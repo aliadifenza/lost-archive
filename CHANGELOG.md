@@ -1,5 +1,17 @@
 # Changelog
 
+## v1.3-phase3-calibration-ready — prompts frozen, smoke gate, calibration (8 November 2026)
+
+- System prompt frozen (sha256 0d8f1f0e…0630); repair message frozen.
+- Step-scoped PI authorization (`authorized_live_steps`): smoke 5, calibrate;
+  pilot and expansion refused.
+- `gate --confirm-live-calls`: five smoke calls (strict parse + action
+  validation, stop at first failure), then C0 calibration on s0 with the PI-6
+  rule as written; `CALIBRATION_REPORT.json`; no second calibration attempt.
+- Rumor-wording framing effect documented as a limitation; expansion
+  condition-set ambiguity (21 vs 28 runs) flagged for the PI.
+- 151 tests; rehearsal unchanged. No live call made from this workspace.
+
 ## v1.3-phase3-corrected — PI decisions of 8 November 2026 implemented
 
 - Observation item 8 (and probe prompts) show currently available actions with

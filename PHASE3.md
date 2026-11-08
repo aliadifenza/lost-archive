@@ -1,6 +1,6 @@
 # Phase 3 — LLM execution infrastructure (spec V1.3)
 
-Status (PHASE3_HANDOFF.md is authoritative for the current state): **infrastructure complete, Adaption client integrated, mock- and fake-transport-tested, not authorized for live runs.** No real inference call has been made from this codebase. Nothing here changes a mechanic, metric, control, probe, or interpretation in V1.3.
+Status (PHASE3_HANDOFF.md is authoritative for the current state): **prompts frozen; smoke gate and calibration authorized; pilot and expansion not authorized.** No real inference call has been made from this codebase. Nothing here changes a mechanic, metric, control, probe, or interpretation in V1.3.
 
 ## Commands
 
@@ -10,7 +10,7 @@ python3 -m lostarchive.experiment smoke --confirm-live-call                   # 
 python3 -m lostarchive.experiment calibrate --config config/experiment.json  # C0 on s0, tuning rule, freezes T
 python3 -m lostarchive.experiment pilot     --config config/experiment.json  # C0, C0-D, C1, C2 on s1 + probes + properties
 python3 -m lostarchive.experiment expand    --config config/experiment.json  # s2..s8, only if all §12 gates pass
-python3 -m unittest discover -s tests                                         # 144 tests, no network
+python3 -m unittest discover -s tests                                         # 151 tests, no network
 ```
 
 Add `--mock` to calibrate / pilot / expand to run the whole sequence locally at zero cost (output in `runs_mock/`, separate ledger). Exit codes: 0 ok, 1 check found blockers, 2 refused, 3 blocked by sequence or gate, 4 aborted (budget or API), 5 smoke reply failed strict parsing.
@@ -60,7 +60,7 @@ Outputs per seed: `runs/<phase>/<seed>/{C0,C0-D,C1,C2}.jsonl`, `*_probes.jsonl`,
 2. **System prompt template** (input 2). `config/prompts/system_prompt.txt` is the V1.3 draft placeholder; freezing = PI approval + its hash in `frozen_prompt_sha256.system`.
 3. **Repair message** (input 5). Draft in `config/prompts/repair_message.txt`; needs approval and hash.
 4. ~~Pricing~~ — set from Adaption's published credit rates; confirm against your Adaption dashboard after the connection test.
-5. **`approved_for_live_runs: true`** — explicit PI authorization; and the API key in the named env var.
+5. **PI authorization per step** — `authorized_live_steps` (smoke count, calibrate, pilot, expand); see PHASE3_HANDOFF.md.
 6. Tagger and word lists (inputs 3–4): analysis-only, do not block runs; tag-based measures stay labelled provisional until human-verified (spec unchanged).
 7. ~~Parse strictness~~ — settled: strict (V1.3 parser unchanged).
 8. **Call ceiling.** Credit ceiling settled (25). `max_calls: 3000` is unchanged; the full design may need about 6,000 calls, so expansion could stop at this ceiling. PI to set.

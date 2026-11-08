@@ -141,32 +141,39 @@ class TestLiveRefusal(unittest.TestCase):
     def test_shipped_config_pins_pi_decisions(self):
         cfg = ex.load_config(os.path.join(ROOT, "config", "experiment.json"))
         self.assertEqual((cfg["provider"], cfg["model"], cfg["temperature"], cfg["cost_unit"],
-                          cfg["budget"]["max_cost"]), ("adaption", "gemma-4-31b-it", 0, "credits", 25.0))
-        self.assertFalse(cfg["approved_for_live_runs"])
-        b = ex.blockers(cfg, env={})
-        for frag in ("approved_for_live_runs", "system prompt", "ADAPTION_API_KEY"):
-            self.assertTrue(any(frag in x for x in b), frag)
-        self.assertFalse(any("repair prompt" in x for x in b))            # approved and frozen
-        self.assertEqual(cfg["pending_system_prompt_sha256"], ex._sha(cfg["_system"]))
-        self.assertEqual(cfg["budget"]["max_calls"], 3000)
-        self.assertEqual(ex.connection_blockers(cfg, env={"ADAPTION_API_KEY": "k"}), [])
+                          cfg["budget"]["max_cost"], cfg["budget"]["max_calls"]),
+                         ("adaption", "gemma-4-31b-it", 0, "credits", 25.0, 3000))
+        self.assertEqual(cfg["frozen_prompt_sha256"]["system"],
+                         "0d8f1f0eafa82eac56c82fb3af4a9c160b85d4068c9cb2c7a6189281deb90630")
+        self.assertEqual(cfg["authorized_live_steps"],
+                         {"smoke": 5, "calibrate": True, "pilot": False, "expand": False})
+        env = {"ADAPTION_API_KEY": "k"}
+        self.assertEqual(ex.blockers(cfg, env, None), [])          # prompts frozen and matching
+        self.assertEqual(ex.blockers(cfg, env, "calibrate"), [])
+        for step in ("pilot", "expand"):
+            self.assertTrue(any("not authorized" in x for x in ex.blockers(cfg, env, step)), step)
+        self.assertTrue(any("ADAPTION_API_KEY" in x for x in ex.blockers(cfg, {}, None)))
 
-    def test_live_run_refused_without_network(self):
+    def test_unauthorized_steps_refused_without_network(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = make_cfg(tmp, provider="adaption")
             t = FakeTransport([])
-            for cmd in ("calibrate", "pilot", "expand"):
-                rc = quiet(ex.main, [cmd, "--config", path], transport=t, env={"ADAPTION_API_KEY": "k"})
-                self.assertEqual(rc, 2)
+            for cmd in ("pilot", "expand"):
+                self.assertEqual(quiet(ex.main, [cmd, "--config", path], transport=t,
+                                       env={"ADAPTION_API_KEY": "k"}), 2)
+            path2 = make_cfg(os.path.join(tmp, "x"), provider="adaption",
+                             authorized_live_steps={"smoke": 0, "calibrate": False})
+            self.assertEqual(quiet(ex.main, ["calibrate", "--config", path2], transport=t,
+                                   env={"ADAPTION_API_KEY": "k"}), 2)
             self.assertEqual(t.calls, [])
 
-    def test_fully_specified_config_has_no_blockers(self):
+    def test_edited_prompt_blocks_everything(self):
         with tempfile.TemporaryDirectory() as tmp:
-            cfg = ex.load_config(make_cfg(tmp, provider="adaption", approved_for_live_runs=True))
-            cfg["frozen_prompt_sha256"] = {"system": ex._sha(cfg["_system"]), "repair": ex._sha(cfg["_repair"])}
-            self.assertEqual(ex.blockers(cfg, env={"ADAPTION_API_KEY": "x"}), [])
+            cfg = ex.load_config(make_cfg(tmp, provider="adaption"))
             cfg["_system"] += " edited"
-            self.assertTrue(ex.blockers(cfg, env={"ADAPTION_API_KEY": "x"}))
+            for step in (None, "smoke", "calibrate"):
+                self.assertTrue(any("system prompt not frozen" in x
+                                    for x in ex.blockers(cfg, {"ADAPTION_API_KEY": "x"}, step)))
 
     def test_mock_flag_overrides_live_provider(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -208,23 +215,48 @@ class TestAdaption(unittest.TestCase):
         self.assertEqual(len(t.calls), 1)
 
 
+def _reply(text, tin=500, tout=20):
+    return (200, {"object": "response", "output_text": text,
+                  "usage": {"input_tokens": tin, "output_tokens": tout}})
+
+
+class Always:
+    """Fake transport that answers every call with the same response."""
+    def __init__(self, resp):
+        self.resp, self.calls = resp, []
+
+    def __call__(self, url, headers, body, timeout):
+        self.calls.append(body)
+        return self.resp
+
+
+WAIT = '{"thought": "", "action": "wait", "args": {}}'
+
+
 class TestSmoke(unittest.TestCase):
     ENV = {"ADAPTION_API_KEY": "k"}
 
-    def test_refused_without_confirmation_or_under_mock(self):
+    def _cfg(self, tmp, **over):
+        return make_cfg(tmp, provider="adaption", **over)
+
+    def test_refusals_make_no_call(self):
         with tempfile.TemporaryDirectory() as tmp:
-            path = make_cfg(tmp, provider="adaption")
+            path = self._cfg(tmp)
             t = FakeTransport([])
             self.assertEqual(quiet(ex.main, ["smoke", "--config", path], transport=t, env=self.ENV), 2)
             self.assertEqual(quiet(ex.main, ["smoke", "--confirm-live-call", "--config", path],
                                    transport=t, env={}), 2)
             self.assertEqual(quiet(ex.main, ["smoke", "--mock", "--confirm-live-call", "--config", path],
                                    transport=t, env=self.ENV), 2)
+            self.assertEqual(quiet(ex.main, ["gate", "--config", path], transport=t, env=self.ENV), 2)
+            p0 = self._cfg(os.path.join(tmp, "z"), authorized_live_steps={"smoke": 0})
+            self.assertEqual(quiet(ex.main, ["smoke", "--confirm-live-call", "--config", p0],
+                                   transport=t, env=self.ENV), 2)
             self.assertEqual(t.calls, [])
 
     def test_one_call_exact_prompt_strict_parse(self):
         with tempfile.TemporaryDirectory() as tmp:
-            path = make_cfg(tmp, provider="adaption")
+            path = self._cfg(tmp)
             t = FakeTransport([ADAPTION_OK])
             rc = quiet(ex.main, ["smoke", "--confirm-live-call", "--config", path], transport=t, env=self.ENV)
             self.assertEqual((rc, len(t.calls)), (0, 1))
@@ -232,28 +264,36 @@ class TestSmoke(unittest.TestCase):
             rep = _load(os.path.join(out, os.listdir(out)[0]))
             body = t.calls[0][2]
             self.assertEqual(body["instructions"] + "\n\n" + body["input"][0]["content"], rep["prompt_sent"])
-            self.assertIn("Round 1", rep["prompt_sent"])
-            self.assertTrue(rep["strict_parse_ok"])
-            self.assertTrue(rep["action_valid"])
+            self.assertTrue(rep["prompt_sent"].endswith(
+                "Available actions: inspect, record(object_id), move(room_id), enter_code(code), wait"))
+            self.assertTrue(rep["strict_parse_ok"] and rep["action_valid"])
+            self.assertEqual(rep["system_prompt_sha256"][:8], "0d8f1f0e")
             self.assertAlmostEqual(rep["cost"], (420 * 0.09 + 18 * 0.34) / 1e6)
             led = _load(os.path.join(tmp, "runs", "ledger.json"))
             self.assertEqual((led["calls"], led["unit"]), (1, "credits"))
 
-    def test_non_json_reply_reported_not_repaired(self):
+    def test_smoke_count_limit(self):
         with tempfile.TemporaryDirectory() as tmp:
-            path = make_cfg(tmp, provider="adaption")
-            t = FakeTransport([(200, {"output_text": "```json\n{\"action\": \"wait\"}\n```",
-                                      "usage": {"input_tokens": 1, "output_tokens": 1}})])
+            path = self._cfg(tmp, authorized_live_steps={"smoke": 2, "calibrate": False})
+            t = Always(_reply(WAIT))
+            for expected in (0, 0, 2):
+                self.assertEqual(quiet(ex.main, ["smoke", "--confirm-live-call", "--config", path],
+                                       transport=t, env=self.ENV), expected)
+            self.assertEqual(len(t.calls), 2)
+
+    def test_fenced_reply_fails(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = self._cfg(tmp)
+            t = FakeTransport([_reply("```json\n" + WAIT + "\n```")])
             rc = quiet(ex.main, ["smoke", "--confirm-live-call", "--config", path], transport=t, env=self.ENV)
             self.assertEqual((rc, len(t.calls)), (5, 1))
 
-    def test_invalid_args_reported(self):
+    def test_invalid_args_fail(self):
         with tempfile.TemporaryDirectory() as tmp:
-            path = make_cfg(tmp, provider="adaption")
-            t = FakeTransport([(200, {"output_text": '{"thought": "", "action": "move", "args": {"room": "R2"}}',
-                                      "usage": {"input_tokens": 1, "output_tokens": 1}})])
+            path = self._cfg(tmp)
+            t = FakeTransport([_reply('{"thought": "", "action": "move", "args": {"room": "R2"}}')])
             self.assertEqual(quiet(ex.main, ["smoke", "--confirm-live-call", "--config", path],
-                                   transport=t, env=self.ENV), 0)
+                                   transport=t, env=self.ENV), 5)
             out = os.path.join(tmp, "runs", "smoke")
             rep = _load(os.path.join(out, os.listdir(out)[0]))
             self.assertEqual((rep["strict_parse_ok"], rep["action_valid"], rep["validation_error"]),
@@ -261,10 +301,83 @@ class TestSmoke(unittest.TestCase):
 
     def test_no_retry_in_smoke(self):
         with tempfile.TemporaryDirectory() as tmp:
-            path = make_cfg(tmp, provider="adaption")
+            path = self._cfg(tmp)
             t = FakeTransport([(503, {}), ADAPTION_OK])
             rc = quiet(ex.main, ["smoke", "--confirm-live-call", "--config", path], transport=t, env=self.ENV)
             self.assertEqual((rc, len(t.calls)), (4, 1))
+
+
+class TestGate(unittest.TestCase):
+    ENV = {"ADAPTION_API_KEY": "k"}
+
+    def test_gate_passes_then_calibrates_and_stops(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = make_cfg(tmp, provider="adaption")
+            t = Always(_reply(WAIT))
+            rc = quiet(ex.main, ["gate", "--confirm-live-calls", "--config", path], transport=t, env=self.ENV)
+            self.assertEqual(rc, 0)
+            gate = _load(os.path.join(tmp, "runs", "smoke", "GATE_RESULT.json"))
+            self.assertEqual((gate["smoke_calls"], gate["all_passed"]), (5, True))
+            rep = _load(os.path.join(tmp, "runs", "calibration", "s0", "CALIBRATION_REPORT.json"))
+            # everyone waits: idle stop after 5 rounds, nobody enters -> rule gives T = 20
+            self.assertEqual((rep["stop_reason"] is not None, rep["entered_by_round_16"], rep["T_selected"]),
+                             (True, 0, 20))
+            self.assertEqual(rep["llm_calls"], len(t.calls) - 5)
+            self.assertEqual(_load(os.path.join(tmp, "runs", "state.json"))["T"], 20)
+            self.assertFalse(os.path.exists(os.path.join(tmp, "runs", "pilot")))
+            led = _load(os.path.join(tmp, "runs", "ledger.json"))
+            self.assertEqual(led["calls"], len(t.calls))
+            # a second gate or calibration is refused
+            self.assertEqual(quiet(ex.main, ["gate", "--confirm-live-calls", "--config", path],
+                                   transport=t, env=self.ENV), 2)
+            self.assertEqual(quiet(ex.main, ["calibrate", "--config", path], transport=t, env=self.ENV), 3)
+            self.assertEqual(quiet(ex.main, ["pilot", "--config", path], transport=t, env=self.ENV), 2)
+
+    def test_gate_stops_on_first_failure(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = make_cfg(tmp, provider="adaption")
+            t = FakeTransport([_reply(WAIT), _reply(WAIT), _reply("Sure. " + WAIT)])
+            rc = quiet(ex.main, ["gate", "--confirm-live-calls", "--config", path], transport=t, env=self.ENV)
+            self.assertEqual((rc, len(t.calls)), (5, 3))
+            self.assertFalse(_load(os.path.join(tmp, "runs", "smoke", "GATE_RESULT.json"))["all_passed"])
+            self.assertFalse(os.path.exists(os.path.join(tmp, "runs", "calibration")))
+
+    def test_gate_stops_on_api_error(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = make_cfg(tmp, provider="adaption")
+            t = FakeTransport([_reply(WAIT), (401, {"error": "bad key"})])
+            rc = quiet(ex.main, ["gate", "--confirm-live-calls", "--config", path], transport=t, env=self.ENV)
+            self.assertEqual((rc, len(t.calls)), (5, 2))
+            self.assertFalse(os.path.exists(os.path.join(tmp, "runs", "calibration")))
+
+    def test_gate_without_calibration_authorization(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = make_cfg(tmp, provider="adaption", authorized_live_steps={"smoke": 5, "calibrate": False})
+            t = Always(_reply(WAIT))
+            self.assertEqual(quiet(ex.main, ["gate", "--confirm-live-calls", "--config", path],
+                                   transport=t, env=self.ENV), 0)
+            self.assertEqual(len(t.calls), 5)
+            self.assertFalse(os.path.exists(os.path.join(tmp, "runs", "calibration")))
+
+    def test_calibration_abort_selects_no_T(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = make_cfg(tmp, provider="adaption")
+            t = FakeTransport([_reply(WAIT)] * 7 + [(401, {})])
+            rc = quiet(ex.main, ["gate", "--confirm-live-calls", "--config", path], transport=t, env=self.ENV)
+            self.assertEqual(rc, 4)
+            self.assertFalse(os.path.exists(os.path.join(tmp, "runs", "state.json")))
+            with open(os.path.join(tmp, "runs", "calibration", "s0", "C0.jsonl")) as f:
+                self.assertEqual(json.loads(f.read().splitlines()[-1])["type"], "run_aborted")
+
+    def test_parse_failure_flag(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = make_cfg(tmp, provider="adaption")
+            replies = [_reply(WAIT)] * 5 + [_reply("no json")] * 2 + [_reply(WAIT)] * 200
+            t = FakeTransport(replies)
+            rc = quiet(ex.main, ["gate", "--confirm-live-calls", "--config", path], transport=t, env=self.ENV)
+            rep = _load(os.path.join(tmp, "runs", "calibration", "s0", "CALIBRATION_REPORT.json"))
+            self.assertEqual(rep["parse_failures"], 1)
+            self.assertEqual(rc, 6 if rep["flags_for_pi_review"] else 0)
 
 
 class TestPolicy(unittest.TestCase):

@@ -83,13 +83,20 @@ def connection_blockers(cfg, env=os.environ) -> list:
     return b
 
 
-def blockers(cfg, env=os.environ) -> list:
-    """Everything that must be settled before an experimental (paid) run. Mock: none."""
+def authorized(cfg, step):
+    """PI authorization is per step (smoke count, calibrate, pilot, expand)."""
+    v = (cfg.get("authorized_live_steps") or {}).get(step)
+    return bool(v)
+
+
+def blockers(cfg, env=os.environ, step=None) -> list:
+    """Everything that must be settled before a paid step. Mock: none.
+    step=None (the `check` command) reports prompt and connection blockers only."""
     if cfg["provider"] == "mock":
         return []
     b = connection_blockers(cfg, env)
-    if not cfg.get("approved_for_live_runs"):
-        b.append("approved_for_live_runs is false (PI authorization)")
+    if step is not None and not authorized(cfg, step):
+        b.append(f"step '{step}' not authorized by the PI (authorized_live_steps.{step})")
     for k in ("system", "repair"):
         frozen = cfg.get("frozen_prompt_sha256", {}).get(k)
         if frozen != _sha(cfg["_" + k]):
@@ -220,14 +227,22 @@ def calibrate(cfg, make_client, budget):
         raise Blocked(f"calibration already done (T={st['T']}); the tuning rule runs once (PI-6)")
     seed = cfg["seeds"]["calibration"]
     out = os.path.join(cfg["_output"], "calibration", seed)
+    if os.path.exists(os.path.join(out, "C0.jsonl")):
+        raise Blocked("a calibration attempt already exists; s0 is used once. A rerun (e.g. after an "
+                      "API abort) needs an explicit PI decision")
     os.makedirs(out, exist_ok=True)
+    calls_before, cost_before = budget.calls, budget.spent
     sim, _ = run_condition(cfg, "C0", seed, cfg["T_initial"], out, budget, make_client)
     T = tune_T(sim.records)
+    rep = calibration_report(cfg, sim, T, budget, calls_before, cost_before)
+    with open(os.path.join(out, "CALIBRATION_REPORT.json"), "w", encoding="utf-8") as f:
+        json.dump(rep, f, indent=2)
     st = {"T": T, "calibration": {"seed": seed, "T_initial": cfg["T_initial"],
-                                  "entered_rounds": {a: x.entered_round for a, x in sim.agents.items()}}}
+                                  "entered_rounds": rep["entered_rounds"],
+                                  "flags_for_pi_review": rep["flags_for_pi_review"]}}
     with open(os.path.join(cfg["_output"], "state.json"), "w", encoding="utf-8") as f:
         json.dump(st, f, indent=2)
-    return st
+    return rep
 
 
 def expansion_gates(cfg, budget, pilot_summary, now=None) -> dict:
@@ -283,46 +298,141 @@ def smoke(cfg, budget, make_client):
               "action_valid": act is not None and verr is None, "validation_error": verr,
               "tokens_in": usage["tokens_in"], "tokens_out": usage["tokens_out"],
               "cost": round(usage["cost"], 8), "cost_unit": cfg.get("cost_unit", "credits"),
+              "system_prompt_sha256": _sha(cfg["_system"]), "repair_sha256": _sha(cfg["_repair"]),
               "prompt_sent": sim.render_prompt(aid, obs), "response_raw": raw,
               "response_payload": getattr(client, "last_payload", None)}
     out = os.path.join(cfg["_output"], "smoke")
     os.makedirs(out, exist_ok=True)
-    with open(os.path.join(out, "smoke_" + datetime.now().strftime("%Y%m%dT%H%M%S") + ".json"), "w",
+    n = smoke_calls_made(cfg) + 1
+    report["smoke_call_number"] = n
+    with open(os.path.join(out, f"smoke_{n:02d}_" + datetime.now().strftime("%Y%m%dT%H%M%S") + ".json"), "w",
               encoding="utf-8") as f:
         json.dump(report, f, indent=2)
     return report
 
 
+def smoke_calls_made(cfg) -> int:
+    out = os.path.join(cfg["_output"], "smoke")
+    return len([f for f in os.listdir(out) if f.startswith("smoke_")]) if os.path.isdir(out) else 0
+
+
+def smoke_passed(r) -> bool:
+    return bool(r["strict_parse_ok"] and r["action_valid"])
+
+
+def calibration_report(cfg, sim, T, budget, calls_before, cost_before) -> dict:
+    """Descriptive record of the calibration run. Flags use only thresholds
+    already in the spec; they ask for PI review and never change T."""
+    rounds = [r for r in sim.records if r["type"] == "agent_round"]
+    n = len(rounds)
+    pf = sum(1 for r in rounds if r["parse_failure"])
+    flags = []
+    if n and pf / n > 0.05:
+        flags.append("parse-failure rate above 5% (the §12 gate (c) threshold)")
+    if any(r["type"] == "run_aborted" for r in sim.records):
+        flags.append("run aborted")
+    end = next((r for r in sim.records if r["type"] == "run_end"), None)
+    return {
+        "seed": cfg["seeds"]["calibration"], "condition": "C0", "T_initial": cfg["T_initial"],
+        "rule": "PI-6: >=5 of 6 entered by round 8 -> 12; <=1 entered by round 16 -> 20; else 16",
+        "T_selected": T, "stop_reason": sim.stop_reason, "rounds_played": sim.round,
+        "entered_rounds": {a: x.entered_round for a, x in sim.agents.items()},
+        "entered_by_round_8": sum(1 for x in sim.agents.values() if x.entered_round and x.entered_round <= 8),
+        "entered_by_round_16": sum(1 for x in sim.agents.values() if x.entered_round and x.entered_round <= 16),
+        "assignment_completion": {a: x.assignment_completion() for a, x in sim.agents.items()},
+        "agent_rounds": n, "parse_failures": pf, "repair_retries": sum(1 for r in rounds if r["repair_retry"]),
+        "invalid_actions": sum(1 for r in rounds if not r["valid"]),
+        "llm_calls": budget.calls - calls_before, "cost": round(budget.spent - cost_before, 8),
+        "cost_unit": cfg.get("cost_unit", "credits"),
+        "ledger_after": budget.ledger(), "model": cfg.get("model"), "temperature": cfg.get("temperature"),
+        "system_prompt_sha256": _sha(cfg["_system"]), "repair_sha256": _sha(cfg["_repair"]),
+        "flags_for_pi_review": flags, "run_end": end,
+    }
+
+
+def _smoke_or_gate(a, cfg, transport, env):
+    b = blockers(cfg, env, "smoke")
+    if cfg["provider"] == "mock":
+        b = ["smoke tests a live provider; drop --mock"]
+    limit = int((cfg.get("authorized_live_steps") or {}).get("smoke") or 0)
+    made = smoke_calls_made(cfg)
+    want = 1 if a.command == "smoke" else limit - made
+    if made + max(want, 1) > limit:
+        b.append(f"smoke calls authorized: {limit}; already made in this output folder: {made}")
+    if a.command == "smoke" and not a.confirm_live_call:
+        b.append("smoke makes one paid call: add --confirm-live-call")
+    if a.command == "gate" and not a.confirm_live_calls:
+        b.append("gate makes paid calls: add --confirm-live-calls")
+    if b:
+        print("REFUSED:\n- " + "\n- ".join(b), file=sys.stderr)
+        return 2
+    budget = make_budget(cfg)
+    results = []
+    try:
+        for _ in range(want):
+            r = smoke(cfg, budget, client_factory(cfg, transport, env, max_attempts=1))
+            results.append({k: v for k, v in r.items() if k not in ("prompt_sent", "response_payload")})
+            print(json.dumps(results[-1], indent=2))
+            if not smoke_passed(r):
+                break
+    except (BudgetExceeded, APIError) as e:
+        results.append({"error": f"{type(e).__name__}: {e}"})
+        print(f"SMOKE CALL FAILED: {type(e).__name__}: {e}", file=sys.stderr)
+    passed = len(results) == want and all("error" not in r and smoke_passed(r) for r in results)
+    if a.command == "smoke":
+        return 0 if passed else (4 if "error" in results[-1] else 5)
+    gate = {"smoke_calls": len(results), "required": want, "all_passed": passed,
+            "results": results, "ledger": budget.ledger()}
+    os.makedirs(os.path.join(cfg["_output"], "smoke"), exist_ok=True)
+    with open(os.path.join(cfg["_output"], "smoke", "GATE_RESULT.json"), "w", encoding="utf-8") as f:
+        json.dump(gate, f, indent=2)
+    if not passed:
+        print("GATE FAILED: stopped; calibration not started. Report to the PI.", file=sys.stderr)
+        return 5
+    print(f"GATE PASSED: {len(results)}/{want} smoke calls passed strict parsing and action validation.")
+    if not authorized(cfg, "calibrate"):
+        print("Calibration not authorized; stopping.")
+        return 0
+    b = blockers(cfg, env, "calibrate")
+    if b:
+        print("REFUSED calibration:\n- " + "\n- ".join(b), file=sys.stderr)
+        return 2
+    try:
+        rep = calibrate(cfg, client_factory(cfg, transport, env), budget)
+    except Blocked as e:
+        print(f"BLOCKED: {e}", file=sys.stderr)
+        return 3
+    except (BudgetExceeded, APIError) as e:
+        print(f"CALIBRATION ABORTED: {type(e).__name__}: {e}. No T selected. Report to the PI.", file=sys.stderr)
+        return 4
+    finally:
+        save_ledger(cfg, budget)
+    print(json.dumps({k: rep[k] for k in ("T_selected", "stop_reason", "entered_by_round_8",
+                                          "entered_by_round_16", "parse_failures", "invalid_actions",
+                                          "llm_calls", "cost", "cost_unit", "flags_for_pi_review")}, indent=2))
+    print("Calibration complete. Pilot and expansion are NOT started (separate authorization).")
+    return 6 if rep["flags_for_pi_review"] else 0
+
+
 def main(argv=None, transport=http_post_json, env=os.environ):
     ap = argparse.ArgumentParser()
-    ap.add_argument("command", choices=["check", "smoke", "calibrate", "pilot", "expand"])
+    ap.add_argument("command", choices=["check", "smoke", "gate", "calibrate", "pilot", "expand"])
     ap.add_argument("--config", default="config/experiment.json")
     ap.add_argument("--mock", action="store_true", help="force the cost-free mock provider (output under runs_mock/)")
     ap.add_argument("--confirm-live-call", action="store_true", help="required by `smoke`: one paid call")
+    ap.add_argument("--confirm-live-calls", action="store_true",
+                    help="required by `gate`: up to the authorized smoke calls, then calibration if authorized")
     a = ap.parse_args(argv)
     cfg = load_config(a.config)
     if a.mock:
         cfg["provider"] = "mock"
         cfg["_output"] = cfg["_output"].rstrip(os.sep) + "_mock"
-    if a.command == "smoke":
-        b = connection_blockers(cfg, env)
-        if cfg["provider"] == "mock":
-            b = ["smoke tests a live provider; drop --mock"]
-        if not a.confirm_live_call:
-            b.append("smoke makes one paid call: add --confirm-live-call")
-        if b:
-            print("REFUSED:\n- " + "\n- ".join(b), file=sys.stderr)
-            return 2
-        try:
-            r = smoke(cfg, make_budget(cfg), client_factory(cfg, transport, env, max_attempts=1))
-        except (BudgetExceeded, APIError) as e:
-            print(f"CONNECTION TEST FAILED: {type(e).__name__}: {e}", file=sys.stderr)
-            return 4
-        print(json.dumps({k: v for k, v in r.items() if k not in ("prompt_sent", "response_payload")}, indent=2))
-        return 0 if r["strict_parse_ok"] else 5
-    b = blockers(cfg, env)
+    if a.command in ("smoke", "gate"):
+        return _smoke_or_gate(a, cfg, transport, env)
+    b = blockers(cfg, env, None if a.command == "check" else a.command)
     if a.command == "check":
         print(json.dumps({"provider": cfg["provider"], "blockers": b,
+                          "authorized_live_steps": cfg.get("authorized_live_steps"),
                           "system_prompt_sha256": _sha(cfg["_system"]),
                           "repair_sha256": _sha(cfg["_repair"])}, indent=2))
         return 0 if not b else 1

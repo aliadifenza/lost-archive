@@ -1,6 +1,11 @@
 {
   "spec": "V1.3",
-  "approved_for_live_runs": false,
+  "authorized_live_steps": {
+    "smoke": 5,
+    "calibrate": true,
+    "pilot": false,
+    "expand": false
+  },
   "provider": "adaption",
   "model": "gemma-4-31b-it",
   "temperature": 0,
@@ -52,14 +57,14 @@
     "repair": "config/prompts/repair_message.txt"
   },
   "frozen_prompt_sha256": {
-    "system": null,
+    "system": "0d8f1f0eafa82eac56c82fb3af4a9c160b85d4068c9cb2c7a6189281deb90630",
     "repair": "3c2fcc1814b829a1df9722cdb35b031529cc47c2b7e47131b15df44c8353f848"
   },
   "approvals": {
     "2026-11-08": "PI: provider Adaption, model gemma-4-31b-it (verified via /api/v1/models), temperature 0, strict JSON parsing, 25-credit ceiling. Not yet approved: prompt text, repair text, call ceiling, live runs.",
-    "2026-11-08b": "PI: action signatures approved (only currently available actions, exact argument names); system prompt approved conditionally pending verification of the rendered prompt; repair message approved and frozen; call ceiling stays 3000 (re-estimate after pilot); live runs not authorized."
+    "2026-11-08b": "PI: action signatures approved (only currently available actions, exact argument names); system prompt approved conditionally pending verification of the rendered prompt; repair message approved and frozen; call ceiling stays 3000 (re-estimate after pilot); live runs not authorized.",
+    "2026-11-08c": "PI: probe signatures approved; rumor wording kept (framing effect documented as a limitation); expansion call-ceiling projection approved; system prompt frozen (sha256 0d8f1f0e...0630); exactly five smoke calls authorized, then C0 calibration on s0 only if all five pass strict parsing and action validation. Pilot and expansion not authorized. Limits: 3000 calls, 25 credits."
   },
   "deadline_iso": "2026-11-09T13:00:00+01:00",
-  "output_dir": "runs",
-  "pending_system_prompt_sha256": "0d8f1f0eafa82eac56c82fb3af4a9c160b85d4068c9cb2c7a6189281deb90630"
+  "output_dir": "runs"
 }
