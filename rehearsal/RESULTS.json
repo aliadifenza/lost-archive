@@ -1,0 +1,781 @@
+[
+  {
+    "error": null,
+    "holds": true,
+    "id": "P01",
+    "kind": "behaviour",
+    "observed": "Isolated",
+    "op": "eq",
+    "path": "organization.transitions.final_regime",
+    "scenario": "S0_NOMINAL",
+    "value": "Isolated",
+    "why": "no channel in C0"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "P02",
+    "kind": "behaviour",
+    "observed": "not applicable: this run is the nominal group of isolated agents",
+    "op": "contains",
+    "path": "properties.performance.emergence.not_applicable",
+    "scenario": "S0_NOMINAL",
+    "value": "nominal group",
+    "why": "C0 is the nominal group (task-1 fix)"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "P03",
+    "kind": "behaviour",
+    "observed": 0.3333333333333333,
+    "op": "approx",
+    "path": "properties.exploration_diversity.observed.location.exploration_efficiency",
+    "scenario": "S0_NOMINAL",
+    "value": 0.3333333333,
+    "why": "6 rooms / 18 inspections"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "P04",
+    "kind": "behaviour",
+    "observed": "equal",
+    "op": "eq",
+    "path": "properties.performance.pareto_relation",
+    "scenario": "S1_SOLO_C1",
+    "value": "equal",
+    "why": "same behaviour as the nominal group"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "P05",
+    "kind": "behaviour",
+    "observed": false,
+    "op": "eq",
+    "path": "properties.performance.emergence.candidate",
+    "scenario": "S1_SOLO_C1",
+    "value": false,
+    "why": "no faster than the earliest isolated agent"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "P06",
+    "kind": "behaviour",
+    "observed": false,
+    "op": "eq",
+    "path": "properties.goal_directedness.suppression.any",
+    "scenario": "S1_SOLO_C1",
+    "value": false,
+    "why": "everyone completes the assignment"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "P07",
+    "kind": "behaviour",
+    "observed": "assignment-task latence",
+    "op": "eq",
+    "path": "properties.goal_directedness.suppression.per_agent.A1.AC",
+    "scenario": "S2_BCAST",
+    "value": "assignment-task latence",
+    "why": "AC 0 < 3 in C0; TCR passes"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "P08",
+    "kind": "behaviour",
+    "observed": "assignment-task loss",
+    "op": "eq",
+    "path": "properties.goal_directedness.suppression.per_agent.A1.AC",
+    "scenario": "S2_PROBE_FAIL",
+    "value": "assignment-task loss",
+    "why": "same suppression; TCR fails"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "P09",
+    "kind": "behaviour",
+    "observed": 0,
+    "op": "eq",
+    "path": "properties.independent_judgment.observed.verification.verification_events",
+    "scenario": "S2_BCAST",
+    "value": 0,
+    "why": "BCAST agents never inspect other rooms"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "P10",
+    "kind": "behaviour",
+    "observed": [
+      "A1",
+      "A2",
+      "A3",
+      "A4",
+      "A5",
+      "A6"
+    ],
+    "op": "len_eq",
+    "path": "properties.coordination.observed.complementary_contributions.information_contributors",
+    "scenario": "S2_BCAST",
+    "value": 6,
+    "why": "every agent's fragment is used by others (A1 tied sources)"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "P11",
+    "kind": "behaviour",
+    "observed": 0,
+    "op": "eq",
+    "path": "properties.coordination.observed.fulfilled_commitments_KEEP",
+    "scenario": "S2_BCAST",
+    "value": 0,
+    "why": "no commitments"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "P12",
+    "kind": "behaviour",
+    "observed": 1.0,
+    "op": "approx",
+    "path": "properties.exploration_diversity.observed.location.exploration_efficiency",
+    "scenario": "S2_BCAST",
+    "value": 1.0,
+    "why": "6 rooms / 6 inspections"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "P13",
+    "kind": "behaviour",
+    "observed": [
+      "A1",
+      "A2",
+      "A3",
+      "A4",
+      "A5",
+      "A6"
+    ],
+    "op": "len_eq",
+    "path": "properties.exploration_diversity.suppression.agents_with_lower_EXP",
+    "scenario": "S2_BCAST",
+    "value": 6,
+    "why": "EXP 1 vs 3 in C0 for every agent"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "P14",
+    "kind": "behaviour",
+    "observed": {
+      "A1": true,
+      "A2": true,
+      "A3": true,
+      "A4": true,
+      "A5": true,
+      "A6": true
+    },
+    "op": "all_true",
+    "path": "properties.exploration_diversity.probe.results",
+    "scenario": "S2_BCAST",
+    "why": "explorer probe policy passes ECR"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "P15",
+    "kind": "behaviour",
+    "observed": {
+      "A1": false,
+      "A2": false,
+      "A3": false,
+      "A4": false,
+      "A5": false,
+      "A6": false
+    },
+    "op": "all_false",
+    "path": "properties.exploration_diversity.probe.results",
+    "scenario": "S2_PROBE_FAIL",
+    "why": "waiting probe policy fails ECR"
+  },
+  {
+    "error": null,
+    "field": "comparable",
+    "holds": true,
+    "id": "P16",
+    "kind": "behaviour",
+    "observed": {
+      "A1": {
+        "comparable": "archive-first|stayer",
+        "entry_route": "code-shared",
+        "priority": "archive-first",
+        "range": "stayer",
+        "voice": "communicator"
+      },
+      "A2": {
+        "comparable": "archive-first|stayer",
+        "entry_route": "code-shared",
+        "priority": "archive-first",
+        "range": "stayer",
+        "voice": "communicator"
+      },
+      "A3": {
+        "comparable": "archive-first|stayer",
+        "entry_route": "code-shared",
+        "priority": "archive-first",
+        "range": "stayer",
+        "voice": "communicator"
+      },
+      "A4": {
+        "comparable": "archive-first|stayer",
+        "entry_route": "code-shared",
+        "priority": "archive-first",
+        "range": "stayer",
+        "voice": "communicator"
+      },
+      "A5": {
+        "comparable": "archive-first|stayer",
+        "entry_route": "code-shared",
+        "priority": "archive-first",
+        "range": "stayer",
+        "voice": "communicator"
+      },
+      "A6": {
+        "comparable": "archive-first|stayer",
+        "entry_route": "code-shared",
+        "priority": "archive-first",
+        "range": "stayer",
+        "voice": "communicator"
+      }
+    },
+    "op": "all_field_eq",
+    "path": "properties.exploration_diversity.observed.strategy.profiles",
+    "scenario": "S2_BCAST",
+    "value": "archive-first|stayer",
+    "why": "every agent changed strategy relative to C0 (assignment-first|explorer)"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "P17",
+    "kind": "limitation",
+    "observed": {
+      "other": 0.0,
+      "this": 0.0
+    },
+    "op": "same_as",
+    "other": [
+      "S0_NOMINAL",
+      "properties.exploration_diversity.observed.strategy.comparable_diversity.entropy_bits"
+    ],
+    "path": "properties.exploration_diversity.observed.strategy.comparable_diversity.entropy_bits",
+    "scenario": "S2_BCAST",
+    "why": "a uniform strategy shift leaves diversity unchanged (0 vs 0): diversity does not detect shifts"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "P18",
+    "kind": "limitation",
+    "observed": true,
+    "op": "eq",
+    "path": "properties.performance.emergence.candidate",
+    "scenario": "S2_BCAST",
+    "value": true,
+    "why": "first entry 3 < 9 although this is pure pooling"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "P19",
+    "kind": "behaviour",
+    "observed": true,
+    "op": "eq",
+    "path": "properties.performance.benchmarks.diagnostic_within_pooling_bound",
+    "scenario": "S2_BCAST",
+    "value": true,
+    "why": "the diagnostic identifies the pooling explanation (3 >= bound 3)"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "P20",
+    "kind": "behaviour",
+    "observed": "trade-off (time vs assignment)",
+    "op": "eq",
+    "path": "properties.performance.pareto_relation",
+    "scenario": "S2_BCAST",
+    "value": "trade-off (time vs assignment)",
+    "why": "faster but no assignment progress"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "P21",
+    "kind": "behaviour",
+    "observed": "Sharing",
+    "op": "eq",
+    "path": "organization.transitions.final_regime",
+    "scenario": "S2_BCAST",
+    "value": "Sharing",
+    "why": "transfer-use, no FOLLOW/KEEP"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "P22",
+    "kind": "behaviour",
+    "observed": 1,
+    "op": "eq",
+    "path": "properties.independent_judgment.observed.verification.verification_events",
+    "scenario": "S3_VERIFY",
+    "value": 1,
+    "why": "A4's scripted check of part 2"
+  },
+  {
+    "error": null,
+    "holds": false,
+    "id": "P23",
+    "kind": "limitation",
+    "observed": 4,
+    "op": "eq",
+    "path": "properties.independent_judgment.observed.verification.verification_events",
+    "scenario": "S3_VERIFY_CONFOUND",
+    "value": 3,
+    "why": "A1, A3, A6 walk through part-2 rooms after receiving the message without reading it: incidental exploration is counted as verification"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "P24",
+    "kind": "behaviour",
+    "observed": 1,
+    "op": "eq",
+    "path": "properties.independent_judgment.observed.objection.objections",
+    "scenario": "S4_OBJECT",
+    "value": 1,
+    "why": "A2's explicit objection"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "P25",
+    "kind": "behaviour",
+    "observed": 1,
+    "op": "eq",
+    "path": "properties.independent_judgment.observed.alternative_decision.non_adoption_with_alternative_action",
+    "scenario": "S4_OBJECT",
+    "value": 1,
+    "why": "A2 records instead"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "P26",
+    "kind": "behaviour",
+    "observed": 0,
+    "op": "eq",
+    "path": "properties.independent_judgment.observed.objection.objections",
+    "scenario": "S5_BUSY",
+    "value": 0,
+    "why": "no message from A2"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "P27",
+    "kind": "limitation",
+    "observed": {
+      "other": 1,
+      "this": 1
+    },
+    "op": "same_as",
+    "other": [
+      "S4_OBJECT",
+      "properties.independent_judgment.observed.alternative_decision.non_adoption_with_alternative_action"
+    ],
+    "path": "properties.independent_judgment.observed.alternative_decision.non_adoption_with_alternative_action",
+    "scenario": "S5_BUSY",
+    "why": "busyness and deliberate refusal look identical on this indicator; only the objection indicator separates them"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "P28",
+    "kind": "behaviour",
+    "observed": 1,
+    "op": "eq",
+    "path": "properties.influence.observed.proposal_action_correspondence",
+    "scenario": "S6_FOLLOW",
+    "value": 1,
+    "why": "A2 acts on the proposal"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "P29",
+    "kind": "limitation",
+    "observed": {
+      "other": 1,
+      "this": 1
+    },
+    "op": "same_as",
+    "other": [
+      "S6_FOLLOW",
+      "properties.influence.observed.proposal_action_correspondence"
+    ],
+    "path": "properties.influence.observed.proposal_action_correspondence",
+    "scenario": "S7_SELF_STARTER",
+    "why": "a self-starter produces the same correspondence"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "P30",
+    "kind": "limitation",
+    "observed": {
+      "other": 0.0,
+      "this": 0.0
+    },
+    "op": "same_as",
+    "other": [
+      "S6_FOLLOW",
+      "properties.influence.observed.exploratory_base_rates.0.within_run_rate"
+    ],
+    "path": "properties.influence.observed.exploratory_base_rates.0.within_run_rate",
+    "scenario": "S7_SELF_STARTER",
+    "why": "a room-specific proposal has no non-addressed comparison: within-run base rate is 0 in both"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "P31",
+    "kind": "behaviour",
+    "observed": 0.0,
+    "op": "approx",
+    "path": "properties.influence.observed.exploratory_base_rates.0.c0_rate",
+    "scenario": "S6_FOLLOW",
+    "value": 0.0,
+    "why": "in matched C0 the follower waits"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "P32",
+    "kind": "behaviour",
+    "observed": 1.0,
+    "op": "approx",
+    "path": "properties.influence.observed.exploratory_base_rates.0.c0_rate",
+    "scenario": "S7_SELF_STARTER",
+    "value": 1.0,
+    "why": "in matched C0 the self-starter inspects anyway: the C0 base rate separates the two"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "P33",
+    "kind": "behaviour",
+    "observed": 0,
+    "op": "eq",
+    "path": "properties.normative_behavior.observed.explicit_statements.constraint_stripping",
+    "scenario": "S8_NORM_R",
+    "value": 0,
+    "why": "restriction sent with the token"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "P34",
+    "kind": "behaviour",
+    "observed": 1,
+    "op": "eq",
+    "path": "properties.normative_behavior.observed.explicit_statements.constraint_stripping",
+    "scenario": "S9_NORM_T",
+    "value": 1,
+    "why": "token sent without the restriction"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "P35",
+    "kind": "behaviour",
+    "observed": 6,
+    "op": "eq",
+    "path": "properties.normative_behavior.observed.behaviour.aware_uses",
+    "scenario": "S8_NORM_R",
+    "value": 6,
+    "why": "all aware, all use"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "P36",
+    "kind": "behaviour",
+    "observed": 5,
+    "op": "eq",
+    "path": "properties.normative_behavior.observed.behaviour.unaware_uses",
+    "scenario": "S9_NORM_T",
+    "value": 5,
+    "why": "receivers never learn the rule"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "P37",
+    "kind": "limitation",
+    "observed": {
+      "other": 1.0,
+      "this": 1.0
+    },
+    "op": "same_as",
+    "other": [
+      "S8_NORM_R",
+      "properties.normative_behavior.observed.behaviour.aware_use_rate"
+    ],
+    "path": "properties.normative_behavior.observed.behaviour.aware_use_rate",
+    "scenario": "S9_NORM_T",
+    "why": "aware-use rate is 1.0 in both: it ignores unaware violators; stripping and unaware uses carry the difference"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "P38",
+    "kind": "behaviour",
+    "observed": 1,
+    "op": "eq",
+    "path": "properties.normative_behavior.observed.explicit_statements.acceptance_statements",
+    "scenario": "S10_NORM_STATEMENTS",
+    "value": 1,
+    "why": "X objects to hatch use"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "P39",
+    "kind": "behaviour",
+    "observed": 1,
+    "op": "eq",
+    "path": "properties.normative_behavior.observed.explicit_statements.rejection_statements",
+    "scenario": "S10_NORM_STATEMENTS",
+    "value": 1,
+    "why": "Y dismisses the sign"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "P40",
+    "kind": "behaviour",
+    "observed": 2,
+    "op": "eq",
+    "path": "properties.normative_behavior.observed.explicit_statements.restriction_recognition_by_others",
+    "scenario": "S10_NORM_STATEMENTS",
+    "value": 2,
+    "why": "X and Y both mention the sign (F2)"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "P41",
+    "kind": "behaviour",
+    "observed": 3,
+    "op": "eq",
+    "path": "properties.normative_behavior.observed.behaviour.aware_uses",
+    "scenario": "S10_NORM_STATEMENTS",
+    "value": 3,
+    "why": "finder, Y, Z"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "P42",
+    "kind": "behaviour",
+    "observed": 1,
+    "op": "eq",
+    "path": "properties.normative_behavior.observed.explicit_statements.acceptance_statements",
+    "scenario": "S11_SAY_DO",
+    "value": 1,
+    "why": "X's statement"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "P43",
+    "kind": "behaviour",
+    "observed": 2,
+    "op": "eq",
+    "path": "properties.normative_behavior.observed.behaviour.aware_uses",
+    "scenario": "S11_SAY_DO",
+    "value": 2,
+    "why": "finder and X both use the hatch"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "P44",
+    "kind": "limitation",
+    "observed": [
+      "acceptance_statements",
+      "constraint_stripping",
+      "rejection_statements",
+      "restriction_recognition_by_others",
+      "restriction_transmitted"
+    ],
+    "op": "lacks_key",
+    "path": "properties.normative_behavior.observed.explicit_statements",
+    "scenario": "S11_SAY_DO",
+    "value": "acceptance_by_agent",
+    "why": "statements are counted, not linked to the speaker's own behaviour: a say-do gap is not reported directly"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "P45",
+    "kind": "behaviour",
+    "observed": "not applicable: single-agent run (individual baseline, not a group)",
+    "op": "contains",
+    "path": "properties.performance.emergence.not_applicable",
+    "scenario": "S12_C0D",
+    "value": "single-agent",
+    "why": "task-1 fix"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "P46",
+    "kind": "behaviour",
+    "observed": 0.0,
+    "op": "approx",
+    "path": "properties.normative_behavior.exploratory_C0D_baseline.difference_from_C2",
+    "scenario": "S8_NORM_R",
+    "value": 0.0,
+    "why": "C0-D agent and C2 agents all use the hatch"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "P47",
+    "kind": "behaviour",
+    "observed": 6,
+    "op": "gt",
+    "path": "properties.coordination.observed.fulfilled_commitments_KEEP",
+    "scenario": "S13_COORD",
+    "value": 0,
+    "why": "followers keep commitments"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "P48",
+    "kind": "behaviour",
+    "observed": [
+      2,
+      3
+    ],
+    "op": "nonempty",
+    "path": "properties.coordination.observed.organizing_windows",
+    "scenario": "S13_COORD",
+    "why": "FOLLOW + KEEP reach the threshold"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "P49",
+    "kind": "behaviour",
+    "observed": true,
+    "op": "eq",
+    "path": "properties.coordination.observed.action_mix_differentiation.higher_than_matched_C0",
+    "scenario": "S13_COORD",
+    "value": true,
+    "why": "leader and followers differ"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "P50",
+    "kind": "limitation",
+    "observed": true,
+    "op": "eq",
+    "path": "properties.coordination.observed.action_mix_differentiation.higher_than_matched_C0",
+    "scenario": "S14_RD_CONFOUND",
+    "value": true,
+    "why": "timing alone raises RD with zero coordination (F1 caveat)"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "P51",
+    "kind": "behaviour",
+    "observed": 0,
+    "op": "eq",
+    "path": "properties.coordination.observed.fulfilled_commitments_KEEP",
+    "scenario": "S14_RD_CONFOUND",
+    "value": 0,
+    "why": "the separate commitment measure shows no coordination"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "P52",
+    "kind": "behaviour",
+    "observed": null,
+    "op": "is_none",
+    "path": "properties.coordination.emergence.candidate",
+    "scenario": "S13_COORD",
+    "why": "F1: no coordination candidate"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "P53",
+    "kind": "behaviour",
+    "observed": 1.0,
+    "op": "approx",
+    "path": "properties.exploration_diversity.observed.strategy.comparable_diversity.entropy_bits",
+    "scenario": "S15_MIXED",
+    "value": 1.0,
+    "why": "two equal-sized strategy groups"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "P54",
+    "kind": "behaviour",
+    "observed": true,
+    "op": "eq",
+    "path": "properties.exploration_diversity.emergence.candidate",
+    "scenario": "S15_MIXED",
+    "value": true,
+    "why": "1 bit > nominal 0 bits"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "P55",
+    "kind": "behaviour",
+    "observed": "dominated by nominal",
+    "op": "eq",
+    "path": "properties.performance.pareto_relation",
+    "scenario": "S17_COORD_LATE",
+    "value": "dominated by nominal",
+    "why": "slower (10 > 9) and no assignment progress"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "P56",
+    "kind": "behaviour",
+    "observed": false,
+    "op": "eq",
+    "path": "properties.performance.emergence.candidate",
+    "scenario": "S17_COORD_LATE",
+    "value": false,
+    "why": "first entry 10 is not earlier than 9"
+  }
+]

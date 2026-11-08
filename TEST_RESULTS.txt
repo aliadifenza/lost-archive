@@ -1,6 +1,6 @@
 Lost Archive simulator — full deterministic validation run
 Spec: World Specification V1.3 with PI decisions F1-F3 (on V1.2-A2)
-Parent commit: 2570b1c
+Parent commit: 670556f
 Python: Python 3.13.18  Platform: Linux x86_64
 Command: python3 -W error::ResourceWarning -m unittest -v
 
@@ -59,6 +59,8 @@ test_pass_fail_and_isolation (tests.test_properties_v13.TestECR.test_pass_fail_a
 test_individual_and_interactive_properties_get_no_candidate (tests.test_properties_v13.TestEmergenceCandidates.test_individual_and_interactive_properties_get_no_candidate) ... ok
 test_pareto_relation (tests.test_properties_v13.TestEmergenceCandidates.test_pareto_relation) ... ok
 test_pooling_is_reported_and_diagnosed (tests.test_properties_v13.TestEmergenceCandidates.test_pooling_is_reported_and_diagnosed) ... ok
+test_c0_is_the_nominal_group (tests.test_properties_v13.TestGroupComparisonScope.test_c0_is_the_nominal_group) ... ok
+test_c0d_single_agent_gets_no_group_comparison (tests.test_properties_v13.TestGroupComparisonScope.test_c0d_single_agent_gets_no_group_comparison) ... ok
 test_alternative_action_is_not_judgment (tests.test_properties_v13.TestIndependentJudgment.test_alternative_action_is_not_judgment) ... ok
 test_quoted_sign_is_not_an_objection (tests.test_properties_v13.TestIndependentJudgment.test_quoted_sign_is_not_an_objection) ... ok
 test_three_separate_indicators (tests.test_properties_v13.TestIndependentJudgment.test_three_separate_indicators) ... ok
@@ -67,6 +69,11 @@ test_explicit_statements_separate_from_behaviour (tests.test_properties_v13.Test
 test_exact_replay (tests.test_properties_v13.TestReplayAndTagger.test_exact_replay) ... ok
 test_negated_first_person_is_not_a_commitment (tests.test_properties_v13.TestReplayAndTagger.test_negated_first_person_is_not_a_commitment) ... ok
 test_seven_properties_with_required_fields (tests.test_properties_v13.TestStructure.test_seven_properties_with_required_fields) ... ok
+test_every_prediction_resolves (tests.test_rehearsal.TestRehearsal.test_every_prediction_resolves) ... ok
+test_outcome_pinned (tests.test_rehearsal.TestRehearsal.test_outcome_pinned) ... ok
+test_predictions_file_unchanged_since_commit (tests.test_rehearsal.TestRehearsal.test_predictions_file_unchanged_since_commit) ... ok
+test_reproducible (tests.test_rehearsal.TestRehearsal.test_reproducible) ... ok
+test_shipped_results_regenerate (tests.test_rehearsal.TestRehearsal.test_shipped_results_regenerate) ... ok
 test_adjacency_and_distances (tests.test_validation.Test01Topology.test_adjacency_and_distances) ... ok
 test_move_non_adjacent_invalid (tests.test_validation.Test01Topology.test_move_non_adjacent_invalid) ... ok
 test_solo_every_room_every_seed (tests.test_validation.Test02SoloSolvability.test_solo_every_room_every_seed) ... ok
@@ -97,6 +104,6 @@ test_identical_logs (tests.test_validation.Test13Reproducibility.test_identical_
 test_matched_seeds_across_conditions (tests.test_validation.Test13Reproducibility.test_matched_seeds_across_conditions) ... ok
 
 ----------------------------------------------------------------------
-Ran 91 tests in 1.907s
+Ran 98 tests in 2.301s
 
 OK

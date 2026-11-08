@@ -1,5 +1,20 @@
 # Changelog
 
+## v1.3-rehearsal — deterministic rehearsal of the seven D2 properties (8 November 2026)
+
+- Fix (reporting bug, spec conformance): group-level comparisons no longer
+  applied to C0-D (single agent) or to C0 compared with itself. This removed a
+  spurious C0-D performance candidate. Regression tests added.
+- Predictions (56 over 19 scenarios) committed before any scenario was
+  implemented or run (`rehearsal/predictions.json`, commit 670556f).
+- `lostarchive/rehearsal.py`: scripted scenarios, prediction evaluation,
+  reproducible outputs in `rehearsal/`.
+- Result: 55/56 predictions held; the miss (P23) is a prediction error.
+  Eight measurement limitations confirmed; decisions D1-D4 for the PI in
+  `rehearsal/FINDINGS.md` (none implemented).
+- `tests/test_rehearsal.py`: reproducibility, shipped outputs regenerate,
+  outcome pinned, predictions unedited.
+
 ## v1.3-review — F1–F3 decisions; review packet (8 November 2026)
 
 - F1: action-mix differentiation vs matched C0 is a descriptive indicator,
