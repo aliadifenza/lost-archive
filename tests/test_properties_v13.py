@@ -217,7 +217,9 @@ class TestEmergenceCandidates(unittest.TestCase):
         bc = compute_properties(run("C1", "s1", all_agents(lambda a: BroadcastPolicy())).records,
                                 c0_records=c0)["properties"]["performance"]
         self.assertEqual(bc["pareto_relation"], "trade-off (time vs assignment)")
-        same = compute_properties(c0, c0_records=c0)["properties"]["performance"]
+        # C1 run in which nobody uses the channel: same behaviour as the nominal group.
+        same = compute_properties(run("C1", "s1", all_agents(lambda a: SoloPolicy())).records,
+                                  c0_records=c0)["properties"]["performance"]
         self.assertEqual(same["pareto_relation"], "equal")
         self.assertFalse(same["emergence"]["candidate"])
         idle = compute_properties(run("C1", "s1", all_agents(lambda a: WaitPolicy())).records,
@@ -230,6 +232,28 @@ class TestEmergenceCandidates(unittest.TestCase):
         for name in ("goal_directedness", "independent_judgment", "influence", "normative_behavior",
                      "coordination"):
             self.assertIsNone(p[name]["emergence"]["candidate"], name)
+
+
+class TestGroupComparisonScope(unittest.TestCase):
+    """Regression: group-level comparisons never apply to C0-D or to C0 itself."""
+
+    def test_c0d_single_agent_gets_no_group_comparison(self):
+        world = generate_world("s1", "C0-D")
+        c0d = run("C0-D", "s1", {world.agent_ids[0]: HatchPolicy(True)})   # enters in round 2
+        p = compute_properties(c0d.records, c0_records=solo_c0("s1").records)["properties"]
+        for name in ("performance", "exploration_diversity"):
+            self.assertIsNone(p[name]["emergence"]["candidate"], name)
+            self.assertIn("single-agent", p[name]["emergence"]["not_applicable"])
+        self.assertIsNone(p["performance"]["pareto_relation"])
+        self.assertIsNone(p["performance"]["benchmarks"])
+        self.assertEqual(p["performance"]["observed"]["T1_first_entry"], 2)   # still observed
+
+    def test_c0_is_the_nominal_group(self):
+        c0 = solo_c0("s1").records
+        p = compute_properties(c0, c0_records=c0)["properties"]
+        for name in ("performance", "exploration_diversity"):
+            self.assertIsNone(p[name]["emergence"]["candidate"], name)
+            self.assertIn("nominal group", p[name]["emergence"]["not_applicable"])
 
 
 class TestReplayAndTagger(unittest.TestCase):

@@ -247,6 +247,16 @@ def compute_properties(records, c0_records=None, c0d_records=None, probes=None,
     rounds = _rounds(records)
     msgs = _messages(records)
     agents = list(m["per_agent"])
+    # Group-level comparisons with the nominal group apply only to a group run
+    # that is not itself the nominal group (spec V1.3: emergence is group-level;
+    # C0-D is a single-agent individual baseline; C0 is the nominal group).
+    if len(agents) < 2:
+        group_na = "not applicable: single-agent run (individual baseline, not a group)"
+    elif m["condition"] == "C0":
+        group_na = "not applicable: this run is the nominal group of isolated agents"
+    else:
+        group_na = None
+    m0g = None if group_na else m0          # nominal used only for group comparisons
     first_org = next((w["rounds"][0] for w in m["windows"] if w["activity"] == "Organizing"), None)
 
     # 1. Goal-directedness (S1, approved) --------------------------------
@@ -449,8 +459,10 @@ def compute_properties(records, c0_records=None, c0d_records=None, probes=None,
         c = Counter(v[key] for a, v in p.items() if subset is None or a in subset)
         return {"distinct": len(c), "entropy_bits": _entropy(list(c.values()))}
 
-    sd, sd0 = div(prof, "comparable"), (div(prof0, "comparable") if prof0 else None)
-    loc, loc0 = location_stats(records), (location_stats(c0_records) if c0_records else None)
+    sd = div(prof, "comparable")
+    sd0 = div(prof0, "comparable") if (prof0 and not group_na) else None
+    loc = location_stats(records)
+    loc0 = location_stats(c0_records) if (c0_records and not group_na) else None
     exp_low = ([a for a in agents if m0 and a in m0["per_agent"]
                 and m["per_agent"][a]["EXP"] < m0["per_agent"][a]["EXP"]] if m0 else [])
     exploration = {
@@ -476,7 +488,8 @@ def compute_properties(records, c0_records=None, c0d_records=None, probes=None,
                       "nominal_location": ({k: loc0[k] for k in ("coverage", "exploration_efficiency")}
                                            if loc0 else None),
                       "note": CANDIDATE_NOTE,
-                      "alternative_explanations": [POOLING, "hatch use replacing exploration (C2)"]},
+                      "alternative_explanations": [POOLING, "hatch use replacing exploration (C2)"],
+                      "not_applicable": group_na},
         "suppression": {"criterion": ("convergence: comparable strategy entropy below the nominal "
                                       "group's; individual: EXP below the matched C0 agent"),
                         "convergence": (None if sd0 is None
@@ -506,7 +519,7 @@ def compute_properties(records, c0_records=None, c0d_records=None, probes=None,
         "assignment_total_AC": sum(m["per_agent"][a]["AC"] for a in agents),
     }
     benchmarks = relation = candidate = None
-    if m0:
+    if m0g:
         m0T1 = m0["collective"]["T1"]
         ac0 = sum(v["AC"] for v in m0["per_agent"].values())
         pb = pooled_bound(c0_records)
@@ -533,7 +546,8 @@ def compute_properties(records, c0_records=None, c0d_records=None, probes=None,
                       "candidate": candidate, "note": CANDIDATE_NOTE,
                       "alternative_explanations": [POOLING],
                       "diagnostic": ("pooled-knowledge bound: if first entry is no earlier than the "
-                                     "bound, the gain is fully consistent with simple pooling")},
+                                     "bound, the gain is fully consistent with simple pooling"),
+                      "not_applicable": group_na},
         "suppression": {"criterion": "dominated by the nominal group (slower and no more assignment progress)",
                         "observed": relation == "dominated by nominal" if relation else None},
         "probe": {"name": None, "results": None},
