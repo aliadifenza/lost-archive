@@ -18,3 +18,12 @@ Output keys refer to `compute_properties(...)["properties"][<property>]`. "Proxy
 | --- | --- | --- | --- | --- | --- |
 | TCR | Complete the catalogue assignment when instructed | inspect, record, wait | 4 | AC reaches 3 | Assignment-task latence vs loss only |
 | ECR | Inspect a room not yet inspected when instructed | move, inspect, wait | 4 | A new room is inspected (not applicable if all six inspected) | Retained capacity for that exploration task only |
+
+## Reporting decisions D1–D4 (PI, 8 November 2026)
+
+- **D1:** verification is exploratory only.
+- **D2:** `normative_behavior.observed.statement_behaviour_by_agent` lists each agent's statements beside its subsequent hatch behaviour.
+- **D3:** `exploration_diversity.observed.strategy.shift_vs_matched_C0` gives the share of agents whose comparable strategy differs from C0.
+- **D4:** `influence.observed.base_rate_role` marks the matched-C0 base rate as diagnostic.
+
+All four are descriptive.

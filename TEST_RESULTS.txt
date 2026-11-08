@@ -1,8 +1,7 @@
-Lost Archive simulator — full deterministic validation run
-Spec: World Specification V1.3 with PI decisions F1-F3 (on V1.2-A2)
-Parent commit: 670556f
+Lost Archive — full deterministic validation run (Phase 2 final)
+Spec: V1.3 + F1-F3 + D1-D4
+Parent commit: 57c90fc
 Python: Python 3.13.18  Platform: Linux x86_64
-Command: python3 -W error::ResourceWarning -m unittest -v
 
 test_addressed_proposals_have_a_within_run_comparison (tests.test_amendment_a2.TestExploratoryBaseRates.test_addressed_proposals_have_a_within_run_comparison) ... ok
 test_collective_proposal_needs_c0_for_a_base_rate (tests.test_amendment_a2.TestExploratoryBaseRates.test_collective_proposal_needs_c0_for_a_base_rate) ... ok
@@ -68,9 +67,16 @@ test_c0d_is_exploratory_only (tests.test_properties_v13.TestNormativeBehavior.te
 test_explicit_statements_separate_from_behaviour (tests.test_properties_v13.TestNormativeBehavior.test_explicit_statements_separate_from_behaviour) ... ok
 test_exact_replay (tests.test_properties_v13.TestReplayAndTagger.test_exact_replay) ... ok
 test_negated_first_person_is_not_a_commitment (tests.test_properties_v13.TestReplayAndTagger.test_negated_first_person_is_not_a_commitment) ... ok
+test_d2_statement_after_hatch_use_is_not_after (tests.test_properties_v13.TestReportingDecisionGaps.test_d2_statement_after_hatch_use_is_not_after) ... ok
+test_d3_uses_comparable_dimensions_not_entry_route (tests.test_properties_v13.TestReportingDecisionGaps.test_d3_uses_comparable_dimensions_not_entry_route) ... ok
+test_d1_verification_is_exploratory (tests.test_properties_v13.TestReportingDecisionsD1toD4.test_d1_verification_is_exploratory) ... ok
+test_d2_statements_beside_behaviour (tests.test_properties_v13.TestReportingDecisionsD1toD4.test_d2_statements_beside_behaviour) ... ok
+test_d3_strategy_shift_share (tests.test_properties_v13.TestReportingDecisionsD1toD4.test_d3_strategy_shift_share) ... ok
+test_d4_base_rate_is_diagnostic (tests.test_properties_v13.TestReportingDecisionsD1toD4.test_d4_base_rate_is_diagnostic) ... ok
 test_seven_properties_with_required_fields (tests.test_properties_v13.TestStructure.test_seven_properties_with_required_fields) ... ok
 test_every_prediction_resolves (tests.test_rehearsal.TestRehearsal.test_every_prediction_resolves) ... ok
 test_outcome_pinned (tests.test_rehearsal.TestRehearsal.test_outcome_pinned) ... ok
+test_post_decision_checks_hold (tests.test_rehearsal.TestRehearsal.test_post_decision_checks_hold) ... ok
 test_predictions_file_unchanged_since_commit (tests.test_rehearsal.TestRehearsal.test_predictions_file_unchanged_since_commit) ... ok
 test_reproducible (tests.test_rehearsal.TestRehearsal.test_reproducible) ... ok
 test_shipped_results_regenerate (tests.test_rehearsal.TestRehearsal.test_shipped_results_regenerate) ... ok
@@ -104,6 +110,6 @@ test_identical_logs (tests.test_validation.Test13Reproducibility.test_identical_
 test_matched_seeds_across_conditions (tests.test_validation.Test13Reproducibility.test_matched_seeds_across_conditions) ... ok
 
 ----------------------------------------------------------------------
-Ran 98 tests in 2.301s
+Ran 105 tests in 2.289s
 
 OK

@@ -118,3 +118,7 @@ Remaining fields:
 | F1 | Action-mix differentiation is compared with matched C0 as a descriptive indicator, not proof of coordination; complementary contributions and fulfilled commitments remain separate coordination measures |
 | F2 | Restriction recognition is distinguished from acceptance |
 | F3 | Tagger lexicons remain provisional until tagger verification (implementation input 3) |
+| D1 | Verification is reported as exploratory only; incidental inspection is not evidence of independent judgment |
+| D2 | A descriptive per-agent table compares norm statements with subsequent hatch behaviour |
+| D3 | The share of agents whose comparable strategy differs from their matched C0 counterpart is reported (descriptive) |
+| D4 | Accepted limitation: correspondence stays descriptive, not causal influence; the matched-C0 base rate is a diagnostic |

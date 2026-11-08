@@ -1,0 +1,105 @@
+[
+  {
+    "error": null,
+    "holds": true,
+    "id": "C1",
+    "observed": "exploratory only (PI decision D1)",
+    "op": "contains",
+    "path": "properties.independent_judgment.observed.verification.status",
+    "scenario": "S3_VERIFY_CONFOUND",
+    "value": "exploratory",
+    "why": "D1: verification reported as exploratory only"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "C2",
+    "observed": [
+      "acceptance"
+    ],
+    "op": "eq",
+    "path": "properties.normative_behavior.observed.statement_behaviour_by_agent.0.statements.0.types",
+    "scenario": "S11_SAY_DO",
+    "value": [
+      "acceptance"
+    ],
+    "why": "D2: the speaker's acceptance statement is listed"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "C3",
+    "observed": true,
+    "op": "eq",
+    "path": "properties.normative_behavior.observed.statement_behaviour_by_agent.0.used_hatch_after_last_statement",
+    "scenario": "S11_SAY_DO",
+    "value": true,
+    "why": "D2: the say-do gap (accept, then use) is now visible per agent"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "C4",
+    "observed": false,
+    "op": "eq",
+    "path": "properties.normative_behavior.observed.statement_behaviour_by_agent.0.used_hatch_after_last_statement",
+    "scenario": "S10_NORM_STATEMENTS",
+    "value": false,
+    "why": "D2: the accepting agent (A1) does not use the hatch"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "C5",
+    "observed": true,
+    "op": "eq",
+    "path": "properties.normative_behavior.observed.statement_behaviour_by_agent.1.used_hatch_after_last_statement",
+    "scenario": "S10_NORM_STATEMENTS",
+    "value": true,
+    "why": "D2: the rejecting agent (A2) uses the hatch"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "C6",
+    "observed": 1.0,
+    "op": "approx",
+    "path": "properties.exploration_diversity.observed.strategy.shift_vs_matched_C0.share",
+    "scenario": "S2_BCAST",
+    "value": 1.0,
+    "why": "D3: the uniform shift invisible to diversity (P17) is now reported"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "C7",
+    "observed": 0.5,
+    "op": "approx",
+    "path": "properties.exploration_diversity.observed.strategy.shift_vs_matched_C0.share",
+    "scenario": "S15_MIXED",
+    "value": 0.5,
+    "why": "D3: half the agents shifted"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "C8",
+    "observed": 0.0,
+    "op": "approx",
+    "path": "properties.exploration_diversity.observed.strategy.shift_vs_matched_C0.share",
+    "scenario": "S1_SOLO_C1",
+    "value": 0.0,
+    "why": "D3: no shift when behaviour matches C0"
+  },
+  {
+    "error": null,
+    "holds": true,
+    "id": "C9",
+    "observed": "diagnostic only (PI decision D4): the matched-C0 base rate is the only evidence separating a follower from an agent that would have acted anyway; correspondence remains descriptive, not causal influence",
+    "op": "contains",
+    "path": "properties.influence.observed.base_rate_role",
+    "scenario": "S7_SELF_STARTER",
+    "value": "diagnostic only",
+    "why": "D4: matched-C0 base rate labelled diagnostic; correspondence not causal"
+  }
+]

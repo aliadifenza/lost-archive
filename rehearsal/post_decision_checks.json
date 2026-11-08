@@ -1,0 +1,14 @@
+{
+  "written": "2026-11-08, AFTER the rehearsal results and the PI decisions D1-D4. These are verification checks of the approved reporting changes, not predictions.",
+  "checks": [
+    {"id": "C1", "scenario": "S3_VERIFY_CONFOUND", "path": "properties.independent_judgment.observed.verification.status", "op": "contains", "value": "exploratory", "why": "D1: verification reported as exploratory only"},
+    {"id": "C2", "scenario": "S11_SAY_DO", "path": "properties.normative_behavior.observed.statement_behaviour_by_agent.0.statements.0.types", "op": "eq", "value": ["acceptance"], "why": "D2: the speaker's acceptance statement is listed"},
+    {"id": "C3", "scenario": "S11_SAY_DO", "path": "properties.normative_behavior.observed.statement_behaviour_by_agent.0.used_hatch_after_last_statement", "op": "eq", "value": true, "why": "D2: the say-do gap (accept, then use) is now visible per agent"},
+    {"id": "C4", "scenario": "S10_NORM_STATEMENTS", "path": "properties.normative_behavior.observed.statement_behaviour_by_agent.0.used_hatch_after_last_statement", "op": "eq", "value": false, "why": "D2: the accepting agent (A1) does not use the hatch"},
+    {"id": "C5", "scenario": "S10_NORM_STATEMENTS", "path": "properties.normative_behavior.observed.statement_behaviour_by_agent.1.used_hatch_after_last_statement", "op": "eq", "value": true, "why": "D2: the rejecting agent (A2) uses the hatch"},
+    {"id": "C6", "scenario": "S2_BCAST", "path": "properties.exploration_diversity.observed.strategy.shift_vs_matched_C0.share", "op": "approx", "value": 1.0, "why": "D3: the uniform shift invisible to diversity (P17) is now reported"},
+    {"id": "C7", "scenario": "S15_MIXED", "path": "properties.exploration_diversity.observed.strategy.shift_vs_matched_C0.share", "op": "approx", "value": 0.5, "why": "D3: half the agents shifted"},
+    {"id": "C8", "scenario": "S1_SOLO_C1", "path": "properties.exploration_diversity.observed.strategy.shift_vs_matched_C0.share", "op": "approx", "value": 0.0, "why": "D3: no shift when behaviour matches C0"},
+    {"id": "C9", "scenario": "S7_SELF_STARTER", "path": "properties.influence.observed.base_rate_role", "op": "contains", "value": "diagnostic only", "why": "D4: matched-C0 base rate labelled diagnostic; correspondence not causal"}
+  ]
+}

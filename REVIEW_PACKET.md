@@ -63,6 +63,7 @@ The PI's original D2 plan governs; the software serves it. D2 asks how individua
 | 8 Nov | V1.3: D2 restored; causal probe excluded; original emergence criterion kept |
 | 8 Nov | V1.3 corrections S2, S4, S5, S6; X1 to X4 accepted (no planted false clue) |
 | 8 Nov | F1: action-mix comparison descriptive only. F2: recognition is not acceptance. F3: tagger provisional |
+| 8 Nov | C0-D reporting fix; rehearsal 55/56; D1–D3 approved as reporting changes, D4 accepted as a limitation |
 
 ## How to check
 

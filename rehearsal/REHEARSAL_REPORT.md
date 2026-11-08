@@ -63,6 +63,24 @@ Seed s1. Predictions written 2026-11-08, before any rehearsal scenario was imple
 | P55 | S17_COORD_LATE | `pareto_relation` | eq "dominated by nominal" | "dominated by nominal" | yes | behaviour |
 | P56 | S17_COORD_LATE | `emergence.candidate` | eq false | false | yes | behaviour |
 
+## Post-decision checks (not predictions)
+
+2026-11-08, AFTER the rehearsal results and the PI decisions D1-D4. These are verification checks of the approved reporting changes, not predictions.
+
+**9 of 9 checks held.**
+
+| ID | Scenario | Check | Expected | Observed | Held |
+| --- | --- | --- | --- | --- | --- |
+| C1 | S3_VERIFY_CONFOUND | D1: verification reported as exploratory only | contains "exploratory" | "exploratory only (PI decision D1)" | yes |
+| C2 | S11_SAY_DO | D2: the speaker's acceptance statement is listed | eq ["acceptance"] | ["acceptance"] | yes |
+| C3 | S11_SAY_DO | D2: the say-do gap (accept, then use) is now visible per agent | eq true | true | yes |
+| C4 | S10_NORM_STATEMENTS | D2: the accepting agent (A1) does not use the hatch | eq false | false | yes |
+| C5 | S10_NORM_STATEMENTS | D2: the rejecting agent (A2) uses the hatch | eq true | true | yes |
+| C6 | S2_BCAST | D3: the uniform shift invisible to diversity (P17) is now reported | approx 1.0 | 1.0 | yes |
+| C7 | S15_MIXED | D3: half the agents shifted | approx 0.5 | 0.5 | yes |
+| C8 | S1_SOLO_C1 | D3: no shift when behaviour matches C0 | approx 0.0 | 0.0 | yes |
+| C9 | S7_SELF_STARTER | D4: matched-C0 base rate labelled diagnostic; correspondence not causal | contains "diagnostic only" | "diagnostic only (PI decision D4): the matched-C0 base ra... | yes |
+
 ## Scenarios
 
 - **S0_NOMINAL:** C0. All agents SOLO (inspect, record x3, walk clockwise collecting parts, enter round 9).

@@ -226,15 +226,27 @@ def run_rehearsal(out_dir=None, predictions_path=None):
         got, ok, err = evaluate(p, results)
         evaluated.append({**p, "observed": got, "holds": ok, "error": err})
 
+    checks_path = os.path.join(os.path.dirname(path), "post_decision_checks.json")
+    checks_spec, checked = None, []
+    if os.path.exists(checks_path):
+        with open(checks_path, encoding="utf-8") as f:
+            checks_spec = json.load(f)
+        for c in checks_spec["checks"]:
+            got, ok, err = evaluate(c, results)
+            checked.append({**c, "observed": got, "holds": ok, "error": err})
+
     if out_dir:
+        if checked:
+            with open(os.path.join(out_dir, "POST_DECISION_RESULTS.json"), "w", encoding="utf-8") as f:
+                f.write(json.dumps(checked, indent=2, sort_keys=True) + "\n")
         for name, r in results.items():
             with open(os.path.join(out_dir, "runs", f"{name}_properties.json"), "w", encoding="utf-8") as f:
                 f.write(json.dumps(r, indent=2, sort_keys=True) + "\n")
         with open(os.path.join(out_dir, "RESULTS.json"), "w", encoding="utf-8") as f:
             f.write(json.dumps(evaluated, indent=2, sort_keys=True) + "\n")
         with open(os.path.join(out_dir, "REHEARSAL_REPORT.md"), "w", encoding="utf-8") as f:
-            f.write(render_report(evaluated, spec))
-    return results, evaluated
+            f.write(render_report(evaluated, spec, checked, checks_spec))
+    return results, evaluated, checked
 
 
 def _fmt(x):
@@ -242,7 +254,7 @@ def _fmt(x):
     return s if len(s) <= 60 else s[:57] + "..."
 
 
-def render_report(evaluated, spec) -> str:
+def render_report(evaluated, spec, checked=(), checks_spec=None) -> str:
     held = sum(e["holds"] for e in evaluated)
     lim = [e for e in evaluated if e["kind"] == "limitation"]
     lines = ["# Deterministic rehearsal — results against predictions", "",
@@ -258,6 +270,16 @@ def render_report(evaluated, spec) -> str:
         lines.append(f"| {e['id']} | {e['scenario']} | `{e['path'].split('.', 2)[-1]}` | {pred} | "
                      f"{_fmt(e['observed']) if not e['error'] else e['error']} | "
                      f"{'yes' if e['holds'] else '**NO**'} | {e['kind']} |")
+    if checked:
+        lines += ["", "## Post-decision checks (not predictions)", "",
+                  checks_spec["written"], "",
+                  f"**{sum(c['holds'] for c in checked)} of {len(checked)} checks held.**", "",
+                  "| ID | Scenario | Check | Expected | Observed | Held |",
+                  "| --- | --- | --- | --- | --- | --- |"]
+        for c in checked:
+            lines.append(f"| {c['id']} | {c['scenario']} | {c['why']} | {c['op']} {_fmt(c.get('value'))} | "
+                         f"{_fmt(c['observed']) if not c['error'] else c['error']} | "
+                         f"{'yes' if c['holds'] else '**NO**'} |")
     lines += ["", "## Scenarios", ""] + [f"- **{k}:** {v}" for k, v in spec["scenarios"].items()]
     return "\n".join(lines) + "\n"
 
@@ -266,9 +288,14 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default="rehearsal")
     a = ap.parse_args()
-    _, ev = run_rehearsal(a.out)
+    _, ev, ch = run_rehearsal(a.out)
     held = sum(e["holds"] for e in ev)
     print(f"{held}/{len(ev)} predictions held")
+    if ch:
+        print(f"{sum(c['holds'] for c in ch)}/{len(ch)} post-decision checks held")
+        for c in ch:
+            if not c["holds"]:
+                print(f"  CHECK FAILED {c['id']}: observed {_fmt(c['observed'])}")
     for e in ev:
         if not e["holds"]:
             print(f"  NOT HELD {e['id']} {e['scenario']} {e['path']}: observed {_fmt(e['observed'])}"

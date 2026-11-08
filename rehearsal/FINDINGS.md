@@ -63,3 +63,15 @@ None of these is implemented. Each would change a measurement, so each needs app
 python3 -m lostarchive.rehearsal --out rehearsal   # regenerates runs/, RESULTS.json, REHEARSAL_REPORT.md
 python3 -m unittest -v                             # includes the rehearsal tests
 ```
+
+## PI decisions applied (8 November 2026, after the rehearsal)
+
+D1–D3 were implemented as reporting changes only, and D4 was accepted as a limitation. The predictions, including the incorrect P23, and all negative findings above are preserved unchanged. The rehearsal was rerun: still 55 of 56 predictions held. Nine post-decision checks (written after the results, and labelled as checks, not predictions) all hold.
+
+| Finding | Status after the decision |
+| --- | --- |
+| 1, verification counts incidental exploration | D1: verification is reported as exploratory only. The limitation itself remains |
+| 6, statements not linked to behaviour | D2: per-agent table added. P44 still evaluates as written (no `acceptance_by_agent` key), but the say–do gap is now reported in `statement_behaviour_by_agent` |
+| 7, uniform strategy shift invisible | D3: shift share reported (1.0 in S2). Diversity itself is unchanged |
+| 3, follower vs self-starter | D4: accepted limitation; the matched-C0 base rate is labelled diagnostic |
+| 2, 4, 5, 8 | Unchanged; reported as limitations |

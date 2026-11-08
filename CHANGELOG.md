@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.3-phase2-final — reporting decisions D1–D4 (8 November 2026)
+
+- D1 verification exploratory-only label; D2 per-agent statement/behaviour
+  table; D3 strategy-shift share vs matched C0; D4 base-rate role label.
+  Reporting only; no scientific rule changed.
+- Rehearsal rerun: predictions untouched (55/56, P23 kept as a miss); nine
+  post-decision checks added in a separate, labelled file; all hold.
+- Unit tests for D1–D4, including two gaps found by bug injection
+  (statement made after hatch use; entry route vs comparable strategy).
+
 ## v1.3-rehearsal — deterministic rehearsal of the seven D2 properties (8 November 2026)
 
 - Fix (reporting bug, spec conformance): group-level comparisons no longer

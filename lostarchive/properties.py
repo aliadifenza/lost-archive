@@ -223,6 +223,42 @@ def judgment_events(records, m) -> dict:
             "declined_without_alternative": declined_idle, "message_tags": tags}
 
 
+def _say_do(msgs, tags, first_sign, end) -> list:
+    """D2 (descriptive): each agent's norm statements beside its subsequent
+    hatch behaviour. No criterion is applied; gaps are shown, not scored."""
+    uses = {u["agent"]: u for u in (end["hatch_uses"] if end else [])}
+    agents_end = end["agents"] if end else {}
+    by_speaker = {}
+    for x in msgs:
+        t = tags[x["id"]]
+        kinds = []
+        if first_sign is not None and x["id"] == first_sign["id"]:
+            kinds.append("transmission")
+        if t["objection"] and t["hatch_topic"]:
+            kinds.append("acceptance")
+        if t["norm_rejection"]:
+            kinds.append("rejection")
+        if t["restriction_mention"] and first_sign is not None and x["sender"] != first_sign["sender"]:
+            kinds.append("recognition")
+        if kinds:
+            by_speaker.setdefault(x["sender"], []).append(
+                {"message_id": x["id"], "round": x["round_sent"], "types": kinds})
+    table = []
+    for a, stmts in sorted(by_speaker.items()):
+        u = uses.get(a)
+        last = max(s["round"] for s in stmts)
+        f = agents_end.get(a, {})
+        table.append({
+            "agent": a, "statements": stmts,
+            "hatch_use_round": u["round"] if u else None,
+            "hatch_use_aware": u["aware"] if u else None,
+            "used_hatch_after_last_statement": bool(u and u["round"] > last),
+            "entry_method": f.get("entry_method"), "entry_round": f.get("entered_round"),
+            "note": "descriptive (PI decision D2); statements are provisional tags",
+        })
+    return table
+
+
 def _split(events, key, first_org):
     if first_org is None:
         return {"before_first_organizing_window": len(events), "from_first_organizing_window": 0}
@@ -288,7 +324,11 @@ def compute_properties(records, c0_records=None, c0d_records=None, probes=None,
                 "verification_events": len(j["verification_events"]),
                 "verification_requests": len(j["verification_requests"]),
                 "events": j["verification_events"],
-                "note": "an inspection consistent with checking a received value; intent unknown"},
+                "note": "an inspection consistent with checking a received value; intent unknown",
+                "status": "exploratory only (PI decision D1)",
+                "interpretation": ("incidental inspection is not evidence of independent judgment: "
+                                   "agents passing through a room on their normal route are counted "
+                                   "too (rehearsal S3_VERIFY_CONFOUND)")},
             "objection": {
                 "objections": len(j["objections"]), "events": j["objections"],
                 "note": TAGGED},
@@ -329,6 +369,9 @@ def compute_properties(records, c0_records=None, c0d_records=None, probes=None,
                                  if w["rounds"][0] <= e["round"] <= w["rounds"][1])
                 for w in m["windows"]},
             "exploratory_base_rates": m["exploratory"]["base_rates"],
+            "base_rate_role": ("diagnostic only (PI decision D4): the matched-C0 base rate is the "
+                               "only evidence separating a follower from an agent that would have "
+                               "acted anyway; correspondence remains descriptive, not causal influence"),
             "proxy": ("descriptive indicator: proposal-action correspondence, with exploratory "
                       "base rates; not causal influence; " + TAGGED),
         },
@@ -389,6 +432,7 @@ def compute_properties(records, c0_records=None, c0d_records=None, probes=None,
     normative = {
         "level": "interactive",
         "observed": {"explicit_statements": explicit, "behaviour": behaviour,
+                     "statement_behaviour_by_agent": _say_do(msgs, tags, first_sign, end),
                      "proxy": ("explicit acceptance/rejection (tagged statements) kept separate "
                                "from hatch use or non-use; " + TAGGED)},
         "comparison": ("descriptive, within C2; C0-D is an exploratory individual baseline, "
@@ -463,6 +507,14 @@ def compute_properties(records, c0_records=None, c0d_records=None, probes=None,
     sd0 = div(prof0, "comparable") if (prof0 and not group_na) else None
     loc = location_stats(records)
     loc0 = location_stats(c0_records) if (c0_records and not group_na) else None
+    shifted = ([a for a in agents if prof0 and a in prof0 and a in prof
+                and prof[a]["comparable"] != prof0[a]["comparable"]] if prof0 else None)
+    shift = (None if shifted is None else {
+        "share": len(shifted) / len(agents) if agents else None,
+        "agents_differing": shifted,
+        "from_to": {a: [prof0[a]["comparable"], prof[a]["comparable"]] for a in shifted},
+        "status": ("descriptive only (PI decision D3); detects uniform shifts that strategy "
+                   "diversity cannot see")})
     exp_low = ([a for a in agents if m0 and a in m0["per_agent"]
                 and m["per_agent"][a]["EXP"] < m0["per_agent"][a]["EXP"]] if m0 else [])
     exploration = {
@@ -470,6 +522,7 @@ def compute_properties(records, c0_records=None, c0d_records=None, probes=None,
         "observed": {
             "location": loc,
             "strategy": {"profiles": prof, "comparable_diversity": sd,
+                         "shift_vs_matched_C0": shift,
                          "entry_route_distribution": dict(Counter(p["entry_route"] for p in prof.values())),
                          "voice_distribution": dict(Counter(p["voice"] for p in prof.values()))},
             "hatch_related": {"hatch_entrants": hatch_entrants,

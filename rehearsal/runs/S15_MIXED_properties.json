@@ -191,6 +191,29 @@
               "voice": "communicator"
             }
           },
+          "shift_vs_matched_C0": {
+            "agents_differing": [
+              "A4",
+              "A5",
+              "A6"
+            ],
+            "from_to": {
+              "A4": [
+                "assignment-first|explorer",
+                "archive-first|stayer"
+              ],
+              "A5": [
+                "assignment-first|explorer",
+                "archive-first|stayer"
+              ],
+              "A6": [
+                "assignment-first|explorer",
+                "archive-first|stayer"
+              ]
+            },
+            "share": 0.5,
+            "status": "descriptive only (PI decision D3); detects uniform shifts that strategy diversity cannot see"
+          },
           "voice_distribution": {
             "communicator": 3,
             "silent": 3
@@ -376,7 +399,9 @@
               "value": "EMBER-11"
             }
           ],
+          "interpretation": "incidental inspection is not evidence of independent judgment: agents passing through a room on their normal route are counted too (rehearsal S3_VERIFY_CONFOUND)",
           "note": "an inspection consistent with checking a received value; intent unknown",
+          "status": "exploratory only (PI decision D1)",
           "verification_events": 6,
           "verification_requests": 0
         }
@@ -412,6 +437,7 @@
       },
       "level": "interactive",
       "observed": {
+        "base_rate_role": "diagnostic only (PI decision D4): the matched-C0 base rate is the only evidence separating a follower from an agent that would have acted anyway; correspondence remains descriptive, not causal influence",
         "correspondence_by_window": {
           "1": 0,
           "2": 0
@@ -466,7 +492,8 @@
           "restriction_recognition_by_others": 0,
           "restriction_transmitted": 0
         },
-        "proxy": "explicit acceptance/rejection (tagged statements) kept separate from hatch use or non-use; tag-based counts are provisional until human-verified (implementation input 3)"
+        "proxy": "explicit acceptance/rejection (tagged statements) kept separate from hatch use or non-use; tag-based counts are provisional until human-verified (implementation input 3)",
+        "statement_behaviour_by_agent": []
       },
       "probe": {
         "name": null,

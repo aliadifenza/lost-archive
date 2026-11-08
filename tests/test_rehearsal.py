@@ -16,14 +16,14 @@ ROOT = os.path.join(os.path.dirname(__file__), "..")
 class TestRehearsal(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.results, cls.evaluated = run_rehearsal()
+        cls.results, cls.evaluated, cls.checked = run_rehearsal()
 
     def test_every_prediction_resolves(self):
         self.assertEqual(len(self.evaluated), 56)
         self.assertEqual([e["id"] for e in self.evaluated if e["error"]], [])
 
     def test_reproducible(self):
-        _, again = run_rehearsal()
+        _, again, _ = run_rehearsal()
         self.assertEqual(json.dumps(again, sort_keys=True), json.dumps(self.evaluated, sort_keys=True))
 
     def test_shipped_results_regenerate(self):
@@ -34,6 +34,11 @@ class TestRehearsal(unittest.TestCase):
     def test_outcome_pinned(self):
         # 55/56 held; the single miss (P23) is a prediction error documented in FINDINGS.md.
         self.assertEqual([e["id"] for e in self.evaluated if not e["holds"]], ["P23"])
+
+    def test_post_decision_checks_hold(self):
+        # D1-D3 reporting changes (checks written after results; not predictions).
+        self.assertEqual(len(self.checked), 9)
+        self.assertEqual([c["id"] for c in self.checked if not c["holds"]], [])
 
     def test_predictions_file_unchanged_since_commit(self):
         # Guard against editing predictions after seeing results.

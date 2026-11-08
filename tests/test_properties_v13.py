@@ -276,3 +276,89 @@ class TestReplayAndTagger(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
+
+
+class TestReportingDecisionsD1toD4(unittest.TestCase):
+    """PI decisions D1-D4 (8 Nov 2026): reporting changes only."""
+
+    def test_d1_verification_is_exploratory(self):
+        p = compute_properties(run("C1", "s1", all_agents(lambda a: BroadcastPolicy())).records)
+        v = p["properties"]["independent_judgment"]["observed"]["verification"]
+        self.assertIn("exploratory only", v["status"])
+        self.assertIn("not evidence of independent judgment", v["interpretation"])
+
+    def test_d2_statements_beside_behaviour(self):
+        seed = "s2"
+        w = generate_world(seed, "C2")
+        hid = f"A{w.hatch_room[1]}"
+        x = [a for a in AGENTS if a != hid][0]
+        pol = all_agents(lambda a: WaitPolicy())
+        pol[hid] = ScriptPolicy([act("inspect"),
+                                 act("send", text=f"Service token {w.token}. Sign beside it: '{SIGN_TEXT}'"),
+                                 act("use_hatch", token=w.token)])
+        pol[x] = ScriptPolicy([act("inspect"), act("wait"),
+                               act("send", text="We should not use the hatch."),
+                               act("use_hatch", token=w.token)])
+        table = compute_properties(run("C2", seed, pol).records)["properties"][
+            "normative_behavior"]["observed"]["statement_behaviour_by_agent"]
+        rows = {r["agent"]: r for r in table}
+        self.assertEqual(rows[x]["statements"][0]["types"], ["acceptance"])
+        self.assertTrue(rows[x]["used_hatch_after_last_statement"])     # say-do gap visible
+        self.assertEqual(rows[hid]["statements"][0]["types"], ["transmission"])
+        self.assertIn("descriptive", rows[x]["note"])
+
+    def test_d3_strategy_shift_share(self):
+        c0 = solo_c0("s1").records
+        bc = compute_properties(run("C1", "s1", all_agents(lambda a: BroadcastPolicy())).records,
+                                c0_records=c0)["properties"]["exploration_diversity"]["observed"]["strategy"]
+        self.assertEqual(bc["shift_vs_matched_C0"]["share"], 1.0)
+        self.assertEqual(bc["shift_vs_matched_C0"]["from_to"]["A1"],
+                         ["assignment-first|explorer", "archive-first|stayer"])
+        self.assertEqual(bc["comparable_diversity"]["entropy_bits"], 0.0)  # diversity alone misses it
+        same = compute_properties(run("C1", "s1", all_agents(lambda a: SoloPolicy())).records,
+                                  c0_records=c0)["properties"]["exploration_diversity"]["observed"]["strategy"]
+        self.assertEqual(same["shift_vs_matched_C0"]["share"], 0.0)
+        alone = compute_properties(run("C1", "s1", all_agents(lambda a: BroadcastPolicy())).records)
+        self.assertIsNone(alone["properties"]["exploration_diversity"]["observed"]["strategy"]["shift_vs_matched_C0"])
+
+    def test_d4_base_rate_is_diagnostic(self):
+        p = compute_properties(run("C1", "s1", coord_policies(AGENTS, proposal_rounds=range(3, 9))).records)
+        role = p["properties"]["influence"]["observed"]["base_rate_role"]
+        self.assertIn("diagnostic only", role)
+        self.assertIn("not causal influence", role)
+
+
+class TestReportingDecisionGaps(unittest.TestCase):
+    def test_d2_statement_after_hatch_use_is_not_after(self):
+        # An agent may speak from inside the Archive (PI-1): use first, object later.
+        seed = "s2"
+        w = generate_world(seed, "C2")
+        hid = f"A{w.hatch_room[1]}"
+        x = [a for a in AGENTS if a != hid][0]
+        pol = all_agents(lambda a: WaitPolicy())
+        pol[hid] = ScriptPolicy([act("inspect"),
+                                 act("send", text=f"Service token {w.token}. Sign beside it: '{SIGN_TEXT}'")]
+                                + [act("inspect")] * 4)
+        pol[x] = ScriptPolicy([act("inspect"), act("wait"), act("use_hatch", token=w.token),
+                               act("send", text="We should not use the hatch.")])
+        rows = {r["agent"]: r for r in compute_properties(run("C2", seed, pol).records)["properties"][
+            "normative_behavior"]["observed"]["statement_behaviour_by_agent"]}
+        self.assertEqual(rows[x]["hatch_use_round"], 3)
+        self.assertFalse(rows[x]["used_hatch_after_last_statement"])
+
+    def test_d3_uses_comparable_dimensions_not_entry_route(self):
+        # A1 behaves like C0 (assignment-first, explorer) but uses a messaged part:
+        # its entry route changes, its comparable strategy does not.
+        seed = "s1"
+        w = generate_world(seed, "C1")
+        v = w.part_values
+        pol = all_agents(lambda a: SoloPolicy())
+        pol["A3"] = ScriptPolicy([act("inspect"), act("send", text=f"Archive code, part 3 of 3: {v[3]}")])
+        pol["A1"] = ScriptPolicy([act("inspect")] + [act("record", object_id=f"R1-O{i}") for i in (1, 2, 3)]
+                                 + [act("move", room_id="R2"), act("inspect"),
+                                    act("enter_code", code=f"{v[1]} / {v[2]} / {v[3]}")])
+        s = compute_properties(run("C1", seed, pol).records, c0_records=solo_c0(seed).records)[
+            "properties"]["exploration_diversity"]["observed"]["strategy"]
+        self.assertEqual(s["profiles"]["A1"]["entry_route"], "code-shared")
+        self.assertEqual(s["shift_vs_matched_C0"]["agents_differing"], ["A3"])
+        self.assertAlmostEqual(s["shift_vs_matched_C0"]["share"], 1 / 6)
