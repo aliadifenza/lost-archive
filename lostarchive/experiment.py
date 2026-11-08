@@ -265,10 +265,12 @@ def smoke(cfg, budget, make_client):
     finally:
         save_ledger(cfg, budget)
     act, perr = Simulation.parse(raw)
+    verr = sim.validate(aid, act)[0] if act else None      # engine's own check, nothing applied
     usage = pol.consume_usage()
     report = {"provider": cfg["provider"], "model": cfg.get("model"), "agent": aid,
               "http_status": getattr(client, "last_status", None), "seconds": round(time.monotonic() - started, 2),
               "strict_parse_ok": act is not None, "parse_error": perr, "parsed_action": act,
+              "action_valid": act is not None and verr is None, "validation_error": verr,
               "tokens_in": usage["tokens_in"], "tokens_out": usage["tokens_out"],
               "cost": round(usage["cost"], 8), "cost_unit": cfg.get("cost_unit", "credits"),
               "prompt_sent": sim.render_prompt(aid, obs), "response_raw": raw,

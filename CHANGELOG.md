@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.3-phase3-handoff — end of engineering session (8 November 2026)
+
+- Smoke report adds `action_valid` / `validation_error` (engine's own check).
+- `PHASE3_HANDOFF.md`: frozen settings, PI-verified smoke results, JSON-mode
+  finding (not documented by Adaption), prompt-argument gap, proposed prompt
+  and repair texts for review, remaining approvals, exact next commands.
+- No prompt file, rule or parser changed. 132 tests.
+
 ## v1.3-phase3-adaption — Adaption integration and frozen PI configuration (8 November 2026)
 
 - `AdaptionClient` (Responses API, `store: false`) with fake-transport tests.

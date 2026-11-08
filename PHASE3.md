@@ -1,6 +1,6 @@
 # Phase 3 — LLM execution infrastructure (spec V1.3)
 
-Status: **infrastructure complete, Adaption client integrated, mock- and fake-transport-tested, not authorized for live runs.** No real inference call has been made from this codebase. Nothing here changes a mechanic, metric, control, probe, or interpretation in V1.3.
+Status (see PHASE3_HANDOFF.md for the current state): **infrastructure complete, Adaption client integrated, mock- and fake-transport-tested, not authorized for live runs.** No real inference call has been made from this codebase. Nothing here changes a mechanic, metric, control, probe, or interpretation in V1.3.
 
 ## Commands
 

@@ -231,6 +231,7 @@ class TestSmoke(unittest.TestCase):
             self.assertEqual(body["instructions"] + "\n\n" + body["input"][0]["content"], rep["prompt_sent"])
             self.assertIn("Round 1", rep["prompt_sent"])
             self.assertTrue(rep["strict_parse_ok"])
+            self.assertTrue(rep["action_valid"])
             self.assertAlmostEqual(rep["cost"], (420 * 0.09 + 18 * 0.34) / 1e6)
             led = _load(os.path.join(tmp, "runs", "ledger.json"))
             self.assertEqual((led["calls"], led["unit"]), (1, "credits"))
@@ -242,6 +243,18 @@ class TestSmoke(unittest.TestCase):
                                       "usage": {"input_tokens": 1, "output_tokens": 1}})])
             rc = quiet(ex.main, ["smoke", "--confirm-live-call", "--config", path], transport=t, env=self.ENV)
             self.assertEqual((rc, len(t.calls)), (5, 1))
+
+    def test_invalid_args_reported(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = make_cfg(tmp, provider="adaption")
+            t = FakeTransport([(200, {"output_text": '{"thought": "", "action": "move", "args": {"room": "R2"}}',
+                                      "usage": {"input_tokens": 1, "output_tokens": 1}})])
+            self.assertEqual(quiet(ex.main, ["smoke", "--confirm-live-call", "--config", path],
+                                   transport=t, env=self.ENV), 0)
+            out = os.path.join(tmp, "runs", "smoke")
+            rep = _load(os.path.join(out, os.listdir(out)[0]))
+            self.assertEqual((rep["strict_parse_ok"], rep["action_valid"], rep["validation_error"]),
+                             (True, False, "Unknown room."))
 
     def test_no_retry_in_smoke(self):
         with tempfile.TemporaryDirectory() as tmp:
