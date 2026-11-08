@@ -106,7 +106,8 @@ class Simulation:
             SYSTEM_PROMPT_TEMPLATE.encode()).hexdigest()[:16]
         self._emit({
             "type": "run_header",
-            "spec": "V1.2",
+            "spec": "V1.3",
+            "apply_order_salt": config.apply_order_salt,
             "condition": config.condition,
             "seed": str(config.seed),
             "T": config.T,
@@ -140,8 +141,8 @@ class Simulation:
         }
 
     def available_actions(self, aid: str) -> list[str]:
-        if getattr(self, "probe_agent", None) == aid:      # §10 TCR probe copy only
-            return ["inspect", "record", "wait"]
+        if getattr(self, "probe_agent", None) == aid:      # probe copies only (TCR, ECR)
+            return list(getattr(self, "probe_actions", ["inspect", "record", "wait"]))
         a = self.agents[aid]
         can_send = self.world.condition.panels and a.send_unlocked
         if a.inside:
@@ -491,6 +492,7 @@ class Simulation:
             self._emit({
                 "type": "agent_round", "round": self.round, "agent": aid,
                 "handle": a.handle,
+                "observation": d["obs"],                                 # V1.3: full structured observation
                 "location": pre[aid][0], "inside": pre[aid][1],          # when choosing
                 "location_after": a.location, "inside_after": a.inside,  # after the round
                 "prompt": d["prompt"], "response_raw": d["raw"],

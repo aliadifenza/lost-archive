@@ -1,4 +1,9 @@
-# The Lost Archive — simulator (World Specification V1.2 + amendments A1, A2)
+# The Lost Archive — simulator (World Specification V1.3)
+
+**V1.3 (PI-approved 8 November 2026)** restores the seven original D2
+properties: see `spec/World_Specification_V1.3.md` and `PROPERTY_MAPPING.md`.
+V1.3 supersedes V1.2-A2 only where stated; the frozen V1.2-A2 specification is
+kept unchanged in `spec/World_Specification_V1.2_with_A1_A2.md`.
 
 Phase 2, milestone 2: deterministic simulator, all §9 measurements,
 organizational states, the TCR probe, and validation tests 1–19, with
@@ -7,8 +12,8 @@ clarifications). Standard library only. No LLM
 integration, no API calls. See `ENGINEERING_REPORT.md` for results,
 interpretations and limitations.
 
-The authoritative specification, including amendments A1 and A2, is
-`spec/World_Specification_V1.2_with_A1_A2.md`. History of changes: `CHANGELOG.md`
+The authoritative specification is V1.3 (`spec/World_Specification_V1.3.md`),
+on top of V1.2-A2 (`spec/World_Specification_V1.2_with_A1_A2.md`). History of changes: `CHANGELOG.md`
 and `git log` (the pre-A1 implementation is tagged `v1.2-phase2-pre-A1`).
 
 ## Layout
@@ -23,11 +28,15 @@ lostarchive/
   cost.py       call and prompt-size estimator (test 16)
   demo.py       writes one scripted run to a JSONL log
   analyze.py    computes metrics for any JSONL log (scripted or LLM)
+  properties.py V1.3: the seven D2 properties (observed, comparison, emergence,
+                suppression, probe, cannot-conclude)
+  replay.py     exact replay of a logged run from its responses
 tests/
   test_validation.py   deterministic validation tests 1–13 (+ 6a, A1 regression)
   test_measurement.py  deterministic validation tests 14–19
   test_edge_cases.py   boundary and degenerate cases
   test_amendment_a2.py amendment V1.2-A2 regressions
+  test_properties_v13.py V1.3 properties, ECR probe, emergence candidates, replay
 ```
 
 ## Run on a MacBook Air (M1)
@@ -52,7 +61,9 @@ python3 -m unittest -v
 
 Analyze options: `--probes <probe file>` adds TCR results;
 `--verification <json>` replaces provisional tags with PI-verified ones;
-`--c0 <matched C0 log>` adds the exploratory C0 base rate.
+`--c0 <matched C0 log>` adds nominal-group comparisons and the exploratory
+base rate; `--c0d <matched C0-D log>` adds the exploratory normative baseline;
+`--properties <path>` writes the V1.3 seven-property report.
 
 FOLLOW is reported as **proposal–action correspondence**, never as causal
 influence (amendment V1.2-A2). Everything under `exploratory` in the metrics
@@ -87,6 +98,7 @@ Demo options: `--condition C0|C1|C2|C0-D`, `--policy solo|bcast|hatch-r|hatch-t|
 | 19 Reorganization | `Test19Reorganization` |
 | Edge cases | `tests/test_edge_cases.py` |
 | Amendment A2 | `tests/test_amendment_a2.py` |
+| V1.3 properties | `tests/test_properties_v13.py` |
 
 ## Transfer-use events (amendment V1.2-A1)
 

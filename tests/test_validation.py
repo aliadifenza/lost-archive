@@ -446,7 +446,11 @@ class Test11OrderInvariance(unittest.TestCase):
             if not alive:
                 break
         sim.run()  # emits run_end
-        return states, [json.dumps(r, sort_keys=True) for r in sim.records]
+        # V1.3: the header records the salt itself, which differs by design;
+        # every other byte of the log must still be identical.
+        log = [json.dumps({k: v for k, v in r.items() if k != "apply_order_salt"}, sort_keys=True)
+               for r in sim.records]
+        return states, log
 
     def test_order_does_not_matter(self):
         for name, (cond, make) in self.MIXES.items():

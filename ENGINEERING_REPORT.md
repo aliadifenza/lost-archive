@@ -1,4 +1,69 @@
-# Engineering report — Phase 2, milestone 2 (with amendment V1.2-A2)
+# Engineering report — specification V1.3
+
+8 November 2026. No LLM calls were made.
+
+## V1.3 summary
+
+V1.3 restores the PI's seven original D2 properties: goal-directedness,
+independent judgment, influence, normative behaviour, coordination,
+exploration diversity and performance. Each is reported with what is
+observed, the comparison specified in advance, emergence and suppression
+criteria, any capacity probe, and what cannot be concluded
+(`spec/World_Specification_V1.3.md`, `PROPERTY_MAPPING.md`). The existing
+V1.2-A2 simulator, metrics and tests are preserved unchanged, except for
+test 11's log comparison, which now excludes the header's own salt field.
+
+**Result.** The full suite passes: 91 tests (the original 75 plus 16 for
+V1.3). It was executed on Python 3.13, Linux; the output is in
+`TEST_RESULTS.txt`. It has not been executed on macOS for V1.3.
+
+**PI corrections verified by bug injection.** Each correction was deliberately
+undone in a copy of the code, and the suite was run against it. All seven were
+caught:
+
+1. entry route mixed into the cross-condition strategy comparison;
+2. hatch non-use counted as norm acceptance;
+3. C0-D used as a collective control;
+4. the pooled-knowledge bound used as the emergence criterion;
+5. the quoted sign read as an objection;
+6. ECR allowing `record`;
+7. a verification counted before the value was received.
+
+**Defects found.**
+- The provisional objection pattern could never match "No, …": there is no
+  word boundary after a comma. Fixed.
+- Two test-design errors (an unsuitable probe policy and an over-broad string
+  check) were fixed in the tests, not the code.
+
+**Not included, per the PI's sequencing.** No deterministic rehearsal yet;
+that follows the independent scientific fidelity review. No causal-influence
+probe (PI decision).
+
+## Items for PI attention (flagged, not decided)
+
+- **F1 — coordination comparison [scientific].** To give coordination a
+  pre-specified nominal comparison, V1.3 compares action-mix differentiation
+  (RD) with the matched C0 nominal group. The PI's correction named the
+  measures (differentiated contributions, commitments, correspondence) but not
+  this comparison. Please confirm, or name another comparison. Known
+  alternative explanation: action mixes can differ only because agents
+  entered at different times.
+- **F2 — recognition counting [minor].** "Restriction relayed by others"
+  counts any mention of the restriction by a non-discoverer, including
+  mentions inside a rejection ("ignore the sign"). Recognition is kept
+  distinct from acceptance.
+- **F3 — tagger lexicons [input 3].** The new lexicons (objection,
+  verification request, restriction mention, norm rejection) are provisional
+  and should be frozen together with implementation input 3.
+- **Observation.** Under the original criterion, a run that only pools
+  information is flagged as a performance candidate (first entry 3 vs the
+  earliest isolated agent's 9). The diagnostic pooled-knowledge bound marks
+  this case as "within pooling bound", which is what the PI's rule requires
+  to be reported.
+
+---
+
+# Earlier report — Phase 2, milestone 2 (with amendment V1.2-A2)
 
 Lost Archive simulator, World Specification V1.2 with amendments V1.2-A1 and
 V1.2-A2. 8 November 2026. No LLM calls were made.

@@ -1,6 +1,6 @@
 Lost Archive simulator — full deterministic validation run
-Spec: World Specification V1.2 + amendments V1.2-A1, V1.2-A2
-Parent commit: ef49694
+Spec: World Specification V1.3 (on V1.2-A2)
+Parent commit: f09a844 (branch v1.3-proposed)
 Python: Python 3.13.18  Platform: Linux x86_64
 Command: python3 -W error::ResourceWarning -m unittest -v
 
@@ -51,6 +51,22 @@ test_organized_then_quiet (tests.test_measurement.Test17QuietIsNotIsolation.test
 test_organize_then_all_enter_is_terminal (tests.test_measurement.Test18Dissolution.test_organize_then_all_enter_is_terminal) ... ok
 test_organize_then_messaging_only (tests.test_measurement.Test18Dissolution.test_organize_then_messaging_only) ... ok
 test_coord_silence_coord (tests.test_measurement.Test19Reorganization.test_coord_silence_coord) ... ok
+test_coordination_candidate_has_alternatives (tests.test_properties_v13.TestCoordinationAndExploration.test_coordination_candidate_has_alternatives) ... ok
+test_efficiency_is_exploration_not_coordination (tests.test_properties_v13.TestCoordinationAndExploration.test_efficiency_is_exploration_not_coordination) ... ok
+test_equivalent_dimensions_and_hatch_separation (tests.test_properties_v13.TestCoordinationAndExploration.test_equivalent_dimensions_and_hatch_separation) ... ok
+test_not_applicable_when_everything_inspected (tests.test_properties_v13.TestECR.test_not_applicable_when_everything_inspected) ... ok
+test_pass_fail_and_isolation (tests.test_properties_v13.TestECR.test_pass_fail_and_isolation) ... ok
+test_individual_and_interactive_properties_get_no_candidate (tests.test_properties_v13.TestEmergenceCandidates.test_individual_and_interactive_properties_get_no_candidate) ... ok
+test_pareto_relation (tests.test_properties_v13.TestEmergenceCandidates.test_pareto_relation) ... ok
+test_pooling_is_reported_and_diagnosed (tests.test_properties_v13.TestEmergenceCandidates.test_pooling_is_reported_and_diagnosed) ... ok
+test_alternative_action_is_not_judgment (tests.test_properties_v13.TestIndependentJudgment.test_alternative_action_is_not_judgment) ... ok
+test_quoted_sign_is_not_an_objection (tests.test_properties_v13.TestIndependentJudgment.test_quoted_sign_is_not_an_objection) ... ok
+test_three_separate_indicators (tests.test_properties_v13.TestIndependentJudgment.test_three_separate_indicators) ... ok
+test_c0d_is_exploratory_only (tests.test_properties_v13.TestNormativeBehavior.test_c0d_is_exploratory_only) ... ok
+test_explicit_statements_separate_from_behaviour (tests.test_properties_v13.TestNormativeBehavior.test_explicit_statements_separate_from_behaviour) ... ok
+test_exact_replay (tests.test_properties_v13.TestReplayAndTagger.test_exact_replay) ... ok
+test_negated_first_person_is_not_a_commitment (tests.test_properties_v13.TestReplayAndTagger.test_negated_first_person_is_not_a_commitment) ... ok
+test_seven_properties_with_required_fields (tests.test_properties_v13.TestStructure.test_seven_properties_with_required_fields) ... ok
 test_adjacency_and_distances (tests.test_validation.Test01Topology.test_adjacency_and_distances) ... ok
 test_move_non_adjacent_invalid (tests.test_validation.Test01Topology.test_move_non_adjacent_invalid) ... ok
 test_solo_every_room_every_seed (tests.test_validation.Test02SoloSolvability.test_solo_every_room_every_seed) ... ok
@@ -81,6 +97,6 @@ test_identical_logs (tests.test_validation.Test13Reproducibility.test_identical_
 test_matched_seeds_across_conditions (tests.test_validation.Test13Reproducibility.test_matched_seeds_across_conditions) ... ok
 
 ----------------------------------------------------------------------
-Ran 75 tests in 1.582s
+Ran 91 tests in 1.894s
 
 OK

@@ -7,7 +7,10 @@ Usage:
 
 --probes:       probe file written by lostarchive.probe (TCR results are read
                 from its probe_result lines).
---c0:           matched C0 log (same seed), for the exploratory base rate.
+--c0:           matched C0 log (same seed): nominal-group comparisons and the
+                exploratory base rate.
+--c0d:          matched C0-D log (same seed): exploratory normative baseline.
+--properties:   also write the V1.3 seven-property report to this path.
 --verification: PI-verified tags, as JSON {"<message_id>": [tag, ...]}; a
                 message mapped to [] has no tags. Without it, tags are the
                 provisional automatic ones and the output says so.
@@ -25,14 +28,20 @@ def main():
     p.add_argument("--probes")
     p.add_argument("--verification")
     p.add_argument("--c0", help="matched C0 log, for the exploratory base rate")
+    p.add_argument("--c0d")
+    p.add_argument("--properties")
     p.add_argument("--out")
     a = p.parse_args()
 
     records = load_records(a.log)
-    tcr = None
+    tcr, probes = None, {}
     if a.probes:
-        tcr = {r["agent"]: r["passed"] for r in load_records(a.probes)
-               if r["type"] == "probe_result"}
+        results = [r for r in load_records(a.probes) if r["type"] == "probe_result"]
+        for kind in ("TCR", "ECR"):
+            got = {r["agent"]: r["passed"] for r in results if r.get("probe", "TCR") == kind}
+            if got:
+                probes[kind] = got
+        tcr = probes.get("TCR")
     verification = None
     if a.verification:
         with open(a.verification, encoding="utf-8") as f:
@@ -58,6 +67,15 @@ def main():
             m["exploratory"]["without_collective_proposals"]["transitions"]["final_regime"],
         "tagger_verified": m["interactive"]["tagger_verified"],
     }
+    if a.properties:
+        from .properties import compute_properties
+        c0d = load_records(a.c0d) if a.c0d else None
+        props = compute_properties(records, c0_records=c0, c0d_records=c0d, probes=probes,
+                                   verification=verification)
+        with open(a.properties, "w", encoding="utf-8") as f:
+            f.write(json.dumps(props, indent=2, sort_keys=True) + "\n")
+        summary["emergence_candidates (flags only, not proof)"] = {
+            k: v["emergence"].get("candidate") for k, v in props["properties"].items()}
     print(json.dumps(summary, indent=2))
 
 
