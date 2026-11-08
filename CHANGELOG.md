@@ -1,5 +1,30 @@
 # Changelog
 
+## v1.3 — Specification V1.3: D2 properties restored (8 November 2026)
+
+PI-approved with corrections. Supersedes V1.2-A2 only where stated; the frozen
+V1.2-A2 specification file is unchanged.
+
+- History: drafted on branch `v1.3-proposed` (commit "V1.3 proposal (PENDING
+  PI APPROVAL)"), then corrected per the PI decision and merged into master.
+- PI corrections applied: no causal-influence probe (removed); original
+  emergence criterion (candidate flags only; pooling reported as alternative;
+  pooled-knowledge bound diagnostic); S2 three separate judgment indicators;
+  S4 explicit norm statements separate from hatch behaviour, C0-D exploratory
+  only; S5 coverage per inspection moved to exploration, coordination from
+  differentiated contributions + KEEP + correspondence; S6 equivalent strategy
+  dimensions, hatch-related changes separated, ECR strictly task-specific.
+- `properties.py` (new), `probe.py` (ECR), `replay.py` (exact replay),
+  `analyze.py` (`--c0d`, `--properties`), `metrics.py` (SELF/RD labels;
+  tagger: negated first person is not a commitment).
+- Engine (engineering): full structured observation logged per agent-round;
+  header records spec version and apply-order salt. Test 11 compares logs
+  excluding the header's own salt field (which differs by design).
+- Tests: `tests/test_properties_v13.py` (16 tests); suite 91/91.
+- Found during development: the provisional objection pattern could never match
+  "No, …" (no word boundary after a comma); fixed. Two test-design errors
+  (wrong probe policy; an over-broad string check) fixed in the tests.
+
 ## v1.2-A2 — Amendment V1.2-A2: operational clarifications (8 November 2026)
 
 Approved by the PI: interpretations I-1 to I-6 adopted as A2, with I-6 revised;
