@@ -1,5 +1,19 @@
 # Changelog
 
+## v1.3-phase3-infra — LLM execution infrastructure (8 November 2026)
+
+- `lostarchive/llm.py`: Anthropic and OpenAI-compatible clients (stdlib),
+  retries with backoff, hard pre-call budget, mock client, LLM agent policy
+  with the spec's repair turn.
+- `lostarchive/experiment.py`: check / calibrate / pilot / expand runner;
+  calibration tuning rule (runs once), matched seeds, TCR/ECR probes,
+  property reports, persistent ledger, `run_aborted` records, §12 gates.
+- `config/experiment.json` + `config/prompts/`: live runs refused until
+  model, temperature, pricing, key, approval and frozen prompt hashes are set.
+- Engine: per-round token/cost/call fields; prompt template configurable
+  (default unchanged). Probe passes its exact prompt to the policy.
+- 17 new tests (122 total). No real API call made. See PHASE3.md.
+
 ## v1.3-phase2-final — reporting decisions D1–D4 (8 November 2026)
 
 - D1 verification exploratory-only label; D2 per-agent statement/behaviour

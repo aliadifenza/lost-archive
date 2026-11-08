@@ -19,6 +19,10 @@ The authoritative specification is V1.3 (`spec/World_Specification_V1.3.md`),
 on top of V1.2-A2 (`spec/World_Specification_V1.2_with_A1_A2.md`). History of changes: `CHANGELOG.md`
 and `git log` (the pre-A1 implementation is tagged `v1.2-phase2-pre-A1`).
 
+## Phase 3 (LLM runs)
+
+See `PHASE3.md`. `python3 -m lostarchive.experiment check` lists what blocks live runs; the default mock provider runs calibrate → pilot → expand at zero cost.
+
 ## Layout
 
 ```

@@ -96,6 +96,7 @@ def _run_probe(sim, aid: str, policy, kind: str, log_path=None) -> dict:
                     "instruction": instruction, "error": error,
                     "messages": [], "messages_omitted": 0})
         prompt = context + "\n\n" + instruction + "\n" + _render(obs)
+        obs["prompt_text"] = prompt          # LLM policies send exactly this text
         raw = policy.act(obs)
         act, perr = p.parse(raw)
         if act is None:

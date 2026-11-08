@@ -1,0 +1,21 @@
+{
+  "spec": "V1.3",
+  "approved_for_live_runs": false,
+  "provider": "mock",
+  "model": null,
+  "temperature": null,
+  "max_output_tokens": 300,
+  "base_url": null,
+  "api_key_env": "ANTHROPIC_API_KEY",
+  "pricing_usd_per_million": {"input": null, "output": null},
+  "mock_pricing_usd_per_million": {"input": 3.0, "output": 15.0},
+  "budget": {"max_usd": 25.0, "max_calls": 3000},
+  "retries": {"max_attempts": 4, "backoff_seconds": 2.0, "timeout_seconds": 60},
+  "seeds": {"calibration": "s0", "pilot": "s1", "expansion": ["s2", "s3", "s4", "s5", "s6", "s7", "s8"]},
+  "T_initial": 16,
+  "conditions": ["C0", "C0-D", "C1", "C2"],
+  "prompts": {"system": "config/prompts/system_prompt.txt", "repair": "config/prompts/repair_message.txt"},
+  "frozen_prompt_sha256": {"system": null, "repair": null},
+  "deadline_iso": "2026-11-09T13:00:00+01:00",
+  "output_dir": "runs"
+}

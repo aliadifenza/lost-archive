@@ -50,6 +50,8 @@ class RunConfig:
     seed: object
     T: int = 16
     apply_order_salt: str = ""     # test 11: alternative application orders
+    # Phase 3: frozen system prompt template from config (None = built-in draft).
+    system_prompt_template: str | None = None
     pi_flags: dict = field(default_factory=lambda: {
         "PI-1": True, "PI-2": True, "PI-3": True, "PI-4": True,
         "PI-5": "s0+s1, expansion conditional", "PI-6": True})
@@ -78,6 +80,42 @@ class AgentState:
         return sum(1 for o in self.catalogue if o.startswith(self.start + "-"))
 
 
+def render_prompt_text(obs: dict, template: str = None) -> str:
+    """Text form of the observation, in the §8 order."""
+    lines = [(template or SYSTEM_PROMPT_TEMPLATE).format(start_room=obs["assignment"]["room"], T=obs["T"]), ""]
+    lines.append(f"Round {obs['round']} of {obs['T']}")
+    if obs["location"] == "ARCHIVE":
+        lines.append("Location: inside the Archive.")
+    else:
+        lines.append(f"Location: {obs['location']}. Adjacent rooms: "
+                     + ", ".join(obs["adjacent"]))
+    asg = obs["assignment"]
+    lines.append(f"Assignment: {asg['completed']} of 3 recorded "
+                 f"({', '.join(asg['recorded']) or 'none'})")
+    lines.append("Known facts:")
+    for room, c in obs["known_facts"].items():
+        objs = "; ".join(f"{oid} {name}" for oid, name in c["objects"])
+        lines.append(f"- {room}: objects {objs}. {c['fragment']['text']}. {c['door']}")
+        if c["panel"]:
+            lines.append(f"  {c['panel']}")
+        if c["hatch"]:
+            lines.append(f"  {c['hatch']['text']}")
+    if obs["messages"]:
+        lines.append("Messages:")
+        if obs["messages_omitted"]:
+            lines.append(f"({obs['messages_omitted']} earlier messages omitted)")
+        for m in obs["messages"]:
+            tag = " [new]" if m["new"] else ""
+            lines.append(f"PANEL — [{m['from']}]: {m['text']}{tag}")
+    lines.append("History:")
+    for h in obs["history"]:
+        lines.append(f"- {h}")
+    if obs["error"]:
+        lines.append(f"Error: {obs['error']}")
+    lines.append("Available actions: " + ", ".join(obs["available_actions"]))
+    return "\n".join(lines)
+
+
 class Simulation:
     def __init__(self, config: RunConfig, policies: dict, log_path=None):
         self.config = config
@@ -102,8 +140,9 @@ class Simulation:
         self.hatch_uses: list[dict] = []
         self.records: list[dict] = []
         self._log = open(log_path, "w", encoding="utf-8") if log_path else None
+        self.prompt_template = config.system_prompt_template or SYSTEM_PROMPT_TEMPLATE
         self.prompt_template_hash = hashlib.sha256(
-            SYSTEM_PROMPT_TEMPLATE.encode()).hexdigest()[:16]
+            self.prompt_template.encode()).hexdigest()[:16]
         self._emit({
             "type": "run_header",
             "spec": "V1.3",
@@ -179,39 +218,7 @@ class Simulation:
 
     def render_prompt(self, aid: str, obs: dict) -> str:
         """Text form of the observation, in the §8 order."""
-        a = self.agents[aid]
-        lines = [SYSTEM_PROMPT_TEMPLATE.format(start_room=a.start, T=self.config.T), ""]
-        lines.append(f"Round {obs['round']} of {obs['T']}")
-        if obs["location"] == "ARCHIVE":
-            lines.append("Location: inside the Archive.")
-        else:
-            lines.append(f"Location: {obs['location']}. Adjacent rooms: "
-                         + ", ".join(obs["adjacent"]))
-        asg = obs["assignment"]
-        lines.append(f"Assignment: {asg['completed']} of 3 recorded "
-                     f"({', '.join(asg['recorded']) or 'none'})")
-        lines.append("Known facts:")
-        for room, c in obs["known_facts"].items():
-            objs = "; ".join(f"{oid} {name}" for oid, name in c["objects"])
-            lines.append(f"- {room}: objects {objs}. {c['fragment']['text']}. {c['door']}")
-            if c["panel"]:
-                lines.append(f"  {c['panel']}")
-            if c["hatch"]:
-                lines.append(f"  {c['hatch']['text']}")
-        if obs["messages"]:
-            lines.append("Messages:")
-            if obs["messages_omitted"]:
-                lines.append(f"({obs['messages_omitted']} earlier messages omitted)")
-            for m in obs["messages"]:
-                tag = " [new]" if m["new"] else ""
-                lines.append(f"PANEL — [{m['from']}]: {m['text']}{tag}")
-        lines.append("History:")
-        for h in obs["history"]:
-            lines.append(f"- {h}")
-        if obs["error"]:
-            lines.append(f"Error: {obs['error']}")
-        lines.append("Available actions: " + ", ".join(obs["available_actions"]))
-        return "\n".join(lines)
+        return render_prompt_text(obs, self.prompt_template)
 
     def _msg(self, mid: int) -> dict:
         return self.messages[mid]
@@ -466,6 +473,9 @@ class Simulation:
             decisions[aid] = dict(obs=obs, prompt=prompt, raw=raw, act=act,
                                   parse_failure=False, retried=retried,
                                   error=err, effect=eff)
+        for aid in self.agents:   # Phase 3: per-decision token and cost usage, if the policy reports it
+            take = getattr(self.policies[aid], "consume_usage", None)
+            decisions[aid]["usage"] = take() if take else None
 
         order = list(self.agents)
         random.Random(f"apply-order::{self.world.seed}::{self.round}::"
@@ -507,7 +517,10 @@ class Simulation:
                 "unlocked": {"send": a.send_unlocked, "use_hatch": a.hatch_unlocked},
                 "restriction_known": a.restriction_known,
                 "restriction_source": a.restriction_source,
-                "tokens_in": None, "tokens_out": None, "cost": None,
+                "tokens_in": (d["usage"] or {}).get("tokens_in"),
+                "tokens_out": (d["usage"] or {}).get("tokens_out"),
+                "cost": (d["usage"] or {}).get("cost_usd"),
+                "llm_calls": (d["usage"] or {}).get("calls"),
             })
 
         # Stopping (§7). Idle check counts outside agents' chosen action only.
