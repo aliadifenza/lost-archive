@@ -1,0 +1,29 @@
+test_adjacency_and_distances (tests.test_validation.Test01Topology.test_adjacency_and_distances) ... ok
+test_move_non_adjacent_invalid (tests.test_validation.Test01Topology.test_move_non_adjacent_invalid) ... ok
+test_solo_every_room_every_seed (tests.test_validation.Test02SoloSolvability.test_solo_every_room_every_seed) ... ok
+test_c0_no_communication (tests.test_validation.Test03Isolation.test_c0_no_communication) ... ok
+test_delay_recipients_truncation (tests.test_validation.Test04Delivery.test_delay_recipients_truncation) ... ok
+test_send_absent_before_discovery (tests.test_validation.Test05AffordanceUnlocking.test_send_absent_before_discovery) ... ok
+test_unlocking (tests.test_validation.Test05AffordanceUnlocking.test_unlocking) ... ok
+test_bcast_tu_sources (tests.test_validation.Test06Provenance.test_bcast_tu_sources) ... ok
+test_direct_values_never_tu (tests.test_validation.Test06Provenance.test_direct_values_never_tu) ... ok
+test_failure_feedback_is_uninformative (tests.test_validation.Test07CodeParsing.test_failure_feedback_is_uninformative) ... ok
+test_parsing (tests.test_validation.Test07CodeParsing.test_parsing) ... ok
+test_impossible_in_c0_c1 (tests.test_validation.Test08Hatch.test_impossible_in_c0_c1) ... ok
+test_invalid_token_does_nothing (tests.test_validation.Test08Hatch.test_invalid_token_does_nothing) ... ok
+test_valid_token_every_room (tests.test_validation.Test08Hatch.test_valid_token_every_room) ... ok
+test_hatch_r_and_t (tests.test_validation.Test09RestrictionLogging.test_hatch_r_and_t) ... ok
+test_1000_invalid_actions_leave_state_unchanged (tests.test_validation.Test10InvalidActions.test_1000_invalid_actions_leave_state_unchanged) ... ok
+test_order_does_not_matter (tests.test_validation.Test11OrderInvariance.test_order_does_not_matter) ... ok
+test_all_inside (tests.test_validation.Test12Stopping.test_all_inside) ... ok
+test_idle_exact (tests.test_validation.Test12Stopping.test_idle_exact) ... ok
+test_inside_agents_do_not_block_idle (tests.test_validation.Test12Stopping.test_inside_agents_do_not_block_idle) ... ok
+test_round_limit (tests.test_validation.Test12Stopping.test_round_limit) ... ok
+test_different_seed_differs (tests.test_validation.Test13Reproducibility.test_different_seed_differs) ... ok
+test_identical_logs (tests.test_validation.Test13Reproducibility.test_identical_logs) ... ok
+test_matched_seeds_across_conditions (tests.test_validation.Test13Reproducibility.test_matched_seeds_across_conditions) ... ok
+
+----------------------------------------------------------------------
+Ran 24 tests in 1.007s
+
+OK
