@@ -164,6 +164,7 @@ def run_seed(cfg, seed, T, phase, budget, make_client):
     os.makedirs(out, exist_ok=True)
     order = ["C0"] + [c for c in cfg["conditions"] if c != "C0"]
     sims, summary = {}, {"seed": seed, "T": T, "phase": phase, "conditions": {}}
+    calls_before = budget.calls
     for cond in order:
         sim, secs = run_condition(cfg, cond, seed, T, out, budget, make_client)
         sims[cond] = sim
@@ -174,6 +175,8 @@ def run_seed(cfg, seed, T, phase, budget, make_client):
             "messages": len(sim.messages), "tu_events": len(sim.tu_events),
             "hatch_uses": len(sim.hatch_uses),
             "parse_failures": sum(1 for r in rounds if r["parse_failure"]), "agent_rounds": len(rounds),
+            "repair_retries": sum(1 for r in rounds if r["repair_retry"]),
+            "llm_calls": sum(r["llm_calls"] or 0 for r in rounds),
             "cost": round(sum(r["cost"] or 0 for r in rounds), 6), "seconds": round(secs, 3)}
 
     c0 = sims["C0"]
@@ -195,6 +198,7 @@ def run_seed(cfg, seed, T, phase, budget, make_client):
         with open(os.path.join(out, f"{cond}_properties.json"), "w", encoding="utf-8") as f:
             f.write(json.dumps(props, indent=2, sort_keys=True) + "\n")
         summary["conditions"][cond]["probes"] = probes
+    summary["calls_total_incl_probes"] = budget.calls - calls_before     # evidence for the call ceiling
     summary["config_sha256"] = {"system_prompt": _sha(cfg["_system"]), "repair": _sha(cfg["_repair"])}
     summary["provider"], summary["model"] = cfg["provider"], cfg.get("model")
     with open(os.path.join(out, "summary.json"), "w", encoding="utf-8") as f:
@@ -235,13 +239,19 @@ def expansion_gates(cfg, budget, pilot_summary, now=None) -> dict:
     remaining = budget.max_cost - budget.spent
     rounds = sum(c["agent_rounds"] for c in conds.values())
     fails = sum(c["parse_failures"] for c in conds.values())
+    seeds = len(cfg["seeds"]["expansion"])
+    per_seed_calls = pilot_summary.get("calls_total_incl_probes")
+    proj_calls = per_seed_calls * seeds if per_seed_calls is not None else None
     gates = {"a_cost": per_run_cost * n_runs <= remaining,
+             # the hard call ceiling would abort expansion mid-run; refuse up front instead
+             "a_calls": proj_calls is not None and proj_calls <= budget.max_calls - budget.calls,
              "c_messages_in_C1": conds.get("C1", {}).get("messages", 0) > 0,
              "c_parse_failures_le_5pct": (fails / rounds if rounds else 1) <= 0.05}
     if cfg.get("deadline_iso"):
         left = (datetime.fromisoformat(cfg["deadline_iso"]) - (now or datetime.now().astimezone())).total_seconds()
         gates["b_throughput"] = per_run_secs * n_runs <= left
-    gates["projection"] = {"runs": n_runs, "usd": round(per_run_cost * n_runs, 4),
+    gates["projection"] = {"calls": proj_calls, "remaining_calls": budget.max_calls - budget.calls,
+                           "runs": n_runs, "usd": round(per_run_cost * n_runs, 4),
                            "seconds": round(per_run_secs * n_runs, 1), "remaining": round(remaining, 4)}
     return gates
 

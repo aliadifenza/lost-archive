@@ -154,7 +154,7 @@ class Test15ProbeIsolation(unittest.TestCase):
         self.assertFalse(res["rounds"][0]["valid"])                   # move forbidden
         self.assertFalse(res["rounds"][1]["valid"])                   # enter_code forbidden
         for r in res["rounds"]:
-            self.assertIn("Available actions: inspect, record, wait", r["prompt"].splitlines()[-1])
+            self.assertIn("Available actions: inspect, record(object_id), wait", r["prompt"].splitlines()[-1])
         self.assertTrue(sim.agents["A3"].inside)                       # run state untouched
 
     def test_tcr_feeds_suppression_labels(self):

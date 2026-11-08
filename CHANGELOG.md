@@ -1,5 +1,18 @@
 # Changelog
 
+## v1.3-phase3-corrected — PI decisions of 8 November 2026 implemented
+
+- Observation item 8 (and probe prompts) show currently available actions with
+  their exact argument names (V1.2 §3 signatures); locked actions stay hidden.
+- System prompt: JSON-only instruction and argument convention (conditionally
+  approved; hash recorded as pending, not frozen). Repair message forbids
+  Markdown and code fences (approved; hash frozen). Strict parser unchanged.
+- Pilot records total calls incl. probes; expansion gate checks the 3,000-call
+  ceiling against that evidence (presented to PI for confirmation).
+- `tests/test_prompt_fidelity.py`; older tests updated only for the actions-line
+  format. Rehearsal logs differ only in prompt text/hash; results unchanged.
+- No live call, calibration or run.
+
 ## v1.3-phase3-handoff — end of engineering session (8 November 2026)
 
 - Smoke report adds `action_valid` / `validation_error` (engine's own check).

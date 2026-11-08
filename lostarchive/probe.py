@@ -20,6 +20,8 @@ from __future__ import annotations
 import copy
 import json
 
+from .engine import render_actions
+
 PROBE_ROUNDS = 4
 PROBE_INSTRUCTION_TEMPLATE = ("Instruction: complete your catalogue assignment now. "
                               "You are in your starting room {room}. "
@@ -53,7 +55,7 @@ def _render(obs: dict) -> str:
         lines.append(f"- {room}: objects {objs}.")
     if obs["error"]:
         lines.append(f"Error: {obs['error']}")
-    lines.append("Available actions: " + ", ".join(obs["available_actions"]))
+    lines.append(render_actions(obs["available_actions"]))
     return "\n".join(lines)
 
 

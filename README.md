@@ -127,7 +127,7 @@ decision to pre-register, not a simulator output.
 
 ## Placeholders (implementation inputs, not frozen)
 
-- `SYSTEM_PROMPT_TEMPLATE` in `engine.py` (input 2)
+- `SYSTEM_PROMPT_TEMPLATE` in `engine.py` = `config/prompts/system_prompt.txt` (input 2; conditionally approved, see PHASE3_HANDOFF.md)
 - `OBJECT_NAMES`, `CODE_WORDS`, `HANDLE_ALPHABET`, `ARTIFACT_TEXT` in `world.py` (input 4)
 - `RESTRICTION_KEYWORDS` in `engine.py` and `metrics.py`: a provisional
   automatic flag for restriction-carrying messages; the spec requires PI

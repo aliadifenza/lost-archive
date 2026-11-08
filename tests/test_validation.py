@@ -32,7 +32,8 @@ def agent_rounds(sim, aid=None):
 
 def actions_line(prompt):
     line = [l for l in prompt.splitlines() if l.startswith("Available actions: ")][0]
-    return line[len("Available actions: "):].split(", ")
+    # names only; signatures such as "move(room_id)" are reduced to "move"
+    return [a.split("(")[0] for a in line[len("Available actions: "):].split(", ")]
 
 
 class Test01Topology(unittest.TestCase):

@@ -53,11 +53,13 @@
   },
   "frozen_prompt_sha256": {
     "system": null,
-    "repair": null
+    "repair": "3c2fcc1814b829a1df9722cdb35b031529cc47c2b7e47131b15df44c8353f848"
   },
   "approvals": {
-    "2026-11-08": "PI: provider Adaption, model gemma-4-31b-it (verified via /api/v1/models), temperature 0, strict JSON parsing, 25-credit ceiling. Not yet approved: prompt text, repair text, call ceiling, live runs."
+    "2026-11-08": "PI: provider Adaption, model gemma-4-31b-it (verified via /api/v1/models), temperature 0, strict JSON parsing, 25-credit ceiling. Not yet approved: prompt text, repair text, call ceiling, live runs.",
+    "2026-11-08b": "PI: action signatures approved (only currently available actions, exact argument names); system prompt approved conditionally pending verification of the rendered prompt; repair message approved and frozen; call ceiling stays 3000 (re-estimate after pilot); live runs not authorized."
   },
   "deadline_iso": "2026-11-09T13:00:00+01:00",
-  "output_dir": "runs"
+  "output_dir": "runs",
+  "pending_system_prompt_sha256": "0d8f1f0eafa82eac56c82fb3af4a9c160b85d4068c9cb2c7a6189281deb90630"
 }

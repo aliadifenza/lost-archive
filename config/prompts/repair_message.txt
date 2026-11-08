@@ -1,1 +1,1 @@
-Your previous response could not be parsed ({error}) Respond again with only the JSON object described above, and no other text.
+Your previous response could not be parsed ({error}) Respond again with only the JSON object described above: no Markdown, no code fences, no other text.

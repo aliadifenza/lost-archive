@@ -144,8 +144,11 @@ class TestLiveRefusal(unittest.TestCase):
                           cfg["budget"]["max_cost"]), ("adaption", "gemma-4-31b-it", 0, "credits", 25.0))
         self.assertFalse(cfg["approved_for_live_runs"])
         b = ex.blockers(cfg, env={})
-        for frag in ("approved_for_live_runs", "system prompt", "repair prompt", "ADAPTION_API_KEY"):
+        for frag in ("approved_for_live_runs", "system prompt", "ADAPTION_API_KEY"):
             self.assertTrue(any(frag in x for x in b), frag)
+        self.assertFalse(any("repair prompt" in x for x in b))            # approved and frozen
+        self.assertEqual(cfg["pending_system_prompt_sha256"], ex._sha(cfg["_system"]))
+        self.assertEqual(cfg["budget"]["max_calls"], 3000)
         self.assertEqual(ex.connection_blockers(cfg, env={"ADAPTION_API_KEY": "k"}), [])
 
     def test_live_run_refused_without_network(self):
@@ -325,6 +328,20 @@ class TestRunner(unittest.TestCase):
         cfg["deadline_iso"] = (datetime.now(timezone.utc) + timedelta(seconds=30)).isoformat()
         self.assertFalse(ex.expansion_gates(cfg, Budget(10, 100, 1, 1), good)["b_throughput"])
 
+    def test_call_ceiling_gate_uses_pilot_evidence(self):
+        cfg = {"seeds": {"expansion": ["s2", "s3"]}, "deadline_iso": None}
+        pilot = {"calls_total_incl_probes": 1000,
+                 "conditions": {c: {"cost": 0.0, "seconds": 1, "agent_rounds": 10, "parse_failures": 0,
+                                    "messages": 1} for c in ("C0", "C0-D", "C1", "C2")}}
+        b = Budget(25, 3000, 1, 1)
+        g = ex.expansion_gates(cfg, b, pilot)
+        self.assertTrue(g["a_calls"])
+        self.assertEqual(g["projection"]["calls"], 2000)
+        b.calls = 1500                                   # calibration + pilot already spent
+        self.assertFalse(ex.expansion_gates(cfg, b, pilot)["a_calls"])
+        del pilot["calls_total_incl_probes"]
+        self.assertFalse(ex.expansion_gates(cfg, Budget(25, 3000, 1, 1), pilot)["a_calls"])
+
     def test_mock_calibrate_pilot_expand_end_to_end(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = make_cfg(tmp, seeds={"calibration": "s0", "pilot": "s1", "expansion": ["s2"]},
@@ -337,6 +354,7 @@ class TestRunner(unittest.TestCase):
             out = os.path.join(tmp, "runs")
             s = _load(os.path.join(out, "pilot", "s1", "summary.json"))
             self.assertEqual(set(s["conditions"]), {"C0", "C0-D", "C1", "C2"})
+            self.assertGreater(s["calls_total_incl_probes"], sum(c["llm_calls"] for c in s["conditions"].values()) - 1)
             for c in s["conditions"]:
                 p = _load(os.path.join(out, "pilot", "s1", f"{c}_properties.json"))
                 self.assertIn("properties", p)

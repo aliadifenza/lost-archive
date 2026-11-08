@@ -186,7 +186,7 @@ class TestECR(unittest.TestCase):
         self.assertFalse(no["passed"])
         self.assertEqual(json.dumps(sim.snapshot(), sort_keys=True), before)
         for r in ok["rounds"]:
-            self.assertIn("Available actions: move, inspect, wait", r["prompt"])
+            self.assertIn("Available actions: move(room_id), inspect, wait", r["prompt"])
 
     def test_not_applicable_when_everything_inspected(self):
         script = [act("inspect")]
