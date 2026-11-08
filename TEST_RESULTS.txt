@@ -1,6 +1,6 @@
 Lost Archive simulator — full deterministic validation run
-Spec: World Specification V1.3 (on V1.2-A2)
-Parent commit: f09a844 (branch v1.3-proposed)
+Spec: World Specification V1.3 with PI decisions F1-F3 (on V1.2-A2)
+Parent commit: 2570b1c
 Python: Python 3.13.18  Platform: Linux x86_64
 Command: python3 -W error::ResourceWarning -m unittest -v
 
@@ -51,9 +51,9 @@ test_organized_then_quiet (tests.test_measurement.Test17QuietIsNotIsolation.test
 test_organize_then_all_enter_is_terminal (tests.test_measurement.Test18Dissolution.test_organize_then_all_enter_is_terminal) ... ok
 test_organize_then_messaging_only (tests.test_measurement.Test18Dissolution.test_organize_then_messaging_only) ... ok
 test_coord_silence_coord (tests.test_measurement.Test19Reorganization.test_coord_silence_coord) ... ok
-test_coordination_candidate_has_alternatives (tests.test_properties_v13.TestCoordinationAndExploration.test_coordination_candidate_has_alternatives) ... ok
 test_efficiency_is_exploration_not_coordination (tests.test_properties_v13.TestCoordinationAndExploration.test_efficiency_is_exploration_not_coordination) ... ok
 test_equivalent_dimensions_and_hatch_separation (tests.test_properties_v13.TestCoordinationAndExploration.test_equivalent_dimensions_and_hatch_separation) ... ok
+test_f1_rd_comparison_is_descriptive_and_measures_separate (tests.test_properties_v13.TestCoordinationAndExploration.test_f1_rd_comparison_is_descriptive_and_measures_separate) ... ok
 test_not_applicable_when_everything_inspected (tests.test_properties_v13.TestECR.test_not_applicable_when_everything_inspected) ... ok
 test_pass_fail_and_isolation (tests.test_properties_v13.TestECR.test_pass_fail_and_isolation) ... ok
 test_individual_and_interactive_properties_get_no_candidate (tests.test_properties_v13.TestEmergenceCandidates.test_individual_and_interactive_properties_get_no_candidate) ... ok
@@ -97,6 +97,6 @@ test_identical_logs (tests.test_validation.Test13Reproducibility.test_identical_
 test_matched_seeds_across_conditions (tests.test_validation.Test13Reproducibility.test_matched_seeds_across_conditions) ... ok
 
 ----------------------------------------------------------------------
-Ran 91 tests in 1.894s
+Ran 91 tests in 1.907s
 
 OK

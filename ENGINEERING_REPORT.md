@@ -39,7 +39,13 @@ caught:
 that follows the independent scientific fidelity review. No causal-influence
 probe (PI decision).
 
-## Items for PI attention (flagged, not decided)
+## Items for PI attention — resolved 8 November 2026
+
+F1 approved with limitations (action-mix comparison descriptive only; no
+coordination emergence candidate), F2 accepted, F3 remains provisional. The
+original flags are kept below for the record.
+
+### Original flags
 
 - **F1 — coordination comparison [scientific].** To give coordination a
   pre-specified nominal comparison, V1.3 compares action-mix differentiation

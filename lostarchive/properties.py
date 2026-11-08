@@ -341,7 +341,9 @@ def compute_properties(records, c0_records=None, c0d_records=None, probes=None,
                        and TOKEN_RE.search(x["text"])), None)
     explicit = {
         "restriction_transmitted": rule["token_messages_with_restriction_auto"],
-        "restriction_relayed_by_others": sum(
+        # Recognition, not acceptance (PI decision F2): counts any mention of the
+        # restriction by a non-discoverer, including mentions inside a rejection.
+        "restriction_recognition_by_others": sum(
             1 for x in msgs if tags[x["id"]]["restriction_mention"] and first_sign
             and x["sender"] != first_sign["sender"]),
         "acceptance_statements": sum(  # objections to hatch use: explicit endorsement of the rule
@@ -405,29 +407,36 @@ def compute_properties(records, c0_records=None, c0d_records=None, probes=None,
     coordination = {
         "level": "collective",
         "observed": {
-            "differentiated_contributions": {
-                "action_mix_differentiation_RD": rd,
+            # Separate measures (PI decision F1, 8 Nov 2026): none is proof of coordination.
+            "complementary_contributions": {
                 "information_contributors": contributors,
                 "values_contributed": len({e["value"] for e in tu}),
                 "note": "contributors are attributed sources (V1.2-A1), not demonstrated influence"},
             "fulfilled_commitments_KEEP": m["interactive"]["KEEP"],
             "proposal_action_correspondence": m["interactive"]["FOLLOW"],
+            "action_mix_differentiation": {
+                "RD": rd, "RD_matched_C0": rd0,
+                "higher_than_matched_C0": (None if rd is None or rd0 is None else rd > rd0),
+                "interpretation": ("descriptive indicator, not proof of coordination: different "
+                                   "actions may simply reflect different completion times")},
             "organizing_windows": [w["window"] for w in m["windows"] if w["activity"] == "Organizing"],
             "final_regime": m["transitions"]["final_regime"],
-            "proxy": "differentiated contributions, kept commitments and correspondence; " + TAGGED,
+            "proxy": ("separate descriptive measures: complementary contributions, fulfilled "
+                      "commitments, correspondence, action-mix differentiation; " + TAGGED),
         },
-        "comparison": ("action-mix differentiation (RD) vs the nominal group (matched C0); "
-                       "other coordination measures have no C0 analogue and are descriptive"),
+        "comparison": ("action-mix differentiation vs matched C0, descriptive only (PI decision F1); "
+                       "the other coordination measures have no C0 analogue"),
         "emergence": {"criterion": ORIGINAL_EMERGENCE,
-                      "comparison": "RD above the nominal group's RD",
-                      "nominal": rd0,
-                      "candidate": (None if rd is None or rd0 is None else rd > rd0),
-                      "note": CANDIDATE_NOTE,
+                      "candidate": None,
+                      "note": ("no candidate is computed: the only nominal comparison available "
+                               "(action-mix differentiation vs matched C0) is a descriptive "
+                               "indicator, not proof of coordination (PI decision F1)"),
                       "alternative_explanations": [POOLING,
-                                                   "different action mixes caused by entering at different times"]},
+                                                   "different action mixes caused by different completion times"]},
         "suppression": {"criterion": "not applicable", "observed": None},
         "probe": {"name": None, "results": None},
-        "cannot_conclude": ["shared intention or plan", "causation of any contribution"],
+        "cannot_conclude": ["shared intention or plan", "causation of any contribution",
+                            "coordination from action-mix differentiation alone"],
     }
 
     # 6. Exploration diversity (S6, corrected) ---------------------------

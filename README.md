@@ -2,6 +2,7 @@
 
 **V1.3 (PI-approved 8 November 2026)** restores the seven original D2
 properties: see `spec/World_Specification_V1.3.md` and `PROPERTY_MAPPING.md`.
+Reviewers: start with `REVIEW_PACKET.md`.
 V1.3 supersedes V1.2-A2 only where stated; the frozen V1.2-A2 specification is
 kept unchanged in `spec/World_Specification_V1.2_with_A1_A2.md`.
 

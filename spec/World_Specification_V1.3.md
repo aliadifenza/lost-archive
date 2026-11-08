@@ -51,7 +51,7 @@ Remaining fields:
 
 ### 4. Normative behaviour (interactive)
 
-- **Explicit statements:** restriction transmitted; restriction relayed by others (recognition, which includes mentions inside rejections); acceptance statements (objections to hatch use); rejection statements (explicit dismissal of the sign or rule); constraint stripping (token sent without the restriction).
+- **Explicit statements:** restriction transmitted; restriction recognition by others (any mention by a non-discoverer, including inside a rejection; **recognition is not acceptance**, PI decision F2); acceptance statements (objections to hatch use); rejection statements (explicit dismissal of the sign or rule); constraint stripping (token sent without the restriction).
 - **Behaviour, kept separate:** aware and unaware hatch uses, channel-only uses, and aware non-users. Hatch use or non-use is behaviour, not acceptance or rejection of the norm.
 - **Comparison:** descriptive within C2. C0-D is an **exploratory individual baseline, not an equivalent collective control**.
 - **Emergence:** no candidate is computed, because no nominal group of isolated agents exists for norm transmission.
@@ -61,16 +61,14 @@ Remaining fields:
 
 ### 5. Coordination (collective)
 
-- **Observed:** differentiated contributions, kept commitments (KEEP), proposal–action correspondence, organizing windows, and the final regime. Differentiated contributions are:
-    - action-mix differentiation (RD, valid actions only);
-    - information contributors (the attributed sources of transfer-use, V1.2-A1, not demonstrated influence);
-    - the number of values contributed.
-- **Comparison:** RD against the matched C0 nominal group. The other measures have no C0 analogue and are descriptive.
-- **Emergence:** candidate flag if RD exceeds the nominal group's RD. Alternative explanations: pooling, and action mixes that differ only because agents entered at different times.
+- **Observed, as separate measures** (PI decision F1): complementary contributions (information contributors, which are the attributed sources of transfer-use under V1.2-A1, not demonstrated influence; and the number of values contributed), fulfilled commitments (KEEP), proposal–action correspondence, and organizing windows with the final regime.
+- **Action-mix differentiation** (RD, valid actions only) is compared against matched C0 as a **descriptive indicator, not proof of coordination**: different actions may simply reflect different completion times.
+- **Comparison:** RD against matched C0, descriptive only. The other measures have no C0 analogue.
+- **Emergence:** no candidate is computed. The only nominal comparison available is the descriptive RD indicator.
 - **Suppression:** not applicable.
 - **Probe:** none.
-- **Cannot conclude:** shared intention; causation of any contribution.
-- **Change from the proposal:** coverage per inspection is exploration efficiency, not coordination, and is reported under property 6.
+- **Cannot conclude:** shared intention; causation of any contribution; coordination from action-mix differentiation alone.
+- **Note:** coverage per inspection is exploration efficiency, reported under property 6.
 
 ### 6. Exploration diversity (collective)
 
@@ -112,3 +110,11 @@ Remaining fields:
 - Internal states: intentions, or endorsement of norms.
 - Emergence of interactive properties relative to C0.
 - Inferential claims from one pilot seed.
+
+## PI decisions after approval (8 November 2026)
+
+| ID | Decision |
+| --- | --- |
+| F1 | Action-mix differentiation is compared with matched C0 as a descriptive indicator, not proof of coordination; complementary contributions and fulfilled commitments remain separate coordination measures |
+| F2 | Restriction recognition is distinguished from acceptance |
+| F3 | Tagger lexicons remain provisional until tagger verification (implementation input 3) |

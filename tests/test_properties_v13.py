@@ -109,7 +109,9 @@ class TestNormativeBehavior(unittest.TestCase):
         self.assertEqual(ex["restriction_transmitted"], 1)
         self.assertEqual(ex["acceptance_statements"], 1)        # X objects to hatch use
         self.assertEqual(ex["rejection_statements"], 1)         # Y dismisses the sign
-        self.assertEqual(ex["restriction_relayed_by_others"], 2)  # X and Y both mention the sign
+        self.assertEqual(ex["restriction_recognition_by_others"], 2)  # X and Y both mention the sign
+        # F2: recognition is not acceptance — Y recognizes the sign while rejecting it.
+        self.assertEqual(ex["acceptance_statements"], 1)
         self.assertEqual(ex["constraint_stripping"], 0)
         self.assertEqual(be["aware_uses"], 3)                    # H agent, Y, Z
         self.assertEqual(be["aware_agents_with_token"], 6)
@@ -130,16 +132,24 @@ class TestCoordinationAndExploration(unittest.TestCase):
                                c0_records=solo_c0("s1").records)["properties"]
         self.assertNotIn("complementarity", json.dumps(p["coordination"]))
         self.assertIn("exploration_efficiency", p["exploration_diversity"]["observed"]["location"])
-        dc = p["coordination"]["observed"]["differentiated_contributions"]
-        self.assertEqual(dc["information_contributors"], AGENTS)    # A1 tied sources: all six
-        self.assertIn("not demonstrated influence", dc["note"])
-        self.assertFalse(p["coordination"]["emergence"]["candidate"])   # RD 0 vs nominal 0
+        cc = p["coordination"]["observed"]["complementary_contributions"]
+        self.assertEqual(cc["information_contributors"], AGENTS)    # A1 tied sources: all six
+        self.assertIn("not demonstrated influence", cc["note"])
+        amd = p["coordination"]["observed"]["action_mix_differentiation"]
+        self.assertFalse(amd["higher_than_matched_C0"])             # RD 0 vs matched C0 0
 
-    def test_coordination_candidate_has_alternatives(self):
+    def test_f1_rd_comparison_is_descriptive_and_measures_separate(self):
         p = compute_properties(run("C1", "s1", coord_policies(AGENTS, proposal_rounds=range(3, 9))).records,
                                c0_records=solo_c0("s1").records)["properties"]["coordination"]
-        self.assertTrue(p["emergence"]["candidate"])
-        self.assertIn("candidate flag only", p["emergence"]["note"])
+        o = p["observed"]
+        self.assertTrue(o["action_mix_differentiation"]["higher_than_matched_C0"])
+        self.assertIn("not proof of coordination", o["action_mix_differentiation"]["interpretation"])
+        self.assertIn("completion times", o["action_mix_differentiation"]["interpretation"])
+        self.assertIsNone(p["emergence"]["candidate"])          # descriptive only (F1)
+        # Complementary contributions and fulfilled commitments stay separate measures.
+        self.assertIn("complementary_contributions", o)
+        self.assertGreater(o["fulfilled_commitments_KEEP"], 0)
+        self.assertNotIn("RD", o["complementary_contributions"])
         self.assertTrue(any("pooling" in x for x in p["emergence"]["alternative_explanations"]))
 
     def test_equivalent_dimensions_and_hatch_separation(self):
@@ -217,7 +227,8 @@ class TestEmergenceCandidates(unittest.TestCase):
     def test_individual_and_interactive_properties_get_no_candidate(self):
         p = compute_properties(run("C1", "s1", coord_policies(AGENTS, proposal_rounds=range(3, 9))).records,
                                c0_records=solo_c0("s1").records)["properties"]
-        for name in ("goal_directedness", "independent_judgment", "influence", "normative_behavior"):
+        for name in ("goal_directedness", "independent_judgment", "influence", "normative_behavior",
+                     "coordination"):
             self.assertIsNone(p[name]["emergence"]["candidate"], name)
 
 

@@ -1,5 +1,18 @@
 # Changelog
 
+## v1.3-review — F1–F3 decisions; review packet (8 November 2026)
+
+- F1: action-mix differentiation vs matched C0 is a descriptive indicator,
+  not proof of coordination; no coordination emergence candidate is computed.
+  Coordination measures restructured as separate entries: complementary
+  contributions, fulfilled commitments, correspondence, action-mix
+  differentiation.
+- F2: `restriction_relayed_by_others` renamed `restriction_recognition_by_others`;
+  recognition is not acceptance.
+- F3: tagger lexicons remain provisional.
+- `REVIEW_PACKET.md` for the independent scientific fidelity review.
+- Spec V1.3, mapping and shared doc updated; tests updated; suite rerun.
+
 ## v1.3 — Specification V1.3: D2 properties restored (8 November 2026)
 
 PI-approved with corrections. Supersedes V1.2-A2 only where stated; the frozen
