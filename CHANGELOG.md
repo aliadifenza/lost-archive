@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.3-pilot-ready — calibration verified, s1 pilot prepared (8 November 2026)
+
+- Calibration (PI, Mac): 5/5 smoke, C0 on s0, 96 calls, 0 parse failures,
+  0 invalid, 1 entry by round 16 → T = 20 (PI-6 as written). Verified
+  independently, including exact replay; results archived in
+  `results/calibration_s0/` with `VERIFICATION.md`.
+- Run headers now record model and temperature (gap found in the s0 header).
+- Guards: s0 never reused; one pilot attempt per seed unless the PI decides.
+- `pilot_call_bound`: hard maximum of 1,016 calls at T = 20.
+- Pilot remains unauthorized. 154 tests; rehearsal unchanged.
+
 ## v1.3-phase3-calibration-ready — prompts frozen, smoke gate, calibration (8 November 2026)
 
 - System prompt frozen (sha256 0d8f1f0e…0630); repair message frozen.

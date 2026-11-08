@@ -152,7 +152,9 @@ def run_condition(cfg, cond, seed, T, out_dir, budget, make_client):
     world = generate_world(seed, cond)
     policies = {a: LLMPolicy(make_client(), budget, cfg["_system"], cfg["_repair"]) for a in world.agent_ids}
     log = os.path.join(out_dir, f"{cond}.jsonl")
-    sim = Simulation(RunConfig(cond, seed, T, system_prompt_template=cfg["_system"]), policies, log)
+    model = "mock" if cfg["provider"] == "mock" else cfg.get("model")
+    sim = Simulation(RunConfig(cond, seed, T, system_prompt_template=cfg["_system"], model=model,
+                               temperature=cfg.get("temperature")), policies, log)
     started = time.monotonic()
     try:
         sim.run()
@@ -167,7 +169,11 @@ def run_condition(cfg, cond, seed, T, out_dir, budget, make_client):
 
 
 def run_seed(cfg, seed, T, phase, budget, make_client):
+    if seed == cfg["seeds"]["calibration"]:
+        raise Blocked(f"seed {seed} is the held-out calibration seed and is never reused (V1.2 §6)")
     out = os.path.join(cfg["_output"], phase, seed)
+    if os.path.isdir(out) and any(f.endswith(".jsonl") for f in os.listdir(out)):
+        raise Blocked(f"{phase} seed {seed} already has run logs; a rerun needs an explicit PI decision")
     os.makedirs(out, exist_ok=True)
     order = ["C0"] + [c for c in cfg["conditions"] if c != "C0"]
     sims, summary = {}, {"seed": seed, "T": T, "phase": phase, "conditions": {}}
@@ -243,6 +249,17 @@ def calibrate(cfg, make_client, budget):
     with open(os.path.join(cfg["_output"], "state.json"), "w", encoding="utf-8") as f:
         json.dump(st, f, indent=2)
     return rep
+
+
+def pilot_call_bound(T, repairs=True) -> int:
+    """Hard upper bound on pilot calls: C0, C1, C2 with 6 agents and C0-D with 1
+    agent for T rounds; TCR for any agent (AC < 3) and ECR (EXP below matched C0;
+    never in C0 itself) at most 4 probe rounds each; every round may add one
+    repair call."""
+    per = 2 if repairs else 1
+    agent_rounds = 3 * 6 * T + 1 * T
+    probe_agents = 6 + 12 + 12 + 2          # C0: TCR; C1, C2: TCR + ECR; C0-D: TCR + ECR
+    return per * agent_rounds + per * 4 * probe_agents
 
 
 def expansion_gates(cfg, budget, pilot_summary, now=None) -> dict:
@@ -448,8 +465,12 @@ def main(argv=None, transport=http_post_json, env=os.environ):
             if "T" not in st:
                 raise Blocked("run calibrate first (T is frozen by the calibration step)")
             s = run_seed(cfg, cfg["seeds"]["pilot"], st["T"], "pilot", budget, make_client)
-            print(json.dumps({c: {k: v[k] for k in ("stop_reason", "entered", "messages", "cost")}
-                              for c, v in s["conditions"].items()}, indent=2))
+            print(json.dumps({"T": s["T"], "calls_total_incl_probes": s["calls_total_incl_probes"],
+                              "conditions": {c: {k: v[k] for k in ("stop_reason", "entered", "messages",
+                                                                   "parse_failures", "agent_rounds",
+                                                                   "llm_calls", "cost")}
+                                             for c, v in s["conditions"].items()}}, indent=2))
+            print("Pilot complete. Expansion is NOT started (separate authorization).")
         else:
             st = _state(cfg)
             path = os.path.join(cfg["_output"], "pilot", cfg["seeds"]["pilot"], "summary.json")

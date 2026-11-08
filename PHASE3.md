@@ -1,6 +1,6 @@
 # Phase 3 — LLM execution infrastructure (spec V1.3)
 
-Status (PHASE3_HANDOFF.md is authoritative for the current state): **prompts frozen; smoke gate and calibration authorized; pilot and expansion not authorized.** No real inference call has been made from this codebase. Nothing here changes a mechanic, metric, control, probe, or interpretation in V1.3.
+Status (PHASE3_HANDOFF.md is authoritative for the current state): **calibration complete (T = 20); pilot prepared, not authorized; expansion not authorized.** Live calls so far: 5 smoke + 96 calibration, made by the PI. Nothing here changes a mechanic, metric, control, probe, or interpretation in V1.3.
 
 ## Commands
 
@@ -10,7 +10,7 @@ python3 -m lostarchive.experiment smoke --confirm-live-call                   # 
 python3 -m lostarchive.experiment calibrate --config config/experiment.json  # C0 on s0, tuning rule, freezes T
 python3 -m lostarchive.experiment pilot     --config config/experiment.json  # C0, C0-D, C1, C2 on s1 + probes + properties
 python3 -m lostarchive.experiment expand    --config config/experiment.json  # s2..s8, only if all §12 gates pass
-python3 -m unittest discover -s tests                                         # 151 tests, no network
+python3 -m unittest discover -s tests                                         # 154 tests, no network
 ```
 
 Add `--mock` to calibrate / pilot / expand to run the whole sequence locally at zero cost (output in `runs_mock/`, separate ledger). Exit codes: 0 ok, 1 check found blockers, 2 refused, 3 blocked by sequence or gate, 4 aborted (budget or API), 5 smoke reply failed strict parsing.

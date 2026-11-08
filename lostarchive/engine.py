@@ -69,6 +69,9 @@ class RunConfig:
     apply_order_salt: str = ""     # test 11: alternative application orders
     # Phase 3: frozen system prompt template from config (None = built-in draft).
     system_prompt_template: str | None = None
+    # recorded in the run header (Phase 3); not used by the engine
+    model: str | None = None
+    temperature: float | None = None
     pi_flags: dict = field(default_factory=lambda: {
         "PI-1": True, "PI-2": True, "PI-3": True, "PI-4": True,
         "PI-5": "s0+s1, expansion conditional", "PI-6": True})
@@ -167,7 +170,7 @@ class Simulation:
             "condition": config.condition,
             "seed": str(config.seed),
             "T": config.T,
-            "model": None, "temperature": None,
+            "model": config.model, "temperature": config.temperature,
             "prompt_template_hash": self.prompt_template_hash,
             "pi_flags": config.pi_flags,
             "agents": {aid: {"handle": a.handle, "start": a.start}

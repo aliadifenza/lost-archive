@@ -307,6 +307,55 @@ class TestSmoke(unittest.TestCase):
             self.assertEqual((rc, len(t.calls)), (4, 1))
 
 
+SEVEN = {"goal_directedness", "independent_judgment", "influence", "normative_behavior",
+         "coordination", "exploration_diversity", "performance"}
+
+
+class TestPilotReadiness(unittest.TestCase):
+    ENV = {"ADAPTION_API_KEY": "k"}
+
+    def test_pilot_after_calibration_with_fake_provider(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = make_cfg(tmp, provider="adaption")
+            t = Always(_reply(WAIT))
+            self.assertEqual(quiet(ex.main, ["gate", "--confirm-live-calls", "--config", path],
+                                   transport=t, env=self.ENV), 0)
+            self.assertEqual(quiet(ex.main, ["pilot", "--config", path], transport=t, env=self.ENV), 2)
+            path2 = make_cfg(os.path.join(tmp, "p"), provider="adaption", output_dir=os.path.join(tmp, "runs"),
+                             authorized_live_steps={"smoke": 5, "calibrate": True, "pilot": True, "expand": False})
+            before = len(t.calls)
+            self.assertEqual(quiet(ex.main, ["pilot", "--config", path2], transport=t, env=self.ENV), 0)
+            out = os.path.join(tmp, "runs", "pilot", "s1")
+            for cond in ("C0", "C0-D", "C1", "C2"):
+                with open(os.path.join(out, f"{cond}.jsonl")) as f:
+                    hdr = json.loads(f.readline())
+                self.assertEqual((hdr["seed"], hdr["T"], hdr["model"], hdr["temperature"],
+                                  hdr["prompt_template_hash"]), ("s1", 20, "gemma-4-31b-it", 0, "0d8f1f0eafa82eac"))
+                props = _load(os.path.join(out, f"{cond}_properties.json"))["properties"]
+                self.assertEqual(set(props), SEVEN)
+            s = _load(os.path.join(out, "summary.json"))
+            # everyone waits -> AC 0 -> TCR for every agent; EXP 0 = matched C0 -> no ECR
+            self.assertEqual(len(s["conditions"]["C1"]["probes"]["TCR"]), 6)
+            self.assertEqual(s["conditions"]["C1"]["probes"]["ECR"], {})
+            self.assertEqual(s["calls_total_incl_probes"], len(t.calls) - before)
+            self.assertLessEqual(s["calls_total_incl_probes"], ex.pilot_call_bound(20))
+            # no second pilot attempt, no expansion
+            self.assertEqual(quiet(ex.main, ["pilot", "--config", path2], transport=t, env=self.ENV), 3)
+            self.assertEqual(quiet(ex.main, ["expand", "--config", path2], transport=t, env=self.ENV), 2)
+
+    def test_calibration_seed_never_reused(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            cfg = ex.load_config(make_cfg(tmp))
+            with self.assertRaises(ex.Blocked):
+                ex.run_seed(cfg, "s0", 20, "pilot", ex.make_budget(cfg), ex.client_factory(cfg))
+
+    def test_call_bound_matches_design(self):
+        # T=20: 3 x 6 x 20 + 1 x 20 agent rounds, each at most 2 calls (repair);
+        # probes: at most 4 rounds x 2 calls; TCR any agent, ECR not in C0
+        self.assertEqual(ex.pilot_call_bound(20), 2 * (3 * 120 + 20) + 8 * (6 + 12 + 12 + 2))
+        self.assertEqual(ex.pilot_call_bound(16, repairs=False), 3 * 96 + 16 + 4 * (6 + 12 + 12 + 2))
+
+
 class TestGate(unittest.TestCase):
     ENV = {"ADAPTION_API_KEY": "k"}
 
