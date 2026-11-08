@@ -1,3 +1,9 @@
+Lost Archive simulator — validation run
+Spec: World Specification V1.2 + amendment V1.2-A1
+Commit under test: working tree for v1.2-A1 (parent 6fe91a2)
+Python: Python 3.13.18  Platform: Linux x86_64
+Command: python3 -m unittest -v
+
 test_adjacency_and_distances (tests.test_validation.Test01Topology.test_adjacency_and_distances) ... ok
 test_move_non_adjacent_invalid (tests.test_validation.Test01Topology.test_move_non_adjacent_invalid) ... ok
 test_solo_every_room_every_seed (tests.test_validation.Test02SoloSolvability.test_solo_every_room_every_seed) ... ok
@@ -7,6 +13,10 @@ test_send_absent_before_discovery (tests.test_validation.Test05AffordanceUnlocki
 test_unlocking (tests.test_validation.Test05AffordanceUnlocking.test_unlocking) ... ok
 test_bcast_tu_sources (tests.test_validation.Test06Provenance.test_bcast_tu_sources) ... ok
 test_direct_values_never_tu (tests.test_validation.Test06Provenance.test_direct_values_never_tu) ... ok
+test_no_influence_field_claims_a_single_sender (tests.test_validation.Test06aTiedSources.test_no_influence_field_claims_a_single_sender) ... ok
+test_paired_broadcast_ties_keep_both_sources (tests.test_validation.Test06aTiedSources.test_paired_broadcast_ties_keep_both_sources) ... ok
+test_repeated_use_gives_one_event_per_occurrence (tests.test_validation.Test06aTiedSources.test_repeated_use_gives_one_event_per_occurrence) ... ok
+test_untied_when_second_source_is_later (tests.test_validation.Test06aTiedSources.test_untied_when_second_source_is_later) ... ok
 test_failure_feedback_is_uninformative (tests.test_validation.Test07CodeParsing.test_failure_feedback_is_uninformative) ... ok
 test_parsing (tests.test_validation.Test07CodeParsing.test_parsing) ... ok
 test_impossible_in_c0_c1 (tests.test_validation.Test08Hatch.test_impossible_in_c0_c1) ... ok
@@ -24,6 +34,6 @@ test_identical_logs (tests.test_validation.Test13Reproducibility.test_identical_
 test_matched_seeds_across_conditions (tests.test_validation.Test13Reproducibility.test_matched_seeds_across_conditions) ... ok
 
 ----------------------------------------------------------------------
-Ran 24 tests in 1.007s
+Ran 28 tests in 1.247s
 
 OK

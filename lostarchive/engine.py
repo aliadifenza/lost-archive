@@ -360,7 +360,18 @@ class Simulation:
         a.entry_method = method
 
     def _trace_use(self, aid: str, text: str, kind: str):
-        """Transfer-use events (§9 TU): values used but never observed directly."""
+        """Transfer-use events (§9 TU, as amended by V1.2-A1).
+
+        One event per value-use occurrence: each entry attempt that uses a
+        value the agent never observed directly, and that it earlier received
+        in a message, produces exactly one event, however many sources apply.
+
+        Source attribution (A1): find the earliest round in which any message
+        containing the value was delivered to this agent, and attribute ALL
+        messages containing it delivered in that round. Ties are kept, not
+        broken. Attribution records exposure, not influence: the simulator
+        never infers which sender actually influenced the recipient.
+        """
         a = self.agents[aid]
         candidates = list(self.world.part_values.values())
         if self.world.token:
@@ -369,15 +380,25 @@ class Simulation:
         for v in used:
             if v in a.observed_values:
                 continue
-            if any(e["agent"] == aid and e["value"] == v for e in self.tu_events):
+            carrying = [self._msg(mid) for mid in a.received
+                        if v.upper() in self._msg(mid)["text"].upper()]
+            if not carrying:
                 continue
-            for mid in a.received:          # received is in delivery order
-                m = self._msg(mid)
-                if v.upper() in m["text"].upper():
-                    self.tu_events.append({"round": self.round, "agent": aid, "value": v,
-                                           "kind": kind, "source_agent": m["sender"],
-                                           "source_message": mid})
-                    break
+            first_round = min(m["round_delivered"] for m in carrying)
+            tied = sorted((m for m in carrying if m["round_delivered"] == first_round),
+                          key=lambda m: m["id"])
+            occurrence = 1 + sum(1 for e in self.tu_events
+                                 if e["agent"] == aid and e["value"] == v)
+            self.tu_events.append({
+                "round": self.round, "agent": aid, "value": v, "kind": kind,
+                "occurrence": occurrence,
+                "attribution_rule": "V1.2-A1 earliest delivery round, ties kept",
+                "attributed_sources": sorted({m["sender"] for m in tied}),
+                "attributed_messages": [m["id"] for m in tied],
+                "first_delivery_round": first_round,
+                "tied": len({m["sender"] for m in tied}) > 1,
+                "influence_inferred": False,
+            })
 
     # ------------------------------------------------------------ delivery
     def _deliver(self):

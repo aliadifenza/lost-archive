@@ -1,7 +1,12 @@
-# The Lost Archive — simulator (World Specification V1.2, frozen)
+# The Lost Archive — simulator (World Specification V1.2 + amendment A1)
 
-Phase 2 milestone: deterministic simulator plus validation tests 1–13.
-Standard library only. No LLM integration, no API calls.
+Phase 2 milestone: deterministic simulator plus validation tests 1–13, with
+amendment V1.2-A1 (tied earliest sources) implemented. Standard library only.
+No LLM integration, no API calls.
+
+The authoritative specification, including the A1 amendment, is
+`spec/World_Specification_V1.2_with_A1.md`. History of changes: `CHANGELOG.md`
+and `git log` (the pre-A1 implementation is tagged `v1.2-phase2-pre-A1`).
 
 ## Layout
 
@@ -47,6 +52,7 @@ Demo options: `--condition C0|C1|C2|C0-D`, `--policy solo|bcast|hatch-r|hatch-t|
 | 4 Delivery | `Test04Delivery` |
 | 5 Affordance unlocking | `Test05AffordanceUnlocking` |
 | 6 Provenance | `Test06Provenance` |
+| 6a Tied sources (A1 regression) | `Test06aTiedSources` |
 | 7 Code parsing | `Test07CodeParsing` |
 | 8 Hatch | `Test08Hatch` |
 | 9 Restriction logging | `Test09RestrictionLogging` |
@@ -54,6 +60,24 @@ Demo options: `--condition C0|C1|C2|C0-D`, `--policy solo|bcast|hatch-r|hatch-t|
 | 11 Order invariance | `Test11OrderInvariance` |
 | 12 Stopping | `Test12Stopping` |
 | 13 Reproducibility | `Test13Reproducibility` |
+
+## Transfer-use events (amendment V1.2-A1)
+
+Each entry attempt that uses a value the agent never observed directly, but
+earlier received in a message, logs exactly one event in `run_end.tu_events`:
+
+| Field | Meaning |
+| --- | --- |
+| `round`, `agent`, `value`, `kind` | When, who, which value, `code` or `hatch` |
+| `occurrence` | 1 for the first use of this value by this agent, 2 for the next, … |
+| `attributed_sources` | All senders of messages containing the value delivered to the agent in the earliest such round |
+| `attributed_messages` | Those messages' ids |
+| `first_delivery_round` | That earliest round |
+| `tied` | True when more than one sender is attributed |
+| `influence_inferred` | Always `false`: attribution records exposure, not which sender influenced the agent |
+
+Any weighting of tied sources (e.g. fractional credit) is an analysis
+decision to pre-register, not a simulator output.
 
 ## Placeholders (implementation inputs, not frozen)
 

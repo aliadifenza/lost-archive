@@ -197,23 +197,97 @@ class Test06Provenance(unittest.TestCase):
                     own_value = sim.world.fragment(agent.start)[1]
                     self.assertNotEqual(e["value"], own_value)
                     self.assertNotIn(e["value"], agent.observed_values)
-                    # Independent recomputation: earliest delivered message to
-                    # this agent containing the value, by delivery order.
+                    # Independent recomputation (V1.2-A1): every message
+                    # carrying the value delivered to this agent in the
+                    # earliest such round.
                     candidates = [m for m in sim.messages
                                   if e["agent"] in m["recipients"]
                                   and m["round_delivered"] <= e["round"]
                                   and e["value"] in m["text"]]
-                    first = min(candidates, key=lambda m: m["id"])
-                    self.assertEqual(e["source_agent"], first["sender"])
-                    self.assertEqual(e["source_message"], first["id"])
-                    # The source really holds that value in its own room.
-                    src_room = start_room(e["source_agent"])
-                    self.assertEqual(sim.world.fragment(src_room)[1], e["value"])
+                    first_round = min(m["round_delivered"] for m in candidates)
+                    tied = [m for m in candidates if m["round_delivered"] == first_round]
+                    self.assertEqual(e["attributed_sources"],
+                                     sorted({m["sender"] for m in tied}))
+                    self.assertEqual(e["attributed_messages"],
+                                     sorted(m["id"] for m in tied))
+                    self.assertFalse(e["influence_inferred"])
+                    # Every attributed source really holds that value in its room.
+                    for src in e["attributed_sources"]:
+                        self.assertEqual(sim.world.fragment(start_room(src))[1], e["value"])
 
     def test_direct_values_never_tu(self):
         for seed in SEEDS[:5]:
             sim = run("C1", seed, all_agents(lambda a: SoloPolicy()))
             self.assertEqual(sim.tu_events, [])
+
+
+class Test06aTiedSources(unittest.TestCase):
+    """Regression for amendment V1.2-A1 (tied earliest sources)."""
+
+    PAIR = {1: ("A1", "A4"), 2: ("A2", "A5"), 3: ("A3", "A6")}
+
+    def test_paired_broadcast_ties_keep_both_sources(self):
+        # BCAST: both rooms of every pair broadcast the same fragment in
+        # round 2, so every transfer-use has exactly two tied sources.
+        for seed in SEEDS:
+            sim = run("C1", seed, all_agents(lambda a: BroadcastPolicy()))
+            with self.subTest(seed=seed):
+                self.assertEqual(len(sim.tu_events), 12)  # one per use, not per source
+                for e in sim.tu_events:
+                    part = [p for p in (1, 2, 3) if sim.world.part_values[p] == e["value"]][0]
+                    self.assertEqual(e["attributed_sources"], sorted(self.PAIR[part]))
+                    self.assertEqual(len(e["attributed_messages"]), 2)
+                    self.assertTrue(e["tied"])
+                    self.assertEqual(e["first_delivery_round"], 3)
+                    self.assertEqual(e["occurrence"], 1)
+                    self.assertFalse(e["influence_inferred"])
+
+    def test_untied_when_second_source_is_later(self):
+        # A1 sends part 1 in round 2, A4 sends it in round 3. A2 uses the code
+        # in round 5: only A1 is attributed, although A2 received both.
+        world = generate_world("s7", "C1")
+        v = world.part_values
+        pol = all_agents(lambda a: WaitPolicy())
+        pol["A1"] = ScriptPolicy([act("inspect"), act("send", text=f"part 1 of 3: {v[1]}")])
+        pol["A4"] = ScriptPolicy([act("inspect"), act("wait"),
+                                  act("send", text=f"part 1 of 3: {v[1]}")])
+        pol["A2"] = ScriptPolicy([act("inspect"), act("wait"), act("wait"), act("wait"),
+                                  act("enter_code", code=f"{v[1]} / {v[2]} / {v[3]}")])
+        sim = run("C1", "s7", pol)
+        events = [e for e in sim.tu_events if e["agent"] == "A2"]
+        self.assertEqual(len(events), 1)          # part 1 only; part 3 never received
+        e = events[0]
+        self.assertEqual(e["value"], v[1])
+        self.assertEqual(e["attributed_sources"], ["A1"])
+        self.assertFalse(e["tied"])
+        self.assertEqual(e["first_delivery_round"], 3)
+        self.assertEqual(len([m for m in sim.messages if v[1] in m["text"]]), 2)
+
+    def test_repeated_use_gives_one_event_per_occurrence(self):
+        # Two tied sources, value used in two separate attempts: two events,
+        # each with both sources, never four.
+        world = generate_world("s7", "C1")
+        v = world.part_values
+        pol = all_agents(lambda a: WaitPolicy())
+        pol["A1"] = ScriptPolicy([act("inspect"), act("send", text=f"part 1 of 3: {v[1]}")])
+        pol["A4"] = ScriptPolicy([act("inspect"), act("send", text=f"part 1 of 3: {v[1]}")])
+        pol["A2"] = ScriptPolicy([act("inspect"), act("wait"), act("wait"),
+                                  act("enter_code", code=f"{v[1]} / WRONG-11 / {v[3]}"),
+                                  act("enter_code", code=f"{v[1]} / {v[2]} / {v[3]}")])
+        sim = run("C1", "s7", pol)
+        events = [e for e in sim.tu_events if e["agent"] == "A2" and e["value"] == v[1]]
+        self.assertEqual([e["occurrence"] for e in events], [1, 2])
+        self.assertEqual([e["round"] for e in events], [4, 5])
+        for e in events:
+            self.assertEqual(e["attributed_sources"], ["A1", "A4"])
+            self.assertTrue(e["tied"])
+            self.assertFalse(e["influence_inferred"])
+
+    def test_no_influence_field_claims_a_single_sender(self):
+        sim = run("C1", "s0", all_agents(lambda a: BroadcastPolicy()))
+        for e in sim.tu_events:
+            self.assertNotIn("source_agent", e)
+            self.assertNotIn("influencer", e)
 
 
 class Test07CodeParsing(unittest.TestCase):
