@@ -32,8 +32,8 @@ import time
 from datetime import datetime
 
 from .engine import RunConfig, Simulation
-from .llm import (AnthropicClient, APIError, Budget, BudgetExceeded, LLMPolicy,
-                  MockClient, OpenAICompatibleClient, http_post_json)
+from .llm import (CLIENTS, APIError, Budget, BudgetExceeded, LLMPolicy, MockClient,
+                  http_post_json)
 from .probe import run_all_probes, run_ecr_probes
 from .properties import compute_properties
 from .world import generate_world
@@ -62,26 +62,34 @@ def load_config(path):
     return cfg
 
 
-def blockers(cfg, env=os.environ) -> list:
-    """Everything that must be settled before a live (paid) run. Mock: none."""
+def connection_blockers(cfg, env=os.environ) -> list:
+    """What a single connection test needs: provider, model, temperature, pricing, key."""
     if cfg["provider"] == "mock":
         return []
     b = []
     if cfg.get("spec") != "V1.3":
         b.append("config spec is not V1.3")
-    if not cfg.get("approved_for_live_runs"):
-        b.append("approved_for_live_runs is false (PI authorization)")
-    if cfg["provider"] not in ("anthropic", "openai_compatible"):
+    if cfg["provider"] not in CLIENTS:
         b.append(f"unknown provider {cfg['provider']!r}")
     if not cfg.get("model"):
         b.append("model not set (implementation input 1)")
     if cfg.get("temperature") is None:
         b.append("temperature not set (implementation input 1)")
-    pr = cfg.get("pricing_usd_per_million", {})
+    pr = cfg.get("pricing_per_million", {})
     if pr.get("input") is None or pr.get("output") is None:
         b.append("pricing not set: the hard budget cannot be enforced")
     if not env.get(cfg.get("api_key_env") or ""):
         b.append(f"API key environment variable {cfg.get('api_key_env')} is not set")
+    return b
+
+
+def blockers(cfg, env=os.environ) -> list:
+    """Everything that must be settled before an experimental (paid) run. Mock: none."""
+    if cfg["provider"] == "mock":
+        return []
+    b = connection_blockers(cfg, env)
+    if not cfg.get("approved_for_live_runs"):
+        b.append("approved_for_live_runs is false (PI authorization)")
     for k in ("system", "repair"):
         frozen = cfg.get("frozen_prompt_sha256", {}).get(k)
         if frozen != _sha(cfg["_" + k]):
@@ -91,13 +99,13 @@ def blockers(cfg, env=os.environ) -> list:
 
 
 def make_budget(cfg):
-    pr = cfg["mock_pricing_usd_per_million"] if cfg["provider"] == "mock" else cfg["pricing_usd_per_million"]
-    budget = Budget(cfg["budget"]["max_usd"], cfg["budget"]["max_calls"], pr["input"], pr["output"])
+    pr = cfg["mock_pricing_per_million"] if cfg["provider"] == "mock" else cfg["pricing_per_million"]
+    budget = Budget(cfg["budget"]["max_cost"], cfg["budget"]["max_calls"], pr["input"], pr["output"])
     path = os.path.join(cfg["_output"], "ledger.json")
     if os.path.exists(path):                       # the limit holds across invocations
         with open(path, encoding="utf-8") as f:
             led = json.load(f)
-        budget.spent_usd, budget.calls = led["spent_usd"], led["calls"]
+        budget.spent, budget.calls = led["spent"], led["calls"]
         budget.tokens_in, budget.tokens_out = led["tokens_in"], led["tokens_out"]
     return budget
 
@@ -105,14 +113,17 @@ def make_budget(cfg):
 def save_ledger(cfg, budget):
     os.makedirs(cfg["_output"], exist_ok=True)
     with open(os.path.join(cfg["_output"], "ledger.json"), "w", encoding="utf-8") as f:
-        json.dump({**budget.ledger(), "provider": cfg["provider"], "model": cfg.get("model")}, f, indent=2)
+        json.dump({**budget.ledger(), "unit": cfg.get("cost_unit", "credits") if cfg["provider"] != "mock" else "mock",
+                   "provider": cfg["provider"], "model": cfg.get("model")}, f, indent=2)
 
 
-def client_factory(cfg, transport=http_post_json, env=os.environ):
+def client_factory(cfg, transport=http_post_json, env=os.environ, max_attempts=None):
     if cfg["provider"] == "mock":
         return lambda: MockClient(max_output_tokens=cfg["max_output_tokens"])
-    cls = AnthropicClient if cfg["provider"] == "anthropic" else OpenAICompatibleClient
-    r = cfg["retries"]
+    cls = CLIENTS[cfg["provider"]]
+    r = dict(cfg["retries"])
+    if max_attempts:
+        r["max_attempts"] = max_attempts
     return lambda: cls(cfg["model"], cfg["temperature"], cfg["max_output_tokens"],
                        api_key=env.get(cfg["api_key_env"]), base_url=cfg.get("base_url"),
                        max_attempts=r["max_attempts"], backoff_seconds=r["backoff_seconds"],
@@ -163,7 +174,7 @@ def run_seed(cfg, seed, T, phase, budget, make_client):
             "messages": len(sim.messages), "tu_events": len(sim.tu_events),
             "hatch_uses": len(sim.hatch_uses),
             "parse_failures": sum(1 for r in rounds if r["parse_failure"]), "agent_rounds": len(rounds),
-            "cost_usd": round(sum(r["cost"] or 0 for r in rounds), 6), "seconds": round(secs, 3)}
+            "cost": round(sum(r["cost"] or 0 for r in rounds), 6), "seconds": round(secs, 3)}
 
     c0 = sims["C0"]
     c0_exp = {a: len(x.inspected) for a, x in c0.agents.items()}
@@ -219,28 +230,84 @@ def expansion_gates(cfg, budget, pilot_summary, now=None) -> dict:
     """§12 expansion gate: (a) cost, (b) throughput, (c) no floor and parse failures <= 5%."""
     conds = pilot_summary["conditions"]
     n_runs = len(cfg["seeds"]["expansion"]) * len(conds)
-    per_run_cost = sum(c["cost_usd"] for c in conds.values()) / len(conds)
+    per_run_cost = sum(c["cost"] for c in conds.values()) / len(conds)
     per_run_secs = sum(c["seconds"] for c in conds.values()) / len(conds)
-    remaining_usd = budget.max_usd - budget.spent_usd
+    remaining = budget.max_cost - budget.spent
     rounds = sum(c["agent_rounds"] for c in conds.values())
     fails = sum(c["parse_failures"] for c in conds.values())
-    gates = {"a_cost": per_run_cost * n_runs <= remaining_usd,
+    gates = {"a_cost": per_run_cost * n_runs <= remaining,
              "c_messages_in_C1": conds.get("C1", {}).get("messages", 0) > 0,
              "c_parse_failures_le_5pct": (fails / rounds if rounds else 1) <= 0.05}
     if cfg.get("deadline_iso"):
         left = (datetime.fromisoformat(cfg["deadline_iso"]) - (now or datetime.now().astimezone())).total_seconds()
         gates["b_throughput"] = per_run_secs * n_runs <= left
     gates["projection"] = {"runs": n_runs, "usd": round(per_run_cost * n_runs, 4),
-                           "seconds": round(per_run_secs * n_runs, 1), "remaining_usd": round(remaining_usd, 4)}
+                           "seconds": round(per_run_secs * n_runs, 1), "remaining": round(remaining, 4)}
     return gates
+
+
+def smoke(cfg, budget, make_client):
+    """One real call: the frozen-path system prompt and the round-1 prompt of
+    agent A1 in C0 on the calibration seed. No retry, no repair turn, no run.
+    Reports whether the reply passes the unchanged strict parser."""
+    world = generate_world(cfg["seeds"]["calibration"], "C0")
+    aid = world.agent_ids[0]
+    sim = Simulation(RunConfig("C0", cfg["seeds"]["calibration"], cfg["T_initial"],
+                               system_prompt_template=cfg["_system"]), {a: None for a in world.agent_ids}, None)
+    sim.round = 1                      # exactly what Simulation.step does before round 1
+    sim._deliver()
+    obs = sim.observation(aid)
+    client = make_client()
+    pol = LLMPolicy(client, budget, cfg["_system"], cfg["_repair"])
+    started = time.monotonic()
+    try:
+        raw = pol.act(obs)
+    finally:
+        save_ledger(cfg, budget)
+    act, perr = Simulation.parse(raw)
+    usage = pol.consume_usage()
+    report = {"provider": cfg["provider"], "model": cfg.get("model"), "agent": aid,
+              "http_status": getattr(client, "last_status", None), "seconds": round(time.monotonic() - started, 2),
+              "strict_parse_ok": act is not None, "parse_error": perr, "parsed_action": act,
+              "tokens_in": usage["tokens_in"], "tokens_out": usage["tokens_out"],
+              "cost": round(usage["cost"], 8), "cost_unit": cfg.get("cost_unit", "credits"),
+              "prompt_sent": sim.render_prompt(aid, obs), "response_raw": raw,
+              "response_payload": getattr(client, "last_payload", None)}
+    out = os.path.join(cfg["_output"], "smoke")
+    os.makedirs(out, exist_ok=True)
+    with open(os.path.join(out, "smoke_" + datetime.now().strftime("%Y%m%dT%H%M%S") + ".json"), "w",
+              encoding="utf-8") as f:
+        json.dump(report, f, indent=2)
+    return report
 
 
 def main(argv=None, transport=http_post_json, env=os.environ):
     ap = argparse.ArgumentParser()
-    ap.add_argument("command", choices=["check", "calibrate", "pilot", "expand"])
+    ap.add_argument("command", choices=["check", "smoke", "calibrate", "pilot", "expand"])
     ap.add_argument("--config", default="config/experiment.json")
+    ap.add_argument("--mock", action="store_true", help="force the cost-free mock provider (output under runs_mock/)")
+    ap.add_argument("--confirm-live-call", action="store_true", help="required by `smoke`: one paid call")
     a = ap.parse_args(argv)
     cfg = load_config(a.config)
+    if a.mock:
+        cfg["provider"] = "mock"
+        cfg["_output"] = cfg["_output"].rstrip(os.sep) + "_mock"
+    if a.command == "smoke":
+        b = connection_blockers(cfg, env)
+        if cfg["provider"] == "mock":
+            b = ["smoke tests a live provider; drop --mock"]
+        if not a.confirm_live_call:
+            b.append("smoke makes one paid call: add --confirm-live-call")
+        if b:
+            print("REFUSED:\n- " + "\n- ".join(b), file=sys.stderr)
+            return 2
+        try:
+            r = smoke(cfg, make_budget(cfg), client_factory(cfg, transport, env, max_attempts=1))
+        except (BudgetExceeded, APIError) as e:
+            print(f"CONNECTION TEST FAILED: {type(e).__name__}: {e}", file=sys.stderr)
+            return 4
+        print(json.dumps({k: v for k, v in r.items() if k not in ("prompt_sent", "response_payload")}, indent=2))
+        return 0 if r["strict_parse_ok"] else 5
     b = blockers(cfg, env)
     if a.command == "check":
         print(json.dumps({"provider": cfg["provider"], "blockers": b,
@@ -259,7 +326,7 @@ def main(argv=None, transport=http_post_json, env=os.environ):
             if "T" not in st:
                 raise Blocked("run calibrate first (T is frozen by the calibration step)")
             s = run_seed(cfg, cfg["seeds"]["pilot"], st["T"], "pilot", budget, make_client)
-            print(json.dumps({c: {k: v[k] for k in ("stop_reason", "entered", "messages", "cost_usd")}
+            print(json.dumps({c: {k: v[k] for k in ("stop_reason", "entered", "messages", "cost")}
                               for c, v in s["conditions"].items()}, indent=2))
         else:
             st = _state(cfg)

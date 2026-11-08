@@ -519,7 +519,7 @@ class Simulation:
                 "restriction_source": a.restriction_source,
                 "tokens_in": (d["usage"] or {}).get("tokens_in"),
                 "tokens_out": (d["usage"] or {}).get("tokens_out"),
-                "cost": (d["usage"] or {}).get("cost_usd"),
+                "cost": (d["usage"] or {}).get("cost"),
                 "llm_calls": (d["usage"] or {}).get("calls"),
             })
 

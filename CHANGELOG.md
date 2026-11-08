@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.3-phase3-adaption — Adaption integration and frozen PI configuration (8 November 2026)
+
+- `AdaptionClient` (Responses API, `store: false`) with fake-transport tests.
+- Config frozen per PI: Adaption, `gemma-4-31b-it`, temperature 0, strict
+  parsing, 25-credit ceiling; costs and ledger in credits (unit-neutral names).
+- `smoke --confirm-live-call`: one-call connection test (no retry, no repair),
+  for the PI to run; `--mock` flag for zero-cost dry runs.
+- Live experimental runs still refused: prompt text, repair text, call ceiling
+  and `approved_for_live_runs` await the PI. No inference call made.
+- 131 tests; rehearsal unchanged (55/56, 9/9).
+
 ## v1.3-phase3-infra — LLM execution infrastructure (8 November 2026)
 
 - `lostarchive/llm.py`: Anthropic and OpenAI-compatible clients (stdlib),

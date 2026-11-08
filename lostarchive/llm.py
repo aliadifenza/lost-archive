@@ -9,6 +9,7 @@ Providers:
   mock               deterministic scripted stand-in (no network, no cost)
   anthropic          Messages API
   openai_compatible  /chat/completions (OpenAI, vLLM on Modal, other compatible hosts)
+  adaption           Adaption Responses API, POST /api/v1/responses
 Request formats follow the providers' public HTTP APIs; verify against current
 provider documentation before the first live run.
 """
@@ -41,10 +42,10 @@ class APIError(RuntimeError):
 class Budget:
     """Hard limits, checked BEFORE every call against a worst-case projection."""
 
-    def __init__(self, max_usd, max_calls, price_in_per_m, price_out_per_m):
-        self.max_usd, self.max_calls = max_usd, max_calls
+    def __init__(self, max_cost, max_calls, price_in_per_m, price_out_per_m):
+        self.max_cost, self.max_calls = max_cost, max_calls
         self.price_in, self.price_out = price_in_per_m, price_out_per_m
-        self.spent_usd, self.calls, self.tokens_in, self.tokens_out = 0.0, 0, 0, 0
+        self.spent, self.calls, self.tokens_in, self.tokens_out = 0.0, 0, 0, 0
 
     def cost(self, tokens_in, tokens_out) -> float:
         return (tokens_in * self.price_in + tokens_out * self.price_out) / 1_000_000
@@ -52,22 +53,22 @@ class Budget:
     def check(self, est_tokens_in, max_tokens_out):
         if self.calls + 1 > self.max_calls:
             raise BudgetExceeded(f"call limit reached ({self.max_calls})")
-        projected = self.spent_usd + self.cost(est_tokens_in, max_tokens_out)
-        if projected > self.max_usd:
-            raise BudgetExceeded(f"budget limit: projected ${projected:.4f} > ${self.max_usd:.2f}")
+        projected = self.spent + self.cost(est_tokens_in, max_tokens_out)
+        if projected > self.max_cost:
+            raise BudgetExceeded(f"budget limit: projected {projected:.4f} > {self.max_cost} (cost units)")
 
     def record(self, tokens_in, tokens_out) -> float:
         c = self.cost(tokens_in, tokens_out)
-        self.spent_usd += c
+        self.spent += c
         self.calls += 1
         self.tokens_in += tokens_in
         self.tokens_out += tokens_out
         return c
 
     def ledger(self) -> dict:
-        return {"spent_usd": round(self.spent_usd, 6), "calls": self.calls,
+        return {"spent": round(self.spent, 6), "calls": self.calls,
                 "tokens_in": self.tokens_in, "tokens_out": self.tokens_out,
-                "max_usd": self.max_usd, "max_calls": self.max_calls}
+                "max_cost": self.max_cost, "max_calls": self.max_calls}
 
 
 # --------------------------------------------------------------- transport
@@ -103,6 +104,7 @@ class BaseClient:
         last = None
         for attempt in range(1, self.max_attempts + 1):
             status, payload = self.transport(url, headers, body, self.timeout)
+            self.last_status, self.last_payload = status, payload
             if status == 200:
                 return self._parse(payload)
             retryable = status is None or status in RETRYABLE_STATUS
@@ -141,6 +143,32 @@ class OpenAICompatibleClient(BaseClient):
         text = payload["choices"][0]["message"].get("content") or ""
         u = payload.get("usage", {})
         return text, u.get("prompt_tokens", 0), u.get("completion_tokens", 0)
+
+
+class AdaptionClient(BaseClient):
+    """Adaption Responses API (docs.adaptionlabs.ai/api/resources/responses).
+    store=false is sent explicitly so no conversation state lives server-side;
+    each call carries its full context, as with the other providers."""
+
+    def _request(self, system, messages):
+        body = {"model": self.model, "input": messages, "temperature": self.temperature,
+                "max_output_tokens": self.max_output_tokens, "store": False}
+        if system:
+            body["instructions"] = system
+        headers = {"authorization": f"Bearer {self.api_key or ''}"}
+        return (self.base_url or "https://api.prod.adaptionlabs.ai") + "/api/v1/responses", headers, body
+
+    def _parse(self, payload):
+        text = payload.get("output_text")
+        if text is None:
+            text = "".join(c.get("text", "") for item in payload.get("output", []) or []
+                           for c in (item.get("content") or []) if c.get("type") == "output_text")
+        u = payload.get("usage") or {}
+        return text, u.get("input_tokens", 0), u.get("output_tokens", 0)
+
+
+CLIENTS = {"anthropic": AnthropicClient, "openai_compatible": OpenAICompatibleClient,
+           "adaption": AdaptionClient}
 
 
 class _Explorer(Policy):
@@ -206,9 +234,9 @@ class LLMPolicy(Policy):
         self.budget.check(est_in, getattr(self.client, "max_output_tokens", 300))
         text, tin, tout = self.client.complete(system, messages, obs=obs)
         cost = self.budget.record(tin, tout)
-        u = self._usage or {"tokens_in": 0, "tokens_out": 0, "cost_usd": 0.0, "calls": 0}
+        u = self._usage or {"tokens_in": 0, "tokens_out": 0, "cost": 0.0, "calls": 0}
         self._usage = {"tokens_in": u["tokens_in"] + tin, "tokens_out": u["tokens_out"] + tout,
-                       "cost_usd": u["cost_usd"] + cost, "calls": u["calls"] + 1}
+                       "cost": u["cost"] + cost, "calls": u["calls"] + 1}
         return text
 
     def act(self, obs):

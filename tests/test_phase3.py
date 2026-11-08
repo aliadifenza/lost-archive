@@ -11,7 +11,7 @@ from datetime import datetime, timedelta, timezone
 
 from lostarchive import experiment as ex
 from lostarchive.engine import RunConfig, Simulation
-from lostarchive.llm import (AnthropicClient, APIError, Budget, BudgetExceeded, LLMPolicy,
+from lostarchive.llm import (AdaptionClient, AnthropicClient, APIError, Budget, BudgetExceeded, LLMPolicy,
                              MockClient, OpenAICompatibleClient)
 from lostarchive.world import generate_world
 
@@ -25,6 +25,7 @@ def make_cfg(tmp, **over):
     with open(os.path.join(ROOT, "config", "experiment.json")) as f:
         cfg = json.load(f)
     cfg["output_dir"] = "runs"
+    cfg["provider"] = "mock"
     cfg.update(over)
     path = os.path.join(tmp, "config", "experiment.json")
     with open(path, "w") as f:
@@ -105,7 +106,7 @@ class TestClients(unittest.TestCase):
 
 class TestBudget(unittest.TestCase):
     def test_hard_limit_checked_before_call(self):
-        b = Budget(max_usd=0.01, max_calls=100, price_in_per_m=3, price_out_per_m=15)
+        b = Budget(max_cost=0.01, max_calls=100, price_in_per_m=3, price_out_per_m=15)
         b.check(1000, 300)                       # 0.0075 fits
         with self.assertRaises(BudgetExceeded):
             b.check(2000, 300)                   # 0.0105 would exceed
@@ -119,14 +120,14 @@ class TestBudget(unittest.TestCase):
 
     def test_budget_abort_logged_and_raised(self):
         with tempfile.TemporaryDirectory() as tmp:
-            cfg = ex.load_config(make_cfg(tmp, budget={"max_usd": 0.002, "max_calls": 3000}))
+            cfg = ex.load_config(make_cfg(tmp, budget={"max_cost": 0.002, "max_calls": 3000}))
             budget = ex.make_budget(cfg)
             with self.assertRaises(BudgetExceeded):
                 ex.run_condition(cfg, "C1", "s1", 16, tmp, budget, ex.client_factory(cfg))
             with open(os.path.join(tmp, "C1.jsonl")) as f:
                 recs = [json.loads(l) for l in f]
             self.assertEqual(recs[-1]["type"], "run_aborted")
-            self.assertLessEqual(budget.spent_usd, 0.002)
+            self.assertLessEqual(budget.spent, 0.002)
             self.assertTrue(os.path.exists(os.path.join(cfg["_output"], "ledger.json")))
 
     def test_ledger_persists_across_invocations(self):
@@ -137,25 +138,117 @@ class TestBudget(unittest.TestCase):
 
 
 class TestLiveRefusal(unittest.TestCase):
-    def test_live_provider_refused_without_network(self):
+    def test_shipped_config_pins_pi_decisions(self):
+        cfg = ex.load_config(os.path.join(ROOT, "config", "experiment.json"))
+        self.assertEqual((cfg["provider"], cfg["model"], cfg["temperature"], cfg["cost_unit"],
+                          cfg["budget"]["max_cost"]), ("adaption", "gemma-4-31b-it", 0, "credits", 25.0))
+        self.assertFalse(cfg["approved_for_live_runs"])
+        b = ex.blockers(cfg, env={})
+        for frag in ("approved_for_live_runs", "system prompt", "repair prompt", "ADAPTION_API_KEY"):
+            self.assertTrue(any(frag in x for x in b), frag)
+        self.assertEqual(ex.connection_blockers(cfg, env={"ADAPTION_API_KEY": "k"}), [])
+
+    def test_live_run_refused_without_network(self):
         with tempfile.TemporaryDirectory() as tmp:
-            path = make_cfg(tmp, provider="anthropic")
+            path = make_cfg(tmp, provider="adaption")
             t = FakeTransport([])
-            rc = quiet(ex.main, ["calibrate", "--config", path], transport=t, env={})
-            self.assertEqual((rc, t.calls), (2, []))
-            b = ex.blockers(ex.load_config(path), env={})
-            for frag in ("approved_for_live_runs", "model", "temperature", "pricing", "API key", "system prompt"):
-                self.assertTrue(any(frag in x for x in b), frag)
+            for cmd in ("calibrate", "pilot", "expand"):
+                rc = quiet(ex.main, [cmd, "--config", path], transport=t, env={"ADAPTION_API_KEY": "k"})
+                self.assertEqual(rc, 2)
+            self.assertEqual(t.calls, [])
 
     def test_fully_specified_config_has_no_blockers(self):
         with tempfile.TemporaryDirectory() as tmp:
-            cfg = ex.load_config(make_cfg(tmp))
-            cfg.update(provider="anthropic", approved_for_live_runs=True, model="m", temperature=0.0,
-                       pricing_usd_per_million={"input": 3, "output": 15},
-                       frozen_prompt_sha256={"system": ex._sha(cfg["_system"]), "repair": ex._sha(cfg["_repair"])})
-            self.assertEqual(ex.blockers(cfg, env={"ANTHROPIC_API_KEY": "x"}), [])
+            cfg = ex.load_config(make_cfg(tmp, provider="adaption", approved_for_live_runs=True))
+            cfg["frozen_prompt_sha256"] = {"system": ex._sha(cfg["_system"]), "repair": ex._sha(cfg["_repair"])}
+            self.assertEqual(ex.blockers(cfg, env={"ADAPTION_API_KEY": "x"}), [])
             cfg["_system"] += " edited"
-            self.assertTrue(ex.blockers(cfg, env={"ANTHROPIC_API_KEY": "x"}))
+            self.assertTrue(ex.blockers(cfg, env={"ADAPTION_API_KEY": "x"}))
+
+    def test_mock_flag_overrides_live_provider(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = make_cfg(tmp, provider="adaption")
+            self.assertEqual(quiet(ex.main, ["check", "--mock", "--config", path], env={}), 0)
+
+
+ADAPTION_OK = (200, {"object": "response", "status": "completed",
+                     "output": [{"type": "message", "role": "assistant",
+                                 "content": [{"type": "output_text", "text": '{"thought": "start", "action": "inspect", "args": {}}'}]}],
+                     "usage": {"input_tokens": 420, "output_tokens": 18, "total_tokens": 438}})
+
+
+class TestAdaption(unittest.TestCase):
+    def test_payload(self):
+        t = FakeTransport([ADAPTION_OK])
+        c = AdaptionClient("gemma-4-31b-it", 0, 300, api_key="k", transport=t)
+        text, tin, tout = c.complete("SYS", [{"role": "user", "content": "obs"}])
+        url, h, body = t.calls[0]
+        self.assertEqual(url, "https://api.prod.adaptionlabs.ai/api/v1/responses")
+        self.assertEqual(h["authorization"], "Bearer k")
+        self.assertEqual(body, {"model": "gemma-4-31b-it", "input": [{"role": "user", "content": "obs"}],
+                                "temperature": 0, "max_output_tokens": 300, "store": False,
+                                "instructions": "SYS"})
+        self.assertEqual((tin, tout), (420, 18))
+        self.assertTrue(text.startswith('{"thought"'))
+
+    def test_parse_prefers_top_level_output_text(self):
+        c = AdaptionClient("m", 0, 10)
+        self.assertEqual(c._parse({"output_text": "A", "output": [], "usage": {}}), ("A", 0, 0))
+        self.assertEqual(c._parse({"output": None})[0], "")
+
+    def test_retry_and_auth_failure(self):
+        t = FakeTransport([(429, {}), ADAPTION_OK])
+        self.assertEqual(AdaptionClient("m", 0, 10, transport=t, sleep=lambda s: None).complete(None, [])[2], 18)
+        t = FakeTransport([(401, {"error": "invalid key"})])
+        with self.assertRaises(APIError):
+            AdaptionClient("m", 0, 10, transport=t, sleep=lambda s: None).complete(None, [])
+        self.assertEqual(len(t.calls), 1)
+
+
+class TestSmoke(unittest.TestCase):
+    ENV = {"ADAPTION_API_KEY": "k"}
+
+    def test_refused_without_confirmation_or_under_mock(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = make_cfg(tmp, provider="adaption")
+            t = FakeTransport([])
+            self.assertEqual(quiet(ex.main, ["smoke", "--config", path], transport=t, env=self.ENV), 2)
+            self.assertEqual(quiet(ex.main, ["smoke", "--confirm-live-call", "--config", path],
+                                   transport=t, env={}), 2)
+            self.assertEqual(quiet(ex.main, ["smoke", "--mock", "--confirm-live-call", "--config", path],
+                                   transport=t, env=self.ENV), 2)
+            self.assertEqual(t.calls, [])
+
+    def test_one_call_exact_prompt_strict_parse(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = make_cfg(tmp, provider="adaption")
+            t = FakeTransport([ADAPTION_OK])
+            rc = quiet(ex.main, ["smoke", "--confirm-live-call", "--config", path], transport=t, env=self.ENV)
+            self.assertEqual((rc, len(t.calls)), (0, 1))
+            out = os.path.join(tmp, "runs", "smoke")
+            rep = _load(os.path.join(out, os.listdir(out)[0]))
+            body = t.calls[0][2]
+            self.assertEqual(body["instructions"] + "\n\n" + body["input"][0]["content"], rep["prompt_sent"])
+            self.assertIn("Round 1", rep["prompt_sent"])
+            self.assertTrue(rep["strict_parse_ok"])
+            self.assertAlmostEqual(rep["cost"], (420 * 0.09 + 18 * 0.34) / 1e6)
+            led = _load(os.path.join(tmp, "runs", "ledger.json"))
+            self.assertEqual((led["calls"], led["unit"]), (1, "credits"))
+
+    def test_non_json_reply_reported_not_repaired(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = make_cfg(tmp, provider="adaption")
+            t = FakeTransport([(200, {"output_text": "```json\n{\"action\": \"wait\"}\n```",
+                                      "usage": {"input_tokens": 1, "output_tokens": 1}})])
+            rc = quiet(ex.main, ["smoke", "--confirm-live-call", "--config", path], transport=t, env=self.ENV)
+            self.assertEqual((rc, len(t.calls)), (5, 1))
+
+    def test_no_retry_in_smoke(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = make_cfg(tmp, provider="adaption")
+            t = FakeTransport([(503, {}), ADAPTION_OK])
+            rc = quiet(ex.main, ["smoke", "--confirm-live-call", "--config", path], transport=t, env=self.ENV)
+            self.assertEqual((rc, len(t.calls)), (4, 1))
 
 
 class TestPolicy(unittest.TestCase):
@@ -207,7 +300,7 @@ class TestRunner(unittest.TestCase):
 
     def test_expansion_gates(self):
         cfg = {"seeds": {"expansion": ["s2", "s3"]}, "deadline_iso": None}
-        good = {"conditions": {c: {"cost_usd": 1.0, "seconds": 10, "agent_rounds": 100, "parse_failures": 5,
+        good = {"conditions": {c: {"cost": 1.0, "seconds": 10, "agent_rounds": 100, "parse_failures": 5,
                                    "messages": 3} for c in ("C0", "C0-D", "C1", "C2")}}
         g = ex.expansion_gates(cfg, Budget(10, 100, 1, 1), good)
         self.assertTrue(g["a_cost"] and g["c_messages_in_C1"] and g["c_parse_failures_le_5pct"])
