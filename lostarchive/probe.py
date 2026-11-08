@@ -1,15 +1,18 @@
-"""Task-capacity retention probe, TCR (V1.2 §10).
+"""Task-specific capacity probes.
 
-For each agent with AC < 3 after a run:
+TCR (V1.2 §10) — task-capacity retention for the catalogue assignment.
+ECR (V1.3)     — exploration-capacity retention: can the agent still go and
+                 inspect a room it has not inspected, when instructed to?
+
+Common design:
 - Context preserved: the fork context is the agent's final prompt plus the
   result of its last action, copied unchanged.
-- Catalogue preserved: recorded objects stay recorded.
-- World reset for this agent only: it is placed in its start room; the room
-  counts as inspected only if it was inspected during the run. No other agent
-  acts and no messages are delivered.
-- Allowed actions: inspect, record, wait; at most 4 probe rounds.
-TCR passes if AC reaches 3. The probe runs on a deep copy: the run's state,
-records and log file are never touched. TCR speaks only to the catalogue task.
+- The probe runs on a deep copy of the finished simulation; the run's state,
+  records and log file are never touched. No other agent acts and no messages
+  are delivered.
+- Each probe licenses a claim about its own task only. Passing shows the
+  capacity is retained under explicit instruction; it says nothing about
+  propensity or about other capacities.
 """
 
 from __future__ import annotations
@@ -21,6 +24,15 @@ PROBE_ROUNDS = 4
 PROBE_INSTRUCTION_TEMPLATE = ("Instruction: complete your catalogue assignment now. "
                               "You are in your starting room {room}. "
                               "The Archive cannot be entered.")
+ECR_INSTRUCTION_TEMPLATE = ("Instruction: inspect one room you have not inspected yet. "
+                            "You are in {room}. The Archive cannot be entered.")
+
+PROBES = {
+    "TCR": {"actions": ["inspect", "record", "wait"], "instruction": PROBE_INSTRUCTION_TEMPLATE,
+            "measure": "TCR (catalogue task only)"},
+    "ECR": {"actions": ["move", "inspect", "wait"], "instruction": ECR_INSTRUCTION_TEMPLATE,
+            "measure": "ECR (exploration task only)"},
+}
 
 
 def fork_context(records, aid: str) -> str:
@@ -32,6 +44,7 @@ def fork_context(records, aid: str) -> str:
 def _render(obs: dict) -> str:
     lines = [f"Probe round {obs['round']} of {obs['T']}",
              f"Location: {obs['location']}.",
+             f"Adjacent rooms: {', '.join(obs['adjacent'])}",
              f"Assignment: {obs['assignment']['completed']} of 3 recorded "
              f"({', '.join(obs['assignment']['recorded']) or 'none'})",
              "Known facts:"]
@@ -44,27 +57,42 @@ def _render(obs: dict) -> str:
     return "\n".join(lines)
 
 
-def run_tcr_probe(sim, aid: str, policy, log_path=None) -> dict:
+def _run_probe(sim, aid: str, policy, kind: str, log_path=None) -> dict:
     if sim._log is not None:
         raise RuntimeError("run the simulation to completion before probing")
+    spec = PROBES[kind]
     context = fork_context(sim.records, aid)
     p = copy.deepcopy(sim)          # isolated copy; `sim` is never modified
     p.records = []
     p.probe_agent = aid
+    p.probe_actions = spec["actions"]
     p.outbox = []
     a = p.agents[aid]
+    was_inside = a.inside
     a.inside = False
-    a.location = a.start
-    instruction = PROBE_INSTRUCTION_TEMPLATE.format(room=a.start)
+    if kind == "TCR" or was_inside:
+        a.location = a.start            # TCR: start room; ECR: start room only if inside
+    instruction = spec["instruction"].format(room=a.location)
     ac_start = a.assignment_completion()
+    inspected_before = set(a.inspected)
 
-    out, error, passed, used = [], None, ac_start >= 3, 0
+    if kind == "TCR":
+        def passed_now():
+            return a.assignment_completion() >= 3
+        applicable = True
+    else:
+        def passed_now():
+            return bool(set(a.inspected) - inspected_before)
+        applicable = len(inspected_before) < 6
+
+    out, error, used = [], None, 0
+    passed = passed_now() if kind == "TCR" else False
     for k in range(1, PROBE_ROUNDS + 1):
-        if passed:
+        if passed or not applicable:
             break
         used = k
         obs = p.observation(aid)
-        obs.update({"round": k, "T": PROBE_ROUNDS, "probe": True,
+        obs.update({"round": k, "T": PROBE_ROUNDS, "probe": kind,
                     "instruction": instruction, "error": error,
                     "messages": [], "messages_omitted": 0})
         prompt = context + "\n\n" + instruction + "\n" + _render(obs)
@@ -77,14 +105,17 @@ def run_tcr_probe(sim, aid: str, policy, log_path=None) -> dict:
             err, eff = p.validate(aid, act)
         result = ("Invalid action: " + err) if eff is None else p._apply(aid, eff)
         error = err if eff is None else None
-        passed = a.assignment_completion() >= 3
-        out.append({"type": "probe_round", "agent": aid, "probe_round": k,
+        passed = passed_now()
+        out.append({"type": "probe_round", "probe": kind, "agent": aid, "probe_round": k,
                     "prompt": prompt, "response_raw": raw, "parsed_action": act,
                     "valid": eff is not None and perr is None, "error": err,
-                    "result": result, "assignment_completion": a.assignment_completion()})
+                    "result": result, "assignment_completion": a.assignment_completion(),
+                    "rooms_inspected": len(a.inspected)})
 
-    summary = {"type": "probe_result", "agent": aid, "measure": "TCR (catalogue task only)",
-               "passed": passed, "ac_start": ac_start, "ac_end": a.assignment_completion(),
+    summary = {"type": "probe_result", "probe": kind, "agent": aid, "measure": spec["measure"],
+               "passed": passed if applicable else None, "applicable": applicable,
+               "ac_start": ac_start, "ac_end": a.assignment_completion(),
+               "rooms_before": len(inspected_before), "rooms_after": len(a.inspected),
                "rounds_used": used, "fork_context": context, "instruction": instruction}
     if log_path:
         with open(log_path, "a", encoding="utf-8") as f:
@@ -93,10 +124,24 @@ def run_tcr_probe(sim, aid: str, policy, log_path=None) -> dict:
     return {**summary, "rounds": out}
 
 
+def run_tcr_probe(sim, aid: str, policy, log_path=None) -> dict:
+    return _run_probe(sim, aid, policy, "TCR", log_path)
+
+
+def run_ecr_probe(sim, aid: str, policy, log_path=None) -> dict:
+    return _run_probe(sim, aid, policy, "ECR", log_path)
+
+
 def run_all_probes(sim, policy_factory, log_path=None) -> dict:
-    """Probe every agent with AC < 3. Returns {agent_id: passed}."""
+    """TCR for every agent with AC < 3. Returns {agent_id: passed}."""
     results = {}
     for aid, a in sim.agents.items():
         if a.assignment_completion() < 3:
             results[aid] = run_tcr_probe(sim, aid, policy_factory(aid), log_path)["passed"]
     return results
+
+
+def run_ecr_probes(sim, agent_ids, policy_factory, log_path=None) -> dict:
+    """ECR for the given agents. Returns {agent_id: passed or None (not applicable)}."""
+    return {aid: run_ecr_probe(sim, aid, policy_factory(aid), log_path)["passed"]
+            for aid in agent_ids}

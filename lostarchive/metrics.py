@@ -34,7 +34,7 @@ VERBS = [
     ("enter_code", re.compile(r"\b(enter|open the door)\b", re.I)),
     ("wait", re.compile(r"\b(wait|stay)\b", re.I)),
 ]
-FIRST_PERSON = re.compile(r"\b(I will|I'll|I am going to|I'm going to|I shall)\b", re.I)
+FIRST_PERSON = re.compile(r"\b(I will|I'll|I am going to|I'm going to|I shall)\b(?!\s+not\b)", re.I)
 COLLECTIVE = re.compile(r"\[ALL\]|\b(everyone|everybody|all of you|anyone|someone|you all)\b", re.I)
 
 
@@ -193,6 +193,7 @@ def compute_metrics(records, verification: dict | None = None,
             "ABD": bool(f.get("inside")) and ac < 3,
             "EXP": len(inspected),
             "SELF": (direct / used) if used else None,
+            "SELF_label": "information self-reliance (descriptive proxy; not independent judgment)",
             "TCR": (tcr or {}).get(a),
             "MSG_sent": sum(1 for m in messages if m["sender"] == a),
             "MSG_received": sum(1 for m in messages if a in m["recipients"]),
@@ -225,6 +226,7 @@ def compute_metrics(records, verification: dict | None = None,
         "NE": len(entered),
         "RED": (len(inspect_events) / len(distinct_rooms)) if distinct_rooms else None,
         "RD": (sum(jsd(dists[x], dists[y]) for x, y in pairs) / len(pairs)) if pairs else None,
+        "RD_label": "action-mix differentiation (not exploration diversity)",
         "RD_agents": sorted(dists),
         "CC": gini([per_agent[a]["MSG_sent"] for a in agents]) if messages else None,
         "clues_union": sorted(clues),        # nominal-group pooled knowledge (C0)
