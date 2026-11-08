@@ -140,6 +140,8 @@ class Simulation:
         }
 
     def available_actions(self, aid: str) -> list[str]:
+        if getattr(self, "probe_agent", None) == aid:      # §10 TCR probe copy only
+            return ["inspect", "record", "wait"]
         a = self.agents[aid]
         can_send = self.world.condition.panels and a.send_unlocked
         if a.inside:

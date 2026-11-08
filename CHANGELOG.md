@@ -1,5 +1,27 @@
 # Changelog
 
+## v1.2-A1-m2 — Phase 2 milestone 2: measurements, states, TCR (8 November 2026)
+
+No frozen scientific rule changed; no amendment proposed. Gaps in wording are
+resolved as interpretations I-1 to I-8 (see ENGINEERING_REPORT.md) for PI review.
+
+- `metrics.py`: all §9 measures; provisional proposal/commitment tagger with
+  structured (action, target, addressee) tags and a PI-verification override;
+  FOLLOW/KEEP; cumulative regime + current activity per window; dissolution;
+  reorganization; suppression / assignment-task latence / loss vs matched C0.
+- `probe.py`: §10 TCR probe on an isolated deep copy; context and catalogue
+  preserved; probed agent limited to inspect/record/wait for 4 rounds.
+- `cost.py`: call and prompt-size estimator.
+- `analyze.py`: metrics for any JSONL log.
+- `engine.py`: one hook (`probe_agent`) restricting actions in probe copies only.
+- `policies.py`: COORD leader/follower and STRESS policies.
+- Tests 14–19 (`tests/test_measurement.py`) and 22 edge-case tests
+  (`tests/test_edge_cases.py`). Test 16 exposed a stress policy that never hit
+  the 20-message cap; fixed. Bug-injection checks found three untested
+  boundaries (reorganization without a lapse, FOLLOW timing, before-delivery
+  FOLLOW); tests added.
+- A1 attribution semantics unchanged; all milestone-1 tests unchanged and passing.
+
 ## v1.2-A1 — Amendment V1.2-A1: tied earliest sources (8 November 2026)
 
 Approved by the PI. Supersedes the transfer-use (TU) source rule in §9 of

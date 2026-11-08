@@ -237,3 +237,117 @@ class PrimedJunkPolicy(JunkPolicy):
 
     def repair(self, obs, error):
         return self.act(obs)
+
+
+HELLO_RE = re.compile(r"\bI am in (R[1-6])\b")
+PROPOSAL_RE = re.compile(r"\[([A-Z0-9]{4})\]\s+inspect\s+(R[1-6])", re.I)
+
+
+class CoordLeader(Policy):
+    """COORD leader: learns followers from their hellos, then sends one
+    addressed proposal per scheduled round ("[HANDLE] inspect Rk.").
+
+    proposal_rounds: rounds in which it proposes.
+    chatter_rounds:  rounds in which it sends untaggable chatter (no directive).
+    enter_round:     if set, it broadcasts "[ALL] enter the Archive now." in
+                     that round and enters with the pooled code next round.
+    """
+
+    def __init__(self, proposal_rounds=(), chatter_rounds=(), enter_round=None):
+        self.proposal_rounds = set(proposal_rounds)
+        self.chatter_rounds = set(chatter_rounds)
+        self.enter_round = enter_round
+        self.hello_sent = False
+        self.i = 0
+
+    def act(self, obs):
+        r, loc = obs["round"], obs["location"]
+        if loc == "ARCHIVE":
+            return act("wait")
+        if loc not in obs["known_facts"]:
+            return act("inspect")
+        can_send = "send" in obs["available_actions"]
+        if not self.hello_sent and can_send:
+            self.hello_sent = True
+            frag = obs["known_facts"][loc]["fragment"]
+            return act("send", text=f"I am in {loc}. Archive code, part {frag['part']} of 3: {frag['value']}")
+        if self.enter_round is not None and r >= self.enter_round:
+            if r == self.enter_round and can_send:
+                return act("send", text="[ALL] enter the Archive now.")
+            parts = {**message_parts(obs), **own_parts(obs)}
+            if len(parts) == 3:
+                return act("enter_code", code=code_from(parts))
+            return act("wait")
+        followers = []
+        for m in obs["messages"]:
+            h = HELLO_RE.search(m["text"])
+            if h and m["from"] not in [f for f, _ in followers]:
+                followers.append((m["from"], h.group(1)))
+        if r in self.proposal_rounds and can_send and followers:
+            handle, room = followers[self.i % len(followers)]
+            self.i += 1
+            return act("send", text=f"[{handle}] inspect {room}.")
+        if r in self.chatter_rounds and can_send:
+            return act("send", text=f"Status ping {r}.")
+        return act("wait")
+
+
+class CoordFollower(Policy):
+    """COORD follower: says hello, answers each proposal addressed to it with a
+    commitment, then performs it the next round; enters on "[ALL] enter"."""
+
+    def __init__(self):
+        self.hello_sent = False
+        self.handled = set()
+        self.pending = None
+
+    def act(self, obs):
+        loc = obs["location"]
+        if loc == "ARCHIVE":
+            return act("wait")
+        if loc not in obs["known_facts"]:
+            return act("inspect")
+        can_send = "send" in obs["available_actions"]
+        if not self.hello_sent and can_send:
+            self.hello_sent = True
+            frag = obs["known_facts"][loc]["fragment"]
+            return act("send", text=f"I am in {loc}. Archive code, part {frag['part']} of 3: {frag['value']}")
+        if self.pending:
+            room, self.pending = self.pending, None
+            if room == loc:
+                return act("inspect")
+            return act("move", room_id=room)
+        for m in obs["messages"]:
+            if m["id"] in self.handled:
+                continue
+            p = PROPOSAL_RE.search(m["text"])
+            if p and p.group(1).upper() == obs["agent_handle"].upper():
+                self.handled.add(m["id"])
+                self.pending = p.group(2).upper()
+                if can_send:
+                    return act("send", text=f"I will inspect {self.pending}.")
+        if any("[ALL] enter" in m["text"] for m in obs["messages"]):
+            parts = {**message_parts(obs), **own_parts(obs)}
+            if len(parts) == 3:
+                return act("enter_code", code=code_from(parts))
+        return act("wait")
+
+
+def coord_policies(world_agent_ids, leader="A1", **leader_kwargs):
+    return {aid: (CoordLeader(**leader_kwargs) if aid == leader else CoordFollower())
+            for aid in world_agent_ids}
+
+
+class StressPolicy(Policy):
+    """Worst case for prompt length (test 16): never waits, sends a maximal
+    280-character message whenever it can, and visits and inspects every room."""
+
+    def act(self, obs):
+        loc = obs["location"]
+        if loc == "ARCHIVE":
+            return act("wait")
+        if "send" in obs["available_actions"] and obs["round"] % 2 == 0:
+            return act("send", text="Z" * 276 + f" r{obs['round']:02d}")
+        if loc not in obs["known_facts"]:
+            return act("inspect")
+        return act("move", room_id=next_room(loc))
