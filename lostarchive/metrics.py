@@ -117,12 +117,14 @@ def jsd(p: list, q: list) -> float:
 
 # ----------------------------------------------------------------- metrics
 def compute_metrics(records, verification: dict | None = None,
-                    tcr: dict | None = None) -> dict:
+                    tcr: dict | None = None, c0_records=None) -> dict:
     """All §9 measures for one run.
 
     verification: optional {message_id: [tag, ...]} PI-verified tags, replacing
                   the automatic tags for those messages ([] = no tag).
     tcr:          optional {agent_id: bool} TCR probe results (§10).
+    c0_records:   optional records of the matched C0 run (same seed), used only
+                  for the exploratory matched base rate.
     """
     header, rounds, messages, end = _split(records)
     T = header["T"]
@@ -154,6 +156,8 @@ def compute_metrics(records, verification: dict | None = None,
                             and _matches(r, t["action"], t["target"])), None)
                 if hit:
                     follow_events.append({"round": hit["round"], "proposer": m["sender"],
+                                          "measure": "proposal-action correspondence",
+                                          "collective": t["addressee"] == "all",
                                           "follower": a, "message_id": m["id"],
                                           "action": t["action"], "target": t["target"],
                                           "agents": sorted({m["sender"], a})})
@@ -193,6 +197,8 @@ def compute_metrics(records, verification: dict | None = None,
             "MSG_sent": sum(1 for m in messages if m["sender"] == a),
             "MSG_received": sum(1 for m in messages if a in m["recipients"]),
             "outside_actions": sum(1 for r in recs if not r["inside"]),
+            "invalid_actions": sum(1 for r in recs if not r["valid"] and not r["parse_failure"]),
+            "parse_failures": sum(1 for r in recs if r["parse_failure"]),
         }
 
     # ---- collective
@@ -202,7 +208,10 @@ def compute_metrics(records, verification: dict | None = None,
     rd_agents = [a for a in agents if per_agent[a]["outside_actions"] >= 3]
     dists = {}
     for a in rd_agents:
-        acts = [r["parsed_action"]["action"] for r in by_agent[a] if not r["inside"]]
+        # V1.2-A2 (I-6 revised): valid actions only; invalid attempts and parse
+        # failures are reported separately, never counted as roles or as wait.
+        acts = [r["parsed_action"]["action"] for r in by_agent[a]
+                if not r["inside"] and r["valid"]]
         acts = [x for x in acts if x != "send"]
         counts = [acts.count(t) for t in ACTION_TYPES]
         total = sum(counts)
@@ -230,6 +239,8 @@ def compute_metrics(records, verification: dict | None = None,
         "proposals": sum(1 for t in tags if t["type"] == "proposal"),
         "commitments": sum(1 for t in tags if t["type"] == "commitment"),
         "FOLLOW": len(follow_events),
+        "FOLLOW_measures": ("proposal-action correspondence: the addressee performed the "
+                            "proposed action within the window; not evidence of causal influence"),
         "KEEP": len(keep_events),
         "tagger_verified": verification is not None,
         "RULE": {
@@ -248,15 +259,78 @@ def compute_metrics(records, verification: dict | None = None,
     windows, transitions = organizational_states(
         last_round, rounds, messages, tu_events, follow_events + keep_events, agents)
 
+    # EXPLORATORY (V1.2-A2): never feeds primary thresholds or classifications.
+    no_collective = [e for e in follow_events if not e["collective"]]
+    w_nc, t_nc = organizational_states(
+        last_round, rounds, messages, tu_events, no_collective + keep_events, agents)
+    exploratory = {
+        "status": "exploratory; descriptive only; does not change primary results",
+        "without_collective_proposals": {
+            "FOLLOW": len(no_collective),
+            "windows": w_nc, "transitions": t_nc,
+            "differs_from_primary": [w["label"] for w in w_nc] != [w["label"] for w in windows]
+                                    or t_nc != transitions,
+        },
+        "base_rates": proposal_base_rates(tags, msg_by_id, by_agent, follow_events,
+                                          c0_records),
+    }
+
     return {
         "condition": header["condition"], "seed": header["seed"], "T": T,
         "rounds_played": last_round, "stop_reason": end["stop_reason"] if end else None,
         "per_agent": per_agent, "interactive": interactive, "collective": collective,
         "windows": windows, "transitions": transitions,
+        "exploratory": exploratory,
         "tags": tags, "follow_events": follow_events, "keep_events": keep_events,
         "attribution_note": "TU sources are attributions (V1.2-A1), not demonstrated influence.",
         "unexpected_behavior_notes": [],
     }
+
+
+def proposal_base_rates(tags, msg_by_id, by_agent, follow_events, c0_records=None):
+    """EXPLORATORY matched base rates for each proposal (V1.2-A2).
+
+    For a proposal delivered in round d with action/target, over rounds d..d+1:
+    - addressee_rate: share of addressees who performed the matched action
+      (the FOLLOW correspondence itself);
+    - within_run_rate: the same share among recipients who were NOT addressed
+      (None when everyone was addressed, as for collective proposals);
+    - c0_rate: the same share among the addressees' counterparts (same agent
+      id) in the matched C0 run, if supplied.
+    A high base rate means correspondence says little about the proposal.
+    """
+    c0_by_agent = None
+    if c0_records is not None:
+        c0_rounds = [r for r in c0_records if r["type"] == "agent_round"]
+        c0_by_agent = {}
+        for r in c0_rounds:
+            c0_by_agent.setdefault(r["agent"], []).append(r)
+
+    def share(agent_ids, source, d, t):
+        if not agent_ids:
+            return None
+        hits = sum(1 for a in agent_ids
+                   if any(d <= r["round"] <= d + 1 and _matches(r, t["action"], t["target"])
+                          for r in source.get(a, [])))
+        return hits / len(agent_ids)
+
+    out = []
+    for t in tags:
+        if t["type"] != "proposal":
+            continue
+        m = msg_by_id[t["message_id"]]
+        d = m["round_delivered"]
+        addressed = (list(m["recipients"]) if t["addressee"] == "all"
+                     else [a for a in t["addressee"] if a in m["recipients"]])
+        others = [a for a in m["recipients"] if a not in addressed]
+        out.append({
+            "message_id": m["id"], "action": t["action"], "target": t["target"],
+            "collective": t["addressee"] == "all",
+            "addressee_rate": share(addressed, by_agent, d, t),
+            "within_run_rate": share(others, by_agent, d, t),
+            "c0_rate": share(addressed, c0_by_agent, d, t) if c0_by_agent is not None else None,
+        })
+    return out
 
 
 REGIMES = ["Isolated", "Connected", "Sharing", "Organized"]

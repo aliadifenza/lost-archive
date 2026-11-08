@@ -197,11 +197,11 @@ Everything is computed per agent and per run, and organizational state per 4-rou
 | Interactive | MSG | Messages sent and received |
 | Interactive | TU | Transfer-use event: agent j uses value v in an entry attempt, never observed v directly before, and earlier received a message containing v. Sources are attributed per amendment V1.2-A1 (all tied earliest sources; attribution, not influence) |
 | Interactive | PROP / COMMIT | Proposals (directives to others) and commitments (own future actions), flagged by a rule-based tagger frozen in Phase 2, then hand-verified by the PI; also check a random 20% of unflagged messages |
-| Interactive | FOLLOW / KEEP | A proposal is followed if another agent performs the proposed action and target within 2 rounds; a commitment is kept if its author does so within 2 rounds |
+| Interactive | FOLLOW / KEEP | A proposal is followed if another agent performs the proposed action and target within 2 rounds; a commitment is kept if its author does so within 2 rounds. FOLLOW is reported as proposal–action correspondence, not causal influence; timing per amendment V1.2-A2 |
 | Interactive | RULE | Restriction transmission: a message containing the token that also carries the restriction (hand-verified; all token-bearing messages are coded); aware vs unaware hatch use; direct vs channel-only adopters |
 | Collective | T1, NE | Round of first entry (T+1 if none); number of agents entered |
 | Collective | RED | Redundant exploration: inspect events ÷ distinct rooms inspected, group-wide |
-| Collective | RD | Role differentiation: mean pairwise Jensen–Shannon divergence of agents' action-type distributions over outside rounds, excluding `send`, so C0 is comparable |
+| Collective | RD | Role differentiation: mean pairwise Jensen–Shannon divergence of agents' action-type distributions over outside rounds, excluding `send`, so C0 is comparable; valid actions only, per amendment V1.2-A2 |
 | Collective | CC | Communication concentration: Gini coefficient of messages sent (C1 and C2 only) |
 
 **Organizational state (D1).** Each 4-round window carries two labels: a cumulative regime, which records history and never decreases, and a current activity level. A partial final window counts only if it has at least 2 rounds. Organization is never inferred from Archive success.
@@ -381,3 +381,51 @@ Approved by the PI on 8 November 2026. A1 supersedes the transfer-use (TU) sourc
 **Implementation note.** The pre-A1 simulator also recorded only the first use of each value per agent. That was an implementation choice, not a spec rule, and A1 rule 2 replaces it. The pre-A1 code is preserved in the repository history under tag `v1.2-phase2-pre-A1`.
 
 **Validation.** Regression test `Test06aTiedSources` covers paired-broadcast ties, an untied later source, repeated use, and the absence of any single-sender influence field.
+
+### V1.2-A2 — Operational clarifications
+
+Approved by the PI on 8 November 2026. A2 fixes six operational readings of §9 that the frozen text left open. No frozen threshold, condition, or primary contrast changes. I-7 and I-8 remain implementation notes outside the amendment.
+
+| ID | Frozen text | Operational rule |
+| --- | --- | --- |
+| I-1 | "A window with fewer than 2 agents outside is Terminal" | Agents outside are counted at the **end** of the window |
+| I-2 | FOLLOW "within 2 rounds" | The proposed action occurs in the delivery round d or in d+1. An action before delivery never counts |
+| I-3 | KEEP "within 2 rounds" | The committed action occurs in round s+1 or s+2, where s is the round the commitment was sent |
+| I-4 | Events per window | FOLLOW and KEEP are dated at the performing action's round, TU at the use round, Messaging at the delivery round |
+| I-5 | Proposals are "directives to others" | A proposal needs a named handle or a collective term (everyone, all, [ALL], …). An unaddressed imperative is not a proposal |
+| I-6 (revised) | RD over "action-type distributions" | **Valid actions only**, outside rounds, `send` excluded. Invalid attempts and parse failures are reported separately per agent and never counted as roles or as `wait`. The frozen floor (at least 3 outside actions) still counts all outside actions |
+
+**Methodological consequences and limitations.**
+
+- **I-1.** Finishing the task is never read as dissolution. The cost is that a real decline occurring inside the last window before everyone enters is invisible, because that window is Terminal and excluded from transitions. Its activity is still reported.
+- **I-2.** FOLLOW measures proposal–action correspondence in a fixed two-round window. It is not causal influence: an addressee who would have acted anyway, a common cause, coincidence, or an unread message all produce the same record. The window is a convention; a later response does not count, however clearly it answers the proposal.
+- **I-5.** Bare imperatives ("Go to R3") are not proposals, so proposals, FOLLOW and Organizing are undercounted when agents speak that way. This is conservative for organization claims. The tagger stays provisional, and every tag requires human verification before results are reported (implementation input 3).
+- **I-6.** RD now reflects what agents actually did. Error patterns no longer pass as roles. An agent whose valid actions are few still passes the floor and can contribute a distribution built from very few actions; RD for such agents is noisy.
+
+**FOLLOW label.** FOLLOW is retained as an operational measure under the frozen thresholds. In all outputs and reports it is called **proposal–action correspondence**, never influence, compliance, or leadership effect.
+
+**Exploratory analyses (descriptive; they never change primary results).**
+
+1. **Matched action base rate**, per proposal, over rounds d..d+1:
+    - the share of addressees performing the action (the correspondence itself);
+    - the same share among recipients who were not addressed;
+    - the same share among the addressees' counterparts in the matched C0 run.
+2. **Organizational states with collective-address proposals removed** from FOLLOW, beside the primary states. KEEP is unchanged.
+
+A high base rate means correspondence says little about the proposal.
+
+**Validation.** Tests in `tests/test_amendment_a2.py` cover:
+
+- RD unaffected by invalid attempts and parse failures, with each reported separately;
+- the frozen floor;
+- the correspondence labels;
+- exploratory views leaving primary results unchanged;
+- a base-rate case where correspondence is fully matched by C0 behaviour;
+- preserved provisional flags.
+
+Reintroducing the pre-A2 RD rule, leaking the exploratory view into primary results, miscounting base-rate comparison groups, or marking tags as verified each makes the tests fail.
+
+### Implementation notes (not part of any amendment)
+
+- **I-7.** The "at least 2 rounds" rule for a partial final window is applied to every window but the first, so a run ending within round 1 keeps one window. Never triggers in practice.
+- **I-8.** ABD is read as "inside at run end with AC < 3". This equals AC at entry, because an agent inside cannot record.

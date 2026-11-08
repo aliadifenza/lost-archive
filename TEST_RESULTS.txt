@@ -1,9 +1,18 @@
-Lost Archive simulator — validation run (Phase 2, milestone 2)
-Spec: World Specification V1.2 + amendment V1.2-A1
-Parent commit: f151e52
+Lost Archive simulator — full deterministic validation run
+Spec: World Specification V1.2 + amendments V1.2-A1, V1.2-A2
+Parent commit: ef49694
 Python: Python 3.13.18  Platform: Linux x86_64
 Command: python3 -W error::ResourceWarning -m unittest -v
 
+test_addressed_proposals_have_a_within_run_comparison (tests.test_amendment_a2.TestExploratoryBaseRates.test_addressed_proposals_have_a_within_run_comparison) ... ok
+test_collective_proposal_needs_c0_for_a_base_rate (tests.test_amendment_a2.TestExploratoryBaseRates.test_collective_proposal_needs_c0_for_a_base_rate) ... ok
+test_addressed_only_runs_are_identical (tests.test_amendment_a2.TestExploratoryCollective.test_addressed_only_runs_are_identical) ... ok
+test_collective_proposals_change_only_the_exploratory_view (tests.test_amendment_a2.TestExploratoryCollective.test_collective_proposals_change_only_the_exploratory_view) ... ok
+test_labels (tests.test_amendment_a2.TestFollowIsCorrespondence.test_labels) ... ok
+test_floor_still_counts_all_outside_actions (tests.test_amendment_a2.TestI6ValidActionsOnly.test_floor_still_counts_all_outside_actions) ... ok
+test_invalid_attempts_do_not_create_roles (tests.test_amendment_a2.TestI6ValidActionsOnly.test_invalid_attempts_do_not_create_roles) ... ok
+test_parse_failures_are_not_wait (tests.test_amendment_a2.TestI6ValidActionsOnly.test_parse_failures_are_not_wait) ... ok
+test_flags (tests.test_amendment_a2.TestProvisionalFlagsPreserved.test_flags) ... ok
 test_rule_counts_c2 (tests.test_edge_cases.TestA1Preserved.test_rule_counts_c2) ... ok
 test_tied_tu_counted (tests.test_edge_cases.TestA1Preserved.test_tied_tu_counted) ... ok
 test_gini_and_jsd_bounds (tests.test_edge_cases.TestDegenerateRuns.test_gini_and_jsd_bounds) ... ok
@@ -72,6 +81,6 @@ test_identical_logs (tests.test_validation.Test13Reproducibility.test_identical_
 test_matched_seeds_across_conditions (tests.test_validation.Test13Reproducibility.test_matched_seeds_across_conditions) ... ok
 
 ----------------------------------------------------------------------
-Ran 66 tests in 1.781s
+Ran 75 tests in 1.582s
 
 OK

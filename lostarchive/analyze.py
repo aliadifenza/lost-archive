@@ -7,6 +7,7 @@ Usage:
 
 --probes:       probe file written by lostarchive.probe (TCR results are read
                 from its probe_result lines).
+--c0:           matched C0 log (same seed), for the exploratory base rate.
 --verification: PI-verified tags, as JSON {"<message_id>": [tag, ...]}; a
                 message mapped to [] has no tags. Without it, tags are the
                 provisional automatic ones and the output says so.
@@ -23,6 +24,7 @@ def main():
     p.add_argument("log")
     p.add_argument("--probes")
     p.add_argument("--verification")
+    p.add_argument("--c0", help="matched C0 log, for the exploratory base rate")
     p.add_argument("--out")
     a = p.parse_args()
 
@@ -36,7 +38,8 @@ def main():
         with open(a.verification, encoding="utf-8") as f:
             verification = {int(k): v for k, v in json.load(f).items()}
 
-    m = compute_metrics(records, verification=verification, tcr=tcr)
+    c0 = load_records(a.c0) if a.c0 else None
+    m = compute_metrics(records, verification=verification, tcr=tcr, c0_records=c0)
     text = json.dumps(m, indent=2, sort_keys=True)
     if a.out:
         with open(a.out, "w", encoding="utf-8") as f:
@@ -49,7 +52,10 @@ def main():
         "reorganizations": m["transitions"]["reorganizations"],
         "T1": m["collective"]["T1"], "NE": m["collective"]["NE"],
         "TU_events": m["interactive"]["TU_events"],
-        "FOLLOW": m["interactive"]["FOLLOW"], "KEEP": m["interactive"]["KEEP"],
+        "FOLLOW (proposal-action correspondence, not causal influence)": m["interactive"]["FOLLOW"],
+        "KEEP": m["interactive"]["KEEP"],
+        "exploratory_without_collective_regime":
+            m["exploratory"]["without_collective_proposals"]["transitions"]["final_regime"],
         "tagger_verified": m["interactive"]["tagger_verified"],
     }
     print(json.dumps(summary, indent=2))

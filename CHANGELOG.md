@@ -1,5 +1,22 @@
 # Changelog
 
+## v1.2-A2 — Amendment V1.2-A2: operational clarifications (8 November 2026)
+
+Approved by the PI: interpretations I-1 to I-6 adopted as A2, with I-6 revised;
+I-7 and I-8 kept as implementation notes. No frozen threshold changed.
+
+- `metrics.py`: RD counts valid actions only; `invalid_actions` and
+  `parse_failures` reported per agent. FOLLOW labelled proposal–action
+  correspondence (`FOLLOW_measures`, per-event `measure`, `collective`).
+  New `exploratory` block: matched base rates per proposal
+  (`proposal_base_rates`) and states without collective-address proposals.
+- `analyze.py`: `--c0` option; correspondence label in the summary.
+- Spec: `spec/World_Specification_V1.2_with_A1_A2.md` (renamed from the A1
+  file with `git mv`; the shared spec doc carries the identical A2 text).
+- Tests: `tests/test_amendment_a2.py` (9 tests). Full suite 75/75.
+- During development, one new test failed because its own matched-C0 script
+  waited 9 rounds and hit the idle stop; the script was fixed, not the code.
+
 ## v1.2-A1-m2 — Phase 2 milestone 2: measurements, states, TCR (8 November 2026)
 
 No frozen scientific rule changed; no amendment proposed. Gaps in wording are

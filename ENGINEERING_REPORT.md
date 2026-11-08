@@ -1,12 +1,39 @@
-# Engineering report — Phase 2, milestone 2
+# Engineering report — Phase 2, milestone 2 (with amendment V1.2-A2)
 
-Lost Archive simulator, World Specification V1.2 with amendment V1.2-A1.
-8 November 2026. No LLM calls were made.
+Lost Archive simulator, World Specification V1.2 with amendments V1.2-A1 and
+V1.2-A2. 8 November 2026. No LLM calls were made.
+
+## Update: amendment V1.2-A2
+
+The PI accepted interpretations I-1 to I-6 as amendment V1.2-A2, with I-6
+revised so that RD counts valid actions only. I-7 and I-8 remain
+implementation notes. The full amendment text, with consequences and
+limitations, is in `spec/World_Specification_V1.2_with_A1_A2.md`. Changes:
+
+- **Revised I-6.** RD uses valid outside actions only. Invalid attempts and
+  parse failures are reported per agent (`invalid_actions`, `parse_failures`).
+- **FOLLOW label.** It is reported as proposal–action correspondence
+  (`FOLLOW_measures`, and `measure` on each event), never as influence.
+- **Exploratory analyses** (`exploratory` in the metrics output). These are
+  descriptive only and never feed primary thresholds:
+    - a matched base rate per proposal: addressees, non-addressed recipients,
+      and matched C0 via `--c0`;
+    - organizational states recomputed with collective-address proposals
+      removed from FOLLOW.
+- **Provisional flags unchanged.** `tagger_verified` and
+  `restriction_verified` stay false until human-verified inputs are supplied.
+- **Tests.** 9 new tests in `tests/test_amendment_a2.py`; 75 tests in total,
+  all passing.
+- **Bug injection.** Four A2 regressions were deliberately reintroduced: the
+  pre-A2 RD rule, the exploratory view leaking into primary results, a wrong
+  base-rate comparison group, and tags marked as verified. Each was caught.
+
+The milestone-2 report below is unchanged except where noted.
 
 ## Result
 
-The full suite passes: 66 tests, covering validation tests 1–19, the A1
-regression (6a), and 22 edge-case tests. It was executed on Python 3.13,
+The full suite passes: 75 tests, covering validation tests 1–19, the A1
+regression (6a), 22 edge-case tests, and 9 A2 tests. (Before A2: 66.) It was executed on Python 3.13,
 Linux x86-64; the complete output is in `TEST_RESULTS.txt`. It has not yet been
 executed on macOS for this milestone; milestone 1 was validated there by the PI.
 
@@ -61,8 +88,9 @@ The estimate is max(characters ÷ 4, words × 1.33); real tokenizers will differ
 
 ## Interpretations made (no frozen rule changed)
 
-These fill gaps in V1.2-A1's wording. Each is visible in code and pinned by a
-test. The PI may confirm or overrule any of them.
+**Status: I-1 to I-6 are now amendment V1.2-A2, with I-6 revised to valid
+actions only. I-7 and I-8 remain implementation notes.** The table below is
+the original milestone-2 text; I-6 as shown is superseded.
 
 | ID | Spec text | Implementation |
 | --- | --- | --- |
@@ -82,7 +110,8 @@ test. The PI may confirm or overrule any of them.
    misfire on unusual phrasing. Every FOLLOW, KEEP and Organizing result is
    marked `tagger_verified: false` until PI-verified tags are supplied
    (`--verification`).
-2. **FOLLOW has no counterfactual baseline [MED].** A proposal is "followed"
+2. **FOLLOW has no counterfactual baseline [MED]** (addressed descriptively by
+   A2's exploratory base rate; primary thresholds unchanged). A proposal is "followed"
    if the addressee does the proposed action within 2 rounds, even if it would
    have done so anyway. "Everyone enter" is the clearest case. Organization may
    therefore be overstated in LLM runs. A base-rate correction would need a

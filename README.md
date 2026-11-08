@@ -1,13 +1,14 @@
-# The Lost Archive — simulator (World Specification V1.2 + amendment A1)
+# The Lost Archive — simulator (World Specification V1.2 + amendments A1, A2)
 
 Phase 2, milestone 2: deterministic simulator, all §9 measurements,
 organizational states, the TCR probe, and validation tests 1–19, with
-amendment V1.2-A1 (tied earliest sources). Standard library only. No LLM
+amendments V1.2-A1 (tied earliest sources) and V1.2-A2 (operational
+clarifications). Standard library only. No LLM
 integration, no API calls. See `ENGINEERING_REPORT.md` for results,
 interpretations and limitations.
 
-The authoritative specification, including the A1 amendment, is
-`spec/World_Specification_V1.2_with_A1.md`. History of changes: `CHANGELOG.md`
+The authoritative specification, including amendments A1 and A2, is
+`spec/World_Specification_V1.2_with_A1_A2.md`. History of changes: `CHANGELOG.md`
 and `git log` (the pre-A1 implementation is tagged `v1.2-phase2-pre-A1`).
 
 ## Layout
@@ -26,6 +27,7 @@ tests/
   test_validation.py   deterministic validation tests 1–13 (+ 6a, A1 regression)
   test_measurement.py  deterministic validation tests 14–19
   test_edge_cases.py   boundary and degenerate cases
+  test_amendment_a2.py amendment V1.2-A2 regressions
 ```
 
 ## Run on a MacBook Air (M1)
@@ -49,7 +51,12 @@ python3 -m unittest -v
 ```
 
 Analyze options: `--probes <probe file>` adds TCR results;
-`--verification <json>` replaces provisional tags with PI-verified ones.
+`--verification <json>` replaces provisional tags with PI-verified ones;
+`--c0 <matched C0 log>` adds the exploratory C0 base rate.
+
+FOLLOW is reported as **proposal–action correspondence**, never as causal
+influence (amendment V1.2-A2). Everything under `exploratory` in the metrics
+output is descriptive and never changes primary results.
 
 Demo options: `--condition C0|C1|C2|C0-D`, `--policy solo|bcast|hatch-r|hatch-t|random|wait`,
 `--seed <any string>`, `--T <rounds>`.
@@ -79,6 +86,7 @@ Demo options: `--condition C0|C1|C2|C0-D`, `--policy solo|bcast|hatch-r|hatch-t|
 | 18 Dissolution | `Test18Dissolution` |
 | 19 Reorganization | `Test19Reorganization` |
 | Edge cases | `tests/test_edge_cases.py` |
+| Amendment A2 | `tests/test_amendment_a2.py` |
 
 ## Transfer-use events (amendment V1.2-A1)
 
