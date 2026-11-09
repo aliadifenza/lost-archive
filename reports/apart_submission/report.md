@@ -122,7 +122,7 @@ Across eight matched seeds, six LLM agents given a discoverable broadcast channe
 
 - **Code repository:** prepared for GitHub; publication pending PI approval. A verified archive with all code, frozen specifications, raw trajectories and analysis is available from the author.
 - **Data:** all calibration, pilot and expansion logs (every prompt, raw response, action and result), probe logs, property reports and the resource ledger.
-- **Reproduction:** `python3 verify_archive.py` replays every run offline and recomputes all results without API access.
+- **Reproduction:** `python3 verify_archive.py` (archive) or `bash scripts/verify.sh` (repository) replays every run offline and recomputes all results without API access.
 
 ## Author Contributions
 
@@ -202,4 +202,4 @@ The final C1 organizational states were Connected (s1, s3, s4, s5, s8), Sharing 
 
 ## LLM Usage Statement
 
-Claude (Anthropic) supported protocol critique and revision, implemented the simulator, model client, measurement code and tests, ran the offline verification and analysis, and drafted this report under PI direction. Every scientific decision was presented to, and approved by, the PI. Two independent AI reviewers checked the archive and the s6 C1 episode: Qualam (GPT-6), which verified the archive, tests and the episode, and Grok, which assessed scientific fidelity and statistics. A third review was set aside because it misreconstructed the experimental conditions. All numbers in this report are computed from the archived logs by the included scripts. No human other than the PI has yet verified the message classifications.
+Claude (Anthropic) supported protocol critique and revision, implemented the simulator, model client, measurement code and tests, ran the offline verification and analysis, and drafted this report under PI direction. Every scientific decision was presented to, and approved by, the PI. Two independent AI reviewers checked the archive and the s6 C1 episode: Qualam (GPT-6), which verified the archive, tests and the episode, and Grok, which assessed scientific fidelity and statistics. A third review was set aside because it misreconstructed the experimental conditions. All numbers in this report are computed from the archived logs by the included scripts. No human has yet verified the message classifications; the protocol's human classification step is outstanding.

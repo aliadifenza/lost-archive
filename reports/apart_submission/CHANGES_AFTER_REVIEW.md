@@ -14,3 +14,9 @@ No experiment was rerun. No saved trajectory, frozen specification, prompt or or
 | 6 | Fidelity to the protocol: the approved C0/C1/C2 (+C0-D) design is reported as run. The originally proposed S × D × L factorial is described only as the starting point and placed in future work, with organizational-state transitions and hyperindividuality | report §3, §5 |
 | 7 | Seven-property framework preserved in full, including negative and inconclusive measurements (Table 3) | report §4 |
 | 8 | Final report prepared in the Apart Research template structure: title, author and affiliation, a 240-word abstract, main text on 6 pages, references, mandatory Appendix A "Limitations and Dual-Use / Ethical Considerations", frozen prompts, complete s1–s8 results, LLM usage statement | `reports/apart_submission/` |
+
+## Wording fix during repository verification (9 November 2026)
+
+| # | Correction | Where |
+| --- | --- | --- |
+| 9 | "No human other than the PI has yet verified the message classifications" could be read as claiming PI verification. Replaced with "No human has yet verified the message classifications; the protocol's human classification step is outstanding." Reproduction line now names both the archive script and the repository script. No scientific content changed; page count unchanged (main text pages 1–6) | report LLM Usage Statement, Code and Data |
