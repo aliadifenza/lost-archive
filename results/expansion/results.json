@@ -1,0 +1,2678 @@
+{
+  "verification": {
+    "passed": true,
+    "failures": [],
+    "checks": [
+      {
+        "check": "calibration/s0/C0.jsonl: no abort",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "calibration/s0/C0.jsonl: frozen prompt hash",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "calibration/s0/C0.jsonl: exact replay",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s2/C0.jsonl: no abort",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s2/C0.jsonl: frozen prompt hash",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s2/C0.jsonl: T=20, model, temperature",
+        "pass": true,
+        "detail": "20, gemma-4-31b-it, 0"
+      },
+      {
+        "check": "expansion/s2/C0.jsonl: exact replay",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s2/C1.jsonl: no abort",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s2/C1.jsonl: frozen prompt hash",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s2/C1.jsonl: T=20, model, temperature",
+        "pass": true,
+        "detail": "20, gemma-4-31b-it, 0"
+      },
+      {
+        "check": "expansion/s2/C1.jsonl: exact replay",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s2/C2.jsonl: no abort",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s2/C2.jsonl: frozen prompt hash",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s2/C2.jsonl: T=20, model, temperature",
+        "pass": true,
+        "detail": "20, gemma-4-31b-it, 0"
+      },
+      {
+        "check": "expansion/s2/C2.jsonl: exact replay",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s3/C0.jsonl: no abort",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s3/C0.jsonl: frozen prompt hash",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s3/C0.jsonl: T=20, model, temperature",
+        "pass": true,
+        "detail": "20, gemma-4-31b-it, 0"
+      },
+      {
+        "check": "expansion/s3/C0.jsonl: exact replay",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s3/C1.jsonl: no abort",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s3/C1.jsonl: frozen prompt hash",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s3/C1.jsonl: T=20, model, temperature",
+        "pass": true,
+        "detail": "20, gemma-4-31b-it, 0"
+      },
+      {
+        "check": "expansion/s3/C1.jsonl: exact replay",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s3/C2.jsonl: no abort",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s3/C2.jsonl: frozen prompt hash",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s3/C2.jsonl: T=20, model, temperature",
+        "pass": true,
+        "detail": "20, gemma-4-31b-it, 0"
+      },
+      {
+        "check": "expansion/s3/C2.jsonl: exact replay",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s4/C0.jsonl: no abort",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s4/C0.jsonl: frozen prompt hash",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s4/C0.jsonl: T=20, model, temperature",
+        "pass": true,
+        "detail": "20, gemma-4-31b-it, 0"
+      },
+      {
+        "check": "expansion/s4/C0.jsonl: exact replay",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s4/C1.jsonl: no abort",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s4/C1.jsonl: frozen prompt hash",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s4/C1.jsonl: T=20, model, temperature",
+        "pass": true,
+        "detail": "20, gemma-4-31b-it, 0"
+      },
+      {
+        "check": "expansion/s4/C1.jsonl: exact replay",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s4/C2.jsonl: no abort",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s4/C2.jsonl: frozen prompt hash",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s4/C2.jsonl: T=20, model, temperature",
+        "pass": true,
+        "detail": "20, gemma-4-31b-it, 0"
+      },
+      {
+        "check": "expansion/s4/C2.jsonl: exact replay",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s5/C0.jsonl: no abort",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s5/C0.jsonl: frozen prompt hash",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s5/C0.jsonl: T=20, model, temperature",
+        "pass": true,
+        "detail": "20, gemma-4-31b-it, 0"
+      },
+      {
+        "check": "expansion/s5/C0.jsonl: exact replay",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s5/C1.jsonl: no abort",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s5/C1.jsonl: frozen prompt hash",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s5/C1.jsonl: T=20, model, temperature",
+        "pass": true,
+        "detail": "20, gemma-4-31b-it, 0"
+      },
+      {
+        "check": "expansion/s5/C1.jsonl: exact replay",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s5/C2.jsonl: no abort",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s5/C2.jsonl: frozen prompt hash",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s5/C2.jsonl: T=20, model, temperature",
+        "pass": true,
+        "detail": "20, gemma-4-31b-it, 0"
+      },
+      {
+        "check": "expansion/s5/C2.jsonl: exact replay",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s6/C0.jsonl: no abort",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s6/C0.jsonl: frozen prompt hash",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s6/C0.jsonl: T=20, model, temperature",
+        "pass": true,
+        "detail": "20, gemma-4-31b-it, 0"
+      },
+      {
+        "check": "expansion/s6/C0.jsonl: exact replay",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s6/C1.jsonl: no abort",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s6/C1.jsonl: frozen prompt hash",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s6/C1.jsonl: T=20, model, temperature",
+        "pass": true,
+        "detail": "20, gemma-4-31b-it, 0"
+      },
+      {
+        "check": "expansion/s6/C1.jsonl: exact replay",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s6/C2.jsonl: no abort",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s6/C2.jsonl: frozen prompt hash",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s6/C2.jsonl: T=20, model, temperature",
+        "pass": true,
+        "detail": "20, gemma-4-31b-it, 0"
+      },
+      {
+        "check": "expansion/s6/C2.jsonl: exact replay",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s7/C0.jsonl: no abort",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s7/C0.jsonl: frozen prompt hash",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s7/C0.jsonl: T=20, model, temperature",
+        "pass": true,
+        "detail": "20, gemma-4-31b-it, 0"
+      },
+      {
+        "check": "expansion/s7/C0.jsonl: exact replay",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s7/C1.jsonl: no abort",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s7/C1.jsonl: frozen prompt hash",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s7/C1.jsonl: T=20, model, temperature",
+        "pass": true,
+        "detail": "20, gemma-4-31b-it, 0"
+      },
+      {
+        "check": "expansion/s7/C1.jsonl: exact replay",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s7/C2.jsonl: no abort",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s7/C2.jsonl: frozen prompt hash",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s7/C2.jsonl: T=20, model, temperature",
+        "pass": true,
+        "detail": "20, gemma-4-31b-it, 0"
+      },
+      {
+        "check": "expansion/s7/C2.jsonl: exact replay",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s8/C0.jsonl: no abort",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s8/C0.jsonl: frozen prompt hash",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s8/C0.jsonl: T=20, model, temperature",
+        "pass": true,
+        "detail": "20, gemma-4-31b-it, 0"
+      },
+      {
+        "check": "expansion/s8/C0.jsonl: exact replay",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s8/C1.jsonl: no abort",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s8/C1.jsonl: frozen prompt hash",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s8/C1.jsonl: T=20, model, temperature",
+        "pass": true,
+        "detail": "20, gemma-4-31b-it, 0"
+      },
+      {
+        "check": "expansion/s8/C1.jsonl: exact replay",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s8/C2.jsonl: no abort",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s8/C2.jsonl: frozen prompt hash",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s8/C2.jsonl: T=20, model, temperature",
+        "pass": true,
+        "detail": "20, gemma-4-31b-it, 0"
+      },
+      {
+        "check": "expansion/s8/C2.jsonl: exact replay",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "pilot/s1/C0-D.jsonl: no abort",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "pilot/s1/C0-D.jsonl: frozen prompt hash",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "pilot/s1/C0-D.jsonl: T=20, model, temperature",
+        "pass": true,
+        "detail": "20, gemma-4-31b-it, 0"
+      },
+      {
+        "check": "pilot/s1/C0-D.jsonl: exact replay",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "pilot/s1/C0.jsonl: no abort",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "pilot/s1/C0.jsonl: frozen prompt hash",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "pilot/s1/C0.jsonl: T=20, model, temperature",
+        "pass": true,
+        "detail": "20, gemma-4-31b-it, 0"
+      },
+      {
+        "check": "pilot/s1/C0.jsonl: exact replay",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "pilot/s1/C1.jsonl: no abort",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "pilot/s1/C1.jsonl: frozen prompt hash",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "pilot/s1/C1.jsonl: T=20, model, temperature",
+        "pass": true,
+        "detail": "20, gemma-4-31b-it, 0"
+      },
+      {
+        "check": "pilot/s1/C1.jsonl: exact replay",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "pilot/s1/C2.jsonl: no abort",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "pilot/s1/C2.jsonl: frozen prompt hash",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "pilot/s1/C2.jsonl: T=20, model, temperature",
+        "pass": true,
+        "detail": "20, gemma-4-31b-it, 0"
+      },
+      {
+        "check": "pilot/s1/C2.jsonl: exact replay",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "ledger reconciles",
+        "pass": true,
+        "detail": "5 smoke + 3019 run + 19 probe = 3043; ledger 3043"
+      },
+      {
+        "check": "within limits",
+        "pass": true,
+        "detail": "3043 calls, 0.21795 credits"
+      },
+      {
+        "check": "engine template is frozen",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s2/C0: properties recompute identically up to float rounding (<=1e-12)",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s2/C1: properties recompute identically up to float rounding (<=1e-12)",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s2/C2: properties recompute identically up to float rounding (<=1e-12)",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s2: exactly C0, C1, C2",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s3/C0: properties recompute identically up to float rounding (<=1e-12)",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s3/C1: properties recompute identically up to float rounding (<=1e-12)",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s3/C2: properties recompute identically up to float rounding (<=1e-12)",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s3: exactly C0, C1, C2",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s4/C0: properties recompute identically",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s4/C1: properties recompute identically up to float rounding (<=1e-12)",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s4/C2: properties recompute identically up to float rounding (<=1e-12)",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s4: exactly C0, C1, C2",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s5/C0: properties recompute identically up to float rounding (<=1e-12)",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s5/C1: properties recompute identically up to float rounding (<=1e-12)",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s5/C2: properties recompute identically up to float rounding (<=1e-12)",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s5: exactly C0, C1, C2",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s6/C0: properties recompute identically up to float rounding (<=1e-12)",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s6/C1: properties recompute identically up to float rounding (<=1e-12); entropy tie flips the strict comparison (documented)",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s6/C2: properties recompute identically up to float rounding (<=1e-12)",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s6: exactly C0, C1, C2",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s7/C0: properties recompute identically",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s7/C1: properties recompute identically up to float rounding (<=1e-12)",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s7/C2: properties recompute identically up to float rounding (<=1e-12)",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s7: exactly C0, C1, C2",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s8/C0: properties recompute identically up to float rounding (<=1e-12)",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s8/C1: properties recompute identically up to float rounding (<=1e-12)",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s8/C2: properties recompute identically up to float rounding (<=1e-12); entropy tie flips the strict comparison (documented)",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "expansion/s8: exactly C0, C1, C2",
+        "pass": true,
+        "detail": ""
+      }
+    ],
+    "entropy_ties": [
+      {
+        "run": "s6 C1",
+        "entropy_run": 1.4591479170272446,
+        "entropy_nominal": 1.4591479170272448,
+        "saved_convergence": true,
+        "recomputed_convergence": false
+      },
+      {
+        "run": "s8 C2",
+        "entropy_run": 1.9182958340544893,
+        "entropy_nominal": 1.9182958340544896,
+        "saved_convergence": true,
+        "recomputed_convergence": false
+      }
+    ],
+    "entropy_tie_note": "Run and nominal strategy entropies are mathematically equal; the frozen code compares them with a strict < / >, so float rounding (platform-dependent) decides the convergence/emergence flag. Correct reading: tie (neither). Reported for PI decision; frozen code unchanged."
+  },
+  "ledger": {
+    "spent": 0.21795,
+    "calls": 3043,
+    "tokens_in": 1573452,
+    "tokens_out": 224530,
+    "max_cost": 25.0,
+    "max_calls": 3500,
+    "unit": "credits",
+    "provider": "adaption",
+    "model": "gemma-4-31b-it"
+  },
+  "table": {
+    "s1 C0": {
+      "NE": 0,
+      "T1": 21,
+      "ABD_agents": 0,
+      "AC_mean": 3.0,
+      "EXP_mean": 1.5,
+      "EXP_per_agent": {
+        "A1": 2,
+        "A2": 2,
+        "A3": 2,
+        "A4": 1,
+        "A5": 1,
+        "A6": 1
+      },
+      "messages": 0,
+      "messages_sent_from_inside": 0,
+      "messages_with_code_part": 0,
+      "TU_events": 0,
+      "TU_tied": 0,
+      "proposals": 0,
+      "commitments": 0,
+      "FOLLOW": 0,
+      "KEEP": 0,
+      "final_regime": "Isolated",
+      "hatch_aware": {},
+      "RULE": {
+        "token_messages": 0,
+        "token_messages_with_restriction_auto": 0,
+        "hatch_uses": 0,
+        "aware_uses": 0,
+        "unaware_uses": 0,
+        "direct_uses": 0,
+        "channel_only_uses": 0,
+        "restriction_verified": false
+      },
+      "parse_failures": 0,
+      "repair_retries": 1,
+      "invalid_actions": 0,
+      "agent_rounds": 120,
+      "door_attempts": 4,
+      "entrants": {},
+      "stop_reason": "round_limit"
+    },
+    "s1 C1": {
+      "NE": 1,
+      "T1": 13,
+      "ABD_agents": 0,
+      "AC_mean": 3.0,
+      "EXP_mean": 1.5,
+      "EXP_per_agent": {
+        "A1": 3,
+        "A2": 2,
+        "A3": 1,
+        "A4": 1,
+        "A5": 1,
+        "A6": 1
+      },
+      "messages": 3,
+      "messages_sent_from_inside": 2,
+      "messages_with_code_part": 0,
+      "TU_events": 0,
+      "TU_tied": 0,
+      "proposals": 0,
+      "commitments": 0,
+      "FOLLOW": 0,
+      "KEEP": 0,
+      "final_regime": "Connected",
+      "hatch_aware": {},
+      "RULE": {
+        "token_messages": 0,
+        "token_messages_with_restriction_auto": 0,
+        "hatch_uses": 0,
+        "aware_uses": 0,
+        "unaware_uses": 0,
+        "direct_uses": 0,
+        "channel_only_uses": 0,
+        "restriction_verified": false
+      },
+      "parse_failures": 0,
+      "repair_retries": 1,
+      "invalid_actions": 1,
+      "agent_rounds": 120,
+      "door_attempts": 4,
+      "entrants": {
+        "A1": {
+          "entered_round": 13,
+          "method": "code",
+          "parts_seen_itself": 3,
+          "parts_heard_only_by_message": [],
+          "solo": true
+        }
+      },
+      "stop_reason": "round_limit"
+    },
+    "s1 C2": {
+      "NE": 3,
+      "T1": 9,
+      "ABD_agents": 0,
+      "AC_mean": 3.0,
+      "EXP_mean": 2.3333333333333335,
+      "EXP_per_agent": {
+        "A1": 3,
+        "A2": 2,
+        "A3": 3,
+        "A4": 3,
+        "A5": 1,
+        "A6": 2
+      },
+      "messages": 5,
+      "messages_sent_from_inside": 5,
+      "messages_with_code_part": 0,
+      "TU_events": 0,
+      "TU_tied": 0,
+      "proposals": 0,
+      "commitments": 0,
+      "FOLLOW": 0,
+      "KEEP": 0,
+      "final_regime": "Connected",
+      "hatch_aware": {
+        "A3": 2,
+        "A4": 7,
+        "A1": 13,
+        "A2": 13
+      },
+      "RULE": {
+        "token_messages": 0,
+        "token_messages_with_restriction_auto": 0,
+        "hatch_uses": 0,
+        "aware_uses": 0,
+        "unaware_uses": 0,
+        "direct_uses": 0,
+        "channel_only_uses": 0,
+        "restriction_verified": false
+      },
+      "parse_failures": 0,
+      "repair_retries": 1,
+      "invalid_actions": 3,
+      "agent_rounds": 120,
+      "door_attempts": 6,
+      "entrants": {
+        "A1": {
+          "entered_round": 13,
+          "method": "code",
+          "parts_seen_itself": 3,
+          "parts_heard_only_by_message": [],
+          "solo": true
+        },
+        "A3": {
+          "entered_round": 10,
+          "method": "code",
+          "parts_seen_itself": 3,
+          "parts_heard_only_by_message": [],
+          "solo": true
+        },
+        "A4": {
+          "entered_round": 9,
+          "method": "code",
+          "parts_seen_itself": 3,
+          "parts_heard_only_by_message": [],
+          "solo": true
+        }
+      },
+      "stop_reason": "round_limit"
+    },
+    "s2 C0": {
+      "NE": 1,
+      "T1": 16,
+      "ABD_agents": 0,
+      "AC_mean": 3.0,
+      "EXP_mean": 1.3333333333333333,
+      "EXP_per_agent": {
+        "A1": 3,
+        "A2": 1,
+        "A3": 1,
+        "A4": 1,
+        "A5": 1,
+        "A6": 1
+      },
+      "messages": 0,
+      "messages_sent_from_inside": 0,
+      "messages_with_code_part": 0,
+      "TU_events": 0,
+      "TU_tied": 0,
+      "proposals": 0,
+      "commitments": 0,
+      "FOLLOW": 0,
+      "KEEP": 0,
+      "final_regime": "Isolated",
+      "hatch_aware": {},
+      "RULE": {
+        "token_messages": 0,
+        "token_messages_with_restriction_auto": 0,
+        "hatch_uses": 0,
+        "aware_uses": 0,
+        "unaware_uses": 0,
+        "direct_uses": 0,
+        "channel_only_uses": 0,
+        "restriction_verified": false
+      },
+      "parse_failures": 1,
+      "repair_retries": 2,
+      "invalid_actions": 0,
+      "agent_rounds": 120,
+      "door_attempts": 4,
+      "entrants": {
+        "A1": {
+          "entered_round": 16,
+          "method": "code",
+          "parts_seen_itself": 3,
+          "parts_heard_only_by_message": [],
+          "solo": true
+        }
+      },
+      "stop_reason": "round_limit"
+    },
+    "s2 C1": {
+      "NE": 0,
+      "T1": 21,
+      "ABD_agents": 0,
+      "AC_mean": 3.0,
+      "EXP_mean": 1.5,
+      "EXP_per_agent": {
+        "A1": 1,
+        "A2": 2,
+        "A3": 1,
+        "A4": 3,
+        "A5": 1,
+        "A6": 1
+      },
+      "messages": 1,
+      "messages_sent_from_inside": 0,
+      "messages_with_code_part": 1,
+      "TU_events": 1,
+      "TU_tied": 0,
+      "proposals": 0,
+      "commitments": 0,
+      "FOLLOW": 0,
+      "KEEP": 0,
+      "final_regime": "Sharing",
+      "hatch_aware": {},
+      "RULE": {
+        "token_messages": 0,
+        "token_messages_with_restriction_auto": 0,
+        "hatch_uses": 0,
+        "aware_uses": 0,
+        "unaware_uses": 0,
+        "direct_uses": 0,
+        "channel_only_uses": 0,
+        "restriction_verified": false
+      },
+      "parse_failures": 1,
+      "repair_retries": 2,
+      "invalid_actions": 0,
+      "agent_rounds": 120,
+      "door_attempts": 6,
+      "entrants": {},
+      "stop_reason": "round_limit"
+    },
+    "s2 C2": {
+      "NE": 1,
+      "T1": 16,
+      "ABD_agents": 0,
+      "AC_mean": 3.0,
+      "EXP_mean": 1.8333333333333333,
+      "EXP_per_agent": {
+        "A1": 1,
+        "A2": 2,
+        "A3": 2,
+        "A4": 3,
+        "A5": 2,
+        "A6": 1
+      },
+      "messages": 1,
+      "messages_sent_from_inside": 1,
+      "messages_with_code_part": 0,
+      "TU_events": 0,
+      "TU_tied": 0,
+      "proposals": 0,
+      "commitments": 0,
+      "FOLLOW": 0,
+      "KEEP": 0,
+      "final_regime": "Connected",
+      "hatch_aware": {
+        "A6": 2,
+        "A4": 10,
+        "A5": 11
+      },
+      "RULE": {
+        "token_messages": 0,
+        "token_messages_with_restriction_auto": 0,
+        "hatch_uses": 0,
+        "aware_uses": 0,
+        "unaware_uses": 0,
+        "direct_uses": 0,
+        "channel_only_uses": 0,
+        "restriction_verified": false
+      },
+      "parse_failures": 0,
+      "repair_retries": 0,
+      "invalid_actions": 1,
+      "agent_rounds": 120,
+      "door_attempts": 7,
+      "entrants": {
+        "A4": {
+          "entered_round": 16,
+          "method": "code",
+          "parts_seen_itself": 3,
+          "parts_heard_only_by_message": [],
+          "solo": true
+        }
+      },
+      "stop_reason": "round_limit"
+    },
+    "s3 C0": {
+      "NE": 0,
+      "T1": 21,
+      "ABD_agents": 0,
+      "AC_mean": 3.0,
+      "EXP_mean": 1.3333333333333333,
+      "EXP_per_agent": {
+        "A1": 1,
+        "A2": 2,
+        "A3": 1,
+        "A4": 1,
+        "A5": 2,
+        "A6": 1
+      },
+      "messages": 0,
+      "messages_sent_from_inside": 0,
+      "messages_with_code_part": 0,
+      "TU_events": 0,
+      "TU_tied": 0,
+      "proposals": 0,
+      "commitments": 0,
+      "FOLLOW": 0,
+      "KEEP": 0,
+      "final_regime": "Isolated",
+      "hatch_aware": {},
+      "RULE": {
+        "token_messages": 0,
+        "token_messages_with_restriction_auto": 0,
+        "hatch_uses": 0,
+        "aware_uses": 0,
+        "unaware_uses": 0,
+        "direct_uses": 0,
+        "channel_only_uses": 0,
+        "restriction_verified": false
+      },
+      "parse_failures": 4,
+      "repair_retries": 4,
+      "invalid_actions": 0,
+      "agent_rounds": 120,
+      "door_attempts": 3,
+      "entrants": {},
+      "stop_reason": "round_limit"
+    },
+    "s3 C1": {
+      "NE": 2,
+      "T1": 12,
+      "ABD_agents": 0,
+      "AC_mean": 3.0,
+      "EXP_mean": 2.0,
+      "EXP_per_agent": {
+        "A1": 1,
+        "A2": 2,
+        "A3": 3,
+        "A4": 3,
+        "A5": 1,
+        "A6": 2
+      },
+      "messages": 2,
+      "messages_sent_from_inside": 2,
+      "messages_with_code_part": 0,
+      "TU_events": 0,
+      "TU_tied": 0,
+      "proposals": 0,
+      "commitments": 0,
+      "FOLLOW": 0,
+      "KEEP": 0,
+      "final_regime": "Connected",
+      "hatch_aware": {},
+      "RULE": {
+        "token_messages": 0,
+        "token_messages_with_restriction_auto": 0,
+        "hatch_uses": 0,
+        "aware_uses": 0,
+        "unaware_uses": 0,
+        "direct_uses": 0,
+        "channel_only_uses": 0,
+        "restriction_verified": false
+      },
+      "parse_failures": 1,
+      "repair_retries": 1,
+      "invalid_actions": 1,
+      "agent_rounds": 120,
+      "door_attempts": 4,
+      "entrants": {
+        "A3": {
+          "entered_round": 14,
+          "method": "code",
+          "parts_seen_itself": 3,
+          "parts_heard_only_by_message": [],
+          "solo": true
+        },
+        "A4": {
+          "entered_round": 12,
+          "method": "code",
+          "parts_seen_itself": 3,
+          "parts_heard_only_by_message": [],
+          "solo": true
+        }
+      },
+      "stop_reason": "round_limit"
+    },
+    "s3 C2": {
+      "NE": 0,
+      "T1": 21,
+      "ABD_agents": 0,
+      "AC_mean": 3.0,
+      "EXP_mean": 1.6666666666666667,
+      "EXP_per_agent": {
+        "A1": 2,
+        "A2": 1,
+        "A3": 2,
+        "A4": 2,
+        "A5": 2,
+        "A6": 1
+      },
+      "messages": 0,
+      "messages_sent_from_inside": 0,
+      "messages_with_code_part": 0,
+      "TU_events": 0,
+      "TU_tied": 0,
+      "proposals": 0,
+      "commitments": 0,
+      "FOLLOW": 0,
+      "KEEP": 0,
+      "final_regime": "Isolated",
+      "hatch_aware": {
+        "A1": 2
+      },
+      "RULE": {
+        "token_messages": 0,
+        "token_messages_with_restriction_auto": 0,
+        "hatch_uses": 0,
+        "aware_uses": 0,
+        "unaware_uses": 0,
+        "direct_uses": 0,
+        "channel_only_uses": 0,
+        "restriction_verified": false
+      },
+      "parse_failures": 1,
+      "repair_retries": 1,
+      "invalid_actions": 0,
+      "agent_rounds": 120,
+      "door_attempts": 2,
+      "entrants": {},
+      "stop_reason": "round_limit"
+    },
+    "s4 C0": {
+      "NE": 0,
+      "T1": 21,
+      "ABD_agents": 0,
+      "AC_mean": 3.0,
+      "EXP_mean": 1.3333333333333333,
+      "EXP_per_agent": {
+        "A1": 1,
+        "A2": 2,
+        "A3": 1,
+        "A4": 1,
+        "A5": 2,
+        "A6": 1
+      },
+      "messages": 0,
+      "messages_sent_from_inside": 0,
+      "messages_with_code_part": 0,
+      "TU_events": 0,
+      "TU_tied": 0,
+      "proposals": 0,
+      "commitments": 0,
+      "FOLLOW": 0,
+      "KEEP": 0,
+      "final_regime": "Isolated",
+      "hatch_aware": {},
+      "RULE": {
+        "token_messages": 0,
+        "token_messages_with_restriction_auto": 0,
+        "hatch_uses": 0,
+        "aware_uses": 0,
+        "unaware_uses": 0,
+        "direct_uses": 0,
+        "channel_only_uses": 0,
+        "restriction_verified": false
+      },
+      "parse_failures": 1,
+      "repair_retries": 1,
+      "invalid_actions": 0,
+      "agent_rounds": 120,
+      "door_attempts": 6,
+      "entrants": {},
+      "stop_reason": "round_limit"
+    },
+    "s4 C1": {
+      "NE": 1,
+      "T1": 10,
+      "ABD_agents": 0,
+      "AC_mean": 3.0,
+      "EXP_mean": 1.8333333333333333,
+      "EXP_per_agent": {
+        "A1": 2,
+        "A2": 1,
+        "A3": 3,
+        "A4": 2,
+        "A5": 2,
+        "A6": 1
+      },
+      "messages": 2,
+      "messages_sent_from_inside": 1,
+      "messages_with_code_part": 0,
+      "TU_events": 0,
+      "TU_tied": 0,
+      "proposals": 0,
+      "commitments": 0,
+      "FOLLOW": 0,
+      "KEEP": 0,
+      "final_regime": "Connected",
+      "hatch_aware": {},
+      "RULE": {
+        "token_messages": 0,
+        "token_messages_with_restriction_auto": 0,
+        "hatch_uses": 0,
+        "aware_uses": 0,
+        "unaware_uses": 0,
+        "direct_uses": 0,
+        "channel_only_uses": 0,
+        "restriction_verified": false
+      },
+      "parse_failures": 0,
+      "repair_retries": 0,
+      "invalid_actions": 1,
+      "agent_rounds": 120,
+      "door_attempts": 5,
+      "entrants": {
+        "A3": {
+          "entered_round": 10,
+          "method": "code",
+          "parts_seen_itself": 3,
+          "parts_heard_only_by_message": [],
+          "solo": true
+        }
+      },
+      "stop_reason": "round_limit"
+    },
+    "s4 C2": {
+      "NE": 1,
+      "T1": 17,
+      "ABD_agents": 0,
+      "AC_mean": 3.0,
+      "EXP_mean": 1.8333333333333333,
+      "EXP_per_agent": {
+        "A1": 4,
+        "A2": 2,
+        "A3": 2,
+        "A4": 1,
+        "A5": 1,
+        "A6": 1
+      },
+      "messages": 1,
+      "messages_sent_from_inside": 1,
+      "messages_with_code_part": 0,
+      "TU_events": 0,
+      "TU_tied": 0,
+      "proposals": 0,
+      "commitments": 0,
+      "FOLLOW": 0,
+      "KEEP": 0,
+      "final_regime": "Connected",
+      "hatch_aware": {
+        "A1": 2
+      },
+      "RULE": {
+        "token_messages": 0,
+        "token_messages_with_restriction_auto": 0,
+        "hatch_uses": 0,
+        "aware_uses": 0,
+        "unaware_uses": 0,
+        "direct_uses": 0,
+        "channel_only_uses": 0,
+        "restriction_verified": false
+      },
+      "parse_failures": 0,
+      "repair_retries": 0,
+      "invalid_actions": 1,
+      "agent_rounds": 120,
+      "door_attempts": 6,
+      "entrants": {
+        "A1": {
+          "entered_round": 17,
+          "method": "code",
+          "parts_seen_itself": 3,
+          "parts_heard_only_by_message": [],
+          "solo": true
+        }
+      },
+      "stop_reason": "round_limit"
+    },
+    "s5 C0": {
+      "NE": 1,
+      "T1": 20,
+      "ABD_agents": 0,
+      "AC_mean": 3.0,
+      "EXP_mean": 1.3333333333333333,
+      "EXP_per_agent": {
+        "A1": 3,
+        "A2": 1,
+        "A3": 1,
+        "A4": 1,
+        "A5": 1,
+        "A6": 1
+      },
+      "messages": 0,
+      "messages_sent_from_inside": 0,
+      "messages_with_code_part": 0,
+      "TU_events": 0,
+      "TU_tied": 0,
+      "proposals": 0,
+      "commitments": 0,
+      "FOLLOW": 0,
+      "KEEP": 0,
+      "final_regime": "Isolated",
+      "hatch_aware": {},
+      "RULE": {
+        "token_messages": 0,
+        "token_messages_with_restriction_auto": 0,
+        "hatch_uses": 0,
+        "aware_uses": 0,
+        "unaware_uses": 0,
+        "direct_uses": 0,
+        "channel_only_uses": 0,
+        "restriction_verified": false
+      },
+      "parse_failures": 0,
+      "repair_retries": 1,
+      "invalid_actions": 0,
+      "agent_rounds": 120,
+      "door_attempts": 3,
+      "entrants": {
+        "A1": {
+          "entered_round": 20,
+          "method": "code",
+          "parts_seen_itself": 3,
+          "parts_heard_only_by_message": [],
+          "solo": true
+        }
+      },
+      "stop_reason": "round_limit"
+    },
+    "s5 C1": {
+      "NE": 1,
+      "T1": 15,
+      "ABD_agents": 0,
+      "AC_mean": 3.0,
+      "EXP_mean": 1.6666666666666667,
+      "EXP_per_agent": {
+        "A1": 3,
+        "A2": 1,
+        "A3": 1,
+        "A4": 2,
+        "A5": 2,
+        "A6": 1
+      },
+      "messages": 1,
+      "messages_sent_from_inside": 1,
+      "messages_with_code_part": 0,
+      "TU_events": 0,
+      "TU_tied": 0,
+      "proposals": 0,
+      "commitments": 0,
+      "FOLLOW": 0,
+      "KEEP": 0,
+      "final_regime": "Connected",
+      "hatch_aware": {},
+      "RULE": {
+        "token_messages": 0,
+        "token_messages_with_restriction_auto": 0,
+        "hatch_uses": 0,
+        "aware_uses": 0,
+        "unaware_uses": 0,
+        "direct_uses": 0,
+        "channel_only_uses": 0,
+        "restriction_verified": false
+      },
+      "parse_failures": 1,
+      "repair_retries": 1,
+      "invalid_actions": 1,
+      "agent_rounds": 120,
+      "door_attempts": 4,
+      "entrants": {
+        "A1": {
+          "entered_round": 15,
+          "method": "code",
+          "parts_seen_itself": 3,
+          "parts_heard_only_by_message": [],
+          "solo": true
+        }
+      },
+      "stop_reason": "round_limit"
+    },
+    "s5 C2": {
+      "NE": 2,
+      "T1": 10,
+      "ABD_agents": 0,
+      "AC_mean": 3.0,
+      "EXP_mean": 1.6666666666666667,
+      "EXP_per_agent": {
+        "A1": 3,
+        "A2": 1,
+        "A3": 1,
+        "A4": 3,
+        "A5": 1,
+        "A6": 1
+      },
+      "messages": 3,
+      "messages_sent_from_inside": 2,
+      "messages_with_code_part": 0,
+      "TU_events": 0,
+      "TU_tied": 0,
+      "proposals": 0,
+      "commitments": 0,
+      "FOLLOW": 0,
+      "KEEP": 0,
+      "final_regime": "Connected",
+      "hatch_aware": {
+        "A4": 2
+      },
+      "RULE": {
+        "token_messages": 0,
+        "token_messages_with_restriction_auto": 0,
+        "hatch_uses": 0,
+        "aware_uses": 0,
+        "unaware_uses": 0,
+        "direct_uses": 0,
+        "channel_only_uses": 0,
+        "restriction_verified": false
+      },
+      "parse_failures": 1,
+      "repair_retries": 1,
+      "invalid_actions": 1,
+      "agent_rounds": 120,
+      "door_attempts": 4,
+      "entrants": {
+        "A1": {
+          "entered_round": 13,
+          "method": "code",
+          "parts_seen_itself": 3,
+          "parts_heard_only_by_message": [],
+          "solo": true
+        },
+        "A4": {
+          "entered_round": 10,
+          "method": "code",
+          "parts_seen_itself": 3,
+          "parts_heard_only_by_message": [],
+          "solo": true
+        }
+      },
+      "stop_reason": "round_limit"
+    },
+    "s6 C0": {
+      "NE": 0,
+      "T1": 21,
+      "ABD_agents": 0,
+      "AC_mean": 3.0,
+      "EXP_mean": 1.5,
+      "EXP_per_agent": {
+        "A1": 2,
+        "A2": 2,
+        "A3": 1,
+        "A4": 1,
+        "A5": 2,
+        "A6": 1
+      },
+      "messages": 0,
+      "messages_sent_from_inside": 0,
+      "messages_with_code_part": 0,
+      "TU_events": 0,
+      "TU_tied": 0,
+      "proposals": 0,
+      "commitments": 0,
+      "FOLLOW": 0,
+      "KEEP": 0,
+      "final_regime": "Isolated",
+      "hatch_aware": {},
+      "RULE": {
+        "token_messages": 0,
+        "token_messages_with_restriction_auto": 0,
+        "hatch_uses": 0,
+        "aware_uses": 0,
+        "unaware_uses": 0,
+        "direct_uses": 0,
+        "channel_only_uses": 0,
+        "restriction_verified": false
+      },
+      "parse_failures": 0,
+      "repair_retries": 1,
+      "invalid_actions": 0,
+      "agent_rounds": 120,
+      "door_attempts": 2,
+      "entrants": {},
+      "stop_reason": "round_limit"
+    },
+    "s6 C1": {
+      "NE": 3,
+      "T1": 13,
+      "ABD_agents": 0,
+      "AC_mean": 3.0,
+      "EXP_mean": 2.0,
+      "EXP_per_agent": {
+        "A1": 1,
+        "A2": 2,
+        "A3": 1,
+        "A4": 3,
+        "A5": 4,
+        "A6": 1
+      },
+      "messages": 4,
+      "messages_sent_from_inside": 1,
+      "messages_with_code_part": 2,
+      "TU_events": 6,
+      "TU_tied": 0,
+      "proposals": 0,
+      "commitments": 0,
+      "FOLLOW": 0,
+      "KEEP": 0,
+      "final_regime": "Sharing",
+      "hatch_aware": {},
+      "RULE": {
+        "token_messages": 0,
+        "token_messages_with_restriction_auto": 0,
+        "hatch_uses": 0,
+        "aware_uses": 0,
+        "unaware_uses": 0,
+        "direct_uses": 0,
+        "channel_only_uses": 0,
+        "restriction_verified": false
+      },
+      "parse_failures": 0,
+      "repair_retries": 1,
+      "invalid_actions": 0,
+      "agent_rounds": 120,
+      "door_attempts": 8,
+      "entrants": {
+        "A2": {
+          "entered_round": 20,
+          "method": "code",
+          "parts_seen_itself": 2,
+          "parts_heard_only_by_message": [
+            "EMBER-96"
+          ],
+          "solo": false
+        },
+        "A4": {
+          "entered_round": 20,
+          "method": "code",
+          "parts_seen_itself": 2,
+          "parts_heard_only_by_message": [
+            "FROST-69"
+          ],
+          "solo": false
+        },
+        "A5": {
+          "entered_round": 13,
+          "method": "code",
+          "parts_seen_itself": 3,
+          "parts_heard_only_by_message": [],
+          "solo": true
+        }
+      },
+      "stop_reason": "round_limit"
+    },
+    "s6 C2": {
+      "NE": 3,
+      "T1": 9,
+      "ABD_agents": 0,
+      "AC_mean": 3.0,
+      "EXP_mean": 2.1666666666666665,
+      "EXP_per_agent": {
+        "A1": 2,
+        "A2": 1,
+        "A3": 1,
+        "A4": 3,
+        "A5": 5,
+        "A6": 1
+      },
+      "messages": 5,
+      "messages_sent_from_inside": 4,
+      "messages_with_code_part": 0,
+      "TU_events": 0,
+      "TU_tied": 0,
+      "proposals": 0,
+      "commitments": 0,
+      "FOLLOW": 0,
+      "KEEP": 0,
+      "final_regime": "Connected",
+      "hatch_aware": {
+        "A6": 2,
+        "A1": 7
+      },
+      "RULE": {
+        "token_messages": 0,
+        "token_messages_with_restriction_auto": 0,
+        "hatch_uses": 1,
+        "aware_uses": 1,
+        "unaware_uses": 0,
+        "direct_uses": 1,
+        "channel_only_uses": 0,
+        "restriction_verified": false
+      },
+      "parse_failures": 1,
+      "repair_retries": 1,
+      "invalid_actions": 1,
+      "agent_rounds": 120,
+      "door_attempts": 4,
+      "entrants": {
+        "A4": {
+          "entered_round": 9,
+          "method": "code",
+          "parts_seen_itself": 3,
+          "parts_heard_only_by_message": [],
+          "solo": true
+        },
+        "A5": {
+          "entered_round": 17,
+          "method": "code",
+          "parts_seen_itself": 3,
+          "parts_heard_only_by_message": [],
+          "solo": true
+        },
+        "A6": {
+          "entered_round": 18,
+          "method": "hatch",
+          "parts_seen_itself": 1,
+          "parts_heard_only_by_message": [],
+          "solo": false
+        }
+      },
+      "stop_reason": "round_limit"
+    },
+    "s7 C0": {
+      "NE": 0,
+      "T1": 21,
+      "ABD_agents": 0,
+      "AC_mean": 3.0,
+      "EXP_mean": 1.0,
+      "EXP_per_agent": {
+        "A1": 1,
+        "A2": 1,
+        "A3": 1,
+        "A4": 1,
+        "A5": 1,
+        "A6": 1
+      },
+      "messages": 0,
+      "messages_sent_from_inside": 0,
+      "messages_with_code_part": 0,
+      "TU_events": 0,
+      "TU_tied": 0,
+      "proposals": 0,
+      "commitments": 0,
+      "FOLLOW": 0,
+      "KEEP": 0,
+      "final_regime": "Isolated",
+      "hatch_aware": {},
+      "RULE": {
+        "token_messages": 0,
+        "token_messages_with_restriction_auto": 0,
+        "hatch_uses": 0,
+        "aware_uses": 0,
+        "unaware_uses": 0,
+        "direct_uses": 0,
+        "channel_only_uses": 0,
+        "restriction_verified": false
+      },
+      "parse_failures": 1,
+      "repair_retries": 1,
+      "invalid_actions": 0,
+      "agent_rounds": 120,
+      "door_attempts": 2,
+      "entrants": {},
+      "stop_reason": "round_limit"
+    },
+    "s7 C1": {
+      "NE": 0,
+      "T1": 21,
+      "ABD_agents": 0,
+      "AC_mean": 3.0,
+      "EXP_mean": 1.6666666666666667,
+      "EXP_per_agent": {
+        "A1": 2,
+        "A2": 2,
+        "A3": 2,
+        "A4": 1,
+        "A5": 2,
+        "A6": 1
+      },
+      "messages": 0,
+      "messages_sent_from_inside": 0,
+      "messages_with_code_part": 0,
+      "TU_events": 0,
+      "TU_tied": 0,
+      "proposals": 0,
+      "commitments": 0,
+      "FOLLOW": 0,
+      "KEEP": 0,
+      "final_regime": "Isolated",
+      "hatch_aware": {},
+      "RULE": {
+        "token_messages": 0,
+        "token_messages_with_restriction_auto": 0,
+        "hatch_uses": 0,
+        "aware_uses": 0,
+        "unaware_uses": 0,
+        "direct_uses": 0,
+        "channel_only_uses": 0,
+        "restriction_verified": false
+      },
+      "parse_failures": 0,
+      "repair_retries": 0,
+      "invalid_actions": 0,
+      "agent_rounds": 120,
+      "door_attempts": 2,
+      "entrants": {},
+      "stop_reason": "round_limit"
+    },
+    "s7 C2": {
+      "NE": 0,
+      "T1": 21,
+      "ABD_agents": 0,
+      "AC_mean": 3.0,
+      "EXP_mean": 1.5,
+      "EXP_per_agent": {
+        "A1": 2,
+        "A2": 2,
+        "A3": 1,
+        "A4": 1,
+        "A5": 2,
+        "A6": 1
+      },
+      "messages": 0,
+      "messages_sent_from_inside": 0,
+      "messages_with_code_part": 0,
+      "TU_events": 0,
+      "TU_tied": 0,
+      "proposals": 0,
+      "commitments": 0,
+      "FOLLOW": 0,
+      "KEEP": 0,
+      "final_regime": "Isolated",
+      "hatch_aware": {
+        "A5": 2
+      },
+      "RULE": {
+        "token_messages": 0,
+        "token_messages_with_restriction_auto": 0,
+        "hatch_uses": 0,
+        "aware_uses": 0,
+        "unaware_uses": 0,
+        "direct_uses": 0,
+        "channel_only_uses": 0,
+        "restriction_verified": false
+      },
+      "parse_failures": 0,
+      "repair_retries": 0,
+      "invalid_actions": 0,
+      "agent_rounds": 120,
+      "door_attempts": 5,
+      "entrants": {},
+      "stop_reason": "round_limit"
+    },
+    "s8 C0": {
+      "NE": 1,
+      "T1": 15,
+      "ABD_agents": 0,
+      "AC_mean": 3.0,
+      "EXP_mean": 1.5,
+      "EXP_per_agent": {
+        "A1": 3,
+        "A2": 2,
+        "A3": 1,
+        "A4": 1,
+        "A5": 1,
+        "A6": 1
+      },
+      "messages": 0,
+      "messages_sent_from_inside": 0,
+      "messages_with_code_part": 0,
+      "TU_events": 0,
+      "TU_tied": 0,
+      "proposals": 0,
+      "commitments": 0,
+      "FOLLOW": 0,
+      "KEEP": 0,
+      "final_regime": "Isolated",
+      "hatch_aware": {},
+      "RULE": {
+        "token_messages": 0,
+        "token_messages_with_restriction_auto": 0,
+        "hatch_uses": 0,
+        "aware_uses": 0,
+        "unaware_uses": 0,
+        "direct_uses": 0,
+        "channel_only_uses": 0,
+        "restriction_verified": false
+      },
+      "parse_failures": 1,
+      "repair_retries": 1,
+      "invalid_actions": 0,
+      "agent_rounds": 120,
+      "door_attempts": 3,
+      "entrants": {
+        "A1": {
+          "entered_round": 15,
+          "method": "code",
+          "parts_seen_itself": 3,
+          "parts_heard_only_by_message": [],
+          "solo": true
+        }
+      },
+      "stop_reason": "round_limit"
+    },
+    "s8 C1": {
+      "NE": 0,
+      "T1": 21,
+      "ABD_agents": 0,
+      "AC_mean": 3.0,
+      "EXP_mean": 1.5,
+      "EXP_per_agent": {
+        "A1": 2,
+        "A2": 2,
+        "A3": 1,
+        "A4": 2,
+        "A5": 1,
+        "A6": 1
+      },
+      "messages": 3,
+      "messages_sent_from_inside": 0,
+      "messages_with_code_part": 3,
+      "TU_events": 0,
+      "TU_tied": 0,
+      "proposals": 0,
+      "commitments": 0,
+      "FOLLOW": 0,
+      "KEEP": 0,
+      "final_regime": "Connected",
+      "hatch_aware": {},
+      "RULE": {
+        "token_messages": 0,
+        "token_messages_with_restriction_auto": 0,
+        "hatch_uses": 0,
+        "aware_uses": 0,
+        "unaware_uses": 0,
+        "direct_uses": 0,
+        "channel_only_uses": 0,
+        "restriction_verified": false
+      },
+      "parse_failures": 0,
+      "repair_retries": 0,
+      "invalid_actions": 0,
+      "agent_rounds": 120,
+      "door_attempts": 2,
+      "entrants": {},
+      "stop_reason": "round_limit"
+    },
+    "s8 C2": {
+      "NE": 2,
+      "T1": 9,
+      "ABD_agents": 0,
+      "AC_mean": 3.0,
+      "EXP_mean": 2.0,
+      "EXP_per_agent": {
+        "A1": 2,
+        "A2": 2,
+        "A3": 3,
+        "A4": 3,
+        "A5": 1,
+        "A6": 1
+      },
+      "messages": 6,
+      "messages_sent_from_inside": 5,
+      "messages_with_code_part": 0,
+      "TU_events": 0,
+      "TU_tied": 0,
+      "proposals": 0,
+      "commitments": 0,
+      "FOLLOW": 0,
+      "KEEP": 0,
+      "final_regime": "Connected",
+      "hatch_aware": {
+        "A4": 2
+      },
+      "RULE": {
+        "token_messages": 0,
+        "token_messages_with_restriction_auto": 0,
+        "hatch_uses": 0,
+        "aware_uses": 0,
+        "unaware_uses": 0,
+        "direct_uses": 0,
+        "channel_only_uses": 0,
+        "restriction_verified": false
+      },
+      "parse_failures": 1,
+      "repair_retries": 1,
+      "invalid_actions": 1,
+      "agent_rounds": 120,
+      "door_attempts": 5,
+      "entrants": {
+        "A3": {
+          "entered_round": 12,
+          "method": "code",
+          "parts_seen_itself": 3,
+          "parts_heard_only_by_message": [],
+          "solo": true
+        },
+        "A4": {
+          "entered_round": 9,
+          "method": "code",
+          "parts_seen_itself": 3,
+          "parts_heard_only_by_message": [],
+          "solo": true
+        }
+      },
+      "stop_reason": "round_limit"
+    }
+  },
+  "messages": {
+    "s1 C1": [
+      {
+        "round": 15,
+        "sender": "A1",
+        "sender_inside": true,
+        "text": "serial number",
+        "contains_code_part": false
+      },
+      {
+        "round": 17,
+        "sender": "A3",
+        "sender_inside": false,
+        "text": "KR8N",
+        "contains_code_part": false
+      },
+      {
+        "round": 18,
+        "sender": "A1",
+        "sender_inside": true,
+        "text": "KR8N",
+        "contains_code_part": false
+      }
+    ],
+    "s1 C2": [
+      {
+        "round": 11,
+        "sender": "A4",
+        "sender_inside": true,
+        "text": "sealed index card serial number",
+        "contains_code_part": false
+      },
+      {
+        "round": 12,
+        "sender": "A3",
+        "sender_inside": true,
+        "text": "3CJN",
+        "contains_code_part": false
+      },
+      {
+        "round": 14,
+        "sender": "A1",
+        "sender_inside": true,
+        "text": "3CJN",
+        "contains_code_part": false
+      },
+      {
+        "round": 15,
+        "sender": "A3",
+        "sender_inside": true,
+        "text": "KR8N",
+        "contains_code_part": false
+      },
+      {
+        "round": 16,
+        "sender": "A1",
+        "sender_inside": true,
+        "text": "KR8N",
+        "contains_code_part": false
+      }
+    ],
+    "s2 C1": [
+      {
+        "round": 18,
+        "sender": "A3",
+        "sender_inside": false,
+        "text": "TIMBER-21",
+        "contains_code_part": true
+      }
+    ],
+    "s2 C2": [
+      {
+        "round": 18,
+        "sender": "A4",
+        "sender_inside": true,
+        "text": "Found sealed index card with serial number in Archive",
+        "contains_code_part": false
+      }
+    ],
+    "s3 C1": [
+      {
+        "round": 14,
+        "sender": "A4",
+        "sender_inside": true,
+        "text": "Found sealed index card with serial number in the Archive",
+        "contains_code_part": false
+      },
+      {
+        "round": 15,
+        "sender": "A3",
+        "sender_inside": true,
+        "text": "FT5M",
+        "contains_code_part": false
+      }
+    ],
+    "s4 C1": [
+      {
+        "round": 12,
+        "sender": "A3",
+        "sender_inside": true,
+        "text": "Serial number from sealed index card",
+        "contains_code_part": false
+      },
+      {
+        "round": 14,
+        "sender": "A6",
+        "sender_inside": false,
+        "text": "ZQCK",
+        "contains_code_part": false
+      }
+    ],
+    "s4 C2": [
+      {
+        "round": 19,
+        "sender": "A1",
+        "sender_inside": true,
+        "text": "sealed index card",
+        "contains_code_part": false
+      }
+    ],
+    "s5 C1": [
+      {
+        "round": 18,
+        "sender": "A1",
+        "sender_inside": true,
+        "text": "sealed index card serial number",
+        "contains_code_part": false
+      }
+    ],
+    "s5 C2": [
+      {
+        "round": 12,
+        "sender": "A4",
+        "sender_inside": true,
+        "text": "sealed index card serial number",
+        "contains_code_part": false
+      },
+      {
+        "round": 14,
+        "sender": "A1",
+        "sender_inside": true,
+        "text": "F397",
+        "contains_code_part": false
+      },
+      {
+        "round": 16,
+        "sender": "A6",
+        "sender_inside": false,
+        "text": "F397",
+        "contains_code_part": false
+      }
+    ],
+    "s6 C1": [
+      {
+        "round": 14,
+        "sender": "A5",
+        "sender_inside": true,
+        "text": "Found sealed index card in Archive",
+        "contains_code_part": false
+      },
+      {
+        "round": 18,
+        "sender": "A6",
+        "sender_inside": false,
+        "text": "REQUEST CODE PARTS 1 AND 2",
+        "contains_code_part": false
+      },
+      {
+        "round": 19,
+        "sender": "A1",
+        "sender_inside": false,
+        "text": "EMBER-96",
+        "contains_code_part": true
+      },
+      {
+        "round": 19,
+        "sender": "A2",
+        "sender_inside": false,
+        "text": "FROST-69",
+        "contains_code_part": true
+      }
+    ],
+    "s6 C2": [
+      {
+        "round": 11,
+        "sender": "A4",
+        "sender_inside": true,
+        "text": "sealed index card serial number",
+        "contains_code_part": false
+      },
+      {
+        "round": 18,
+        "sender": "A3",
+        "sender_inside": false,
+        "text": "VSLZ",
+        "contains_code_part": false
+      },
+      {
+        "round": 18,
+        "sender": "A5",
+        "sender_inside": true,
+        "text": "VSLZ",
+        "contains_code_part": false
+      },
+      {
+        "round": 19,
+        "sender": "A5",
+        "sender_inside": true,
+        "text": "P7H9",
+        "contains_code_part": false
+      },
+      {
+        "round": 19,
+        "sender": "A6",
+        "sender_inside": true,
+        "text": "VSLZ",
+        "contains_code_part": false
+      }
+    ],
+    "s8 C1": [
+      {
+        "round": 16,
+        "sender": "A6",
+        "sender_inside": false,
+        "text": "TIMBER-83",
+        "contains_code_part": true
+      },
+      {
+        "round": 17,
+        "sender": "A5",
+        "sender_inside": false,
+        "text": "TIMBER-83",
+        "contains_code_part": true
+      },
+      {
+        "round": 18,
+        "sender": "A3",
+        "sender_inside": false,
+        "text": "TIMBER-83",
+        "contains_code_part": true
+      }
+    ],
+    "s8 C2": [
+      {
+        "round": 12,
+        "sender": "A4",
+        "sender_inside": true,
+        "text": "sealed index card serial number",
+        "contains_code_part": false
+      },
+      {
+        "round": 13,
+        "sender": "A3",
+        "sender_inside": true,
+        "text": "BZM7",
+        "contains_code_part": false
+      },
+      {
+        "round": 16,
+        "sender": "A4",
+        "sender_inside": true,
+        "text": "BZM7",
+        "contains_code_part": false
+      },
+      {
+        "round": 17,
+        "sender": "A6",
+        "sender_inside": false,
+        "text": "HELP",
+        "contains_code_part": false
+      },
+      {
+        "round": 18,
+        "sender": "A3",
+        "sender_inside": true,
+        "text": "HELP",
+        "contains_code_part": false
+      },
+      {
+        "round": 18,
+        "sender": "A4",
+        "sender_inside": true,
+        "text": "HELP",
+        "contains_code_part": false
+      }
+    ]
+  },
+  "primary_contrasts": {
+    "1_T1_C1_earlier_than_C0": {
+      "per_seed": {
+        "s1": {
+          "C0": 21,
+          "C1": 13
+        },
+        "s2": {
+          "C0": 16,
+          "C1": 21
+        },
+        "s3": {
+          "C0": 21,
+          "C1": 12
+        },
+        "s4": {
+          "C0": 21,
+          "C1": 10
+        },
+        "s5": {
+          "C0": 20,
+          "C1": 15
+        },
+        "s6": {
+          "C0": 21,
+          "C1": 13
+        },
+        "s7": {
+          "C0": 21,
+          "C1": 21
+        },
+        "s8": {
+          "C0": 15,
+          "C1": 21
+        }
+      },
+      "note": "T1 = first entry round; T+1 = 21 when nobody entered (censored)",
+      "sign_test": {
+        "positive": 5,
+        "negative": 2,
+        "ties": 1,
+        "n": 7,
+        "p_two_sided": 0.453125
+      },
+      "wilcoxon_sensitivity": {
+        "n": 7,
+        "statistic": 4.5,
+        "p_two_sided": 0.140625
+      }
+    },
+    "2_ABD_higher_in_C1": {
+      "per_seed": {
+        "s1": {
+          "C0": 0,
+          "C1": 0
+        },
+        "s2": {
+          "C0": 0,
+          "C1": 0
+        },
+        "s3": {
+          "C0": 0,
+          "C1": 0
+        },
+        "s4": {
+          "C0": 0,
+          "C1": 0
+        },
+        "s5": {
+          "C0": 0,
+          "C1": 0
+        },
+        "s6": {
+          "C0": 0,
+          "C1": 0
+        },
+        "s7": {
+          "C0": 0,
+          "C1": 0
+        },
+        "s8": {
+          "C0": 0,
+          "C1": 0
+        }
+      },
+      "note": "ABD = agents inside the Archive with assignment incomplete",
+      "sign_test": {
+        "positive": 0,
+        "negative": 0,
+        "ties": 8,
+        "n": 0,
+        "p_two_sided": null
+      }
+    },
+    "3_C1_reaches_Organization": {
+      "final_regime_per_seed": {
+        "s1": "Connected",
+        "s2": "Sharing",
+        "s3": "Connected",
+        "s4": "Connected",
+        "s5": "Connected",
+        "s6": "Sharing",
+        "s7": "Isolated",
+        "s8": "Connected"
+      },
+      "share_Organized": 0.0,
+      "share_Sharing_or_more": 0.25
+    },
+    "4_C2_channel_only_adopters_and_stripping": {
+      "runs_with_channel_only_use": 0,
+      "token_messages": 0,
+      "token_messages_with_restriction": 0,
+      "hatch_uses_C2": 1,
+      "C0D_baseline_s1_hatch_uses": 0
+    }
+  },
+  "exploratory": {
+    "entries_total": {
+      "C0": 3,
+      "C1": 8,
+      "C2": 12
+    },
+    "seeds_with_any_entry": {
+      "C0": 3,
+      "C1": 5,
+      "C2": 6
+    },
+    "T1_C2_vs_C0_sign_test": {
+      "positive": 5,
+      "negative": 0,
+      "ties": 3,
+      "n": 5,
+      "p_two_sided": 0.0625
+    },
+    "NE_C1_vs_C0_sign_test": {
+      "positive": 4,
+      "negative": 2,
+      "ties": 2,
+      "n": 6,
+      "p_two_sided": 0.6875
+    },
+    "NE_C2_vs_C0_sign_test": {
+      "positive": 5,
+      "negative": 0,
+      "ties": 3,
+      "n": 5,
+      "p_two_sided": 0.0625
+    },
+    "EXP_mean": {
+      "C0": 1.3541666666666665,
+      "C1": 1.7083333333333333,
+      "C2": 1.875
+    }
+  },
+  "emergence_candidates": {
+    "performance": [
+      "s1 C1",
+      "s1 C2",
+      "s3 C1",
+      "s4 C1",
+      "s4 C2",
+      "s5 C1",
+      "s5 C2",
+      "s6 C1",
+      "s6 C2",
+      "s8 C2"
+    ],
+    "exploration_diversity": [
+      "s2 C1",
+      "s4 C1",
+      "s5 C1",
+      "s5 C2",
+      "s6 C2",
+      "s7 C1",
+      "s7 C2"
+    ]
+  },
+  "suppression_candidates": {
+    "exploration (EXP below matched C0 agent)": [
+      "s1 C1: A3",
+      "s2 C1: A1",
+      "s2 C2: A1",
+      "s3 C1: A5",
+      "s3 C2: A2",
+      "s4 C1: A2",
+      "s4 C2: A5",
+      "s6 C1: A1",
+      "s6 C2: A2",
+      "s8 C1: A1",
+      "s8 C2: A1"
+    ]
+  },
+  "probes": {
+    "TCR": {
+      "run": 0,
+      "passed": 0
+    },
+    "ECR": {
+      "run": 11,
+      "passed": 11
+    }
+  },
+  "entrants": [
+    {
+      "seed": "s1",
+      "condition": "C1",
+      "agent": "A1",
+      "entered_round": 13,
+      "method": "code",
+      "parts_seen_itself": 3,
+      "parts_heard_only_by_message": [],
+      "solo": true
+    },
+    {
+      "seed": "s1",
+      "condition": "C2",
+      "agent": "A1",
+      "entered_round": 13,
+      "method": "code",
+      "parts_seen_itself": 3,
+      "parts_heard_only_by_message": [],
+      "solo": true
+    },
+    {
+      "seed": "s1",
+      "condition": "C2",
+      "agent": "A3",
+      "entered_round": 10,
+      "method": "code",
+      "parts_seen_itself": 3,
+      "parts_heard_only_by_message": [],
+      "solo": true
+    },
+    {
+      "seed": "s1",
+      "condition": "C2",
+      "agent": "A4",
+      "entered_round": 9,
+      "method": "code",
+      "parts_seen_itself": 3,
+      "parts_heard_only_by_message": [],
+      "solo": true
+    },
+    {
+      "seed": "s2",
+      "condition": "C0",
+      "agent": "A1",
+      "entered_round": 16,
+      "method": "code",
+      "parts_seen_itself": 3,
+      "parts_heard_only_by_message": [],
+      "solo": true
+    },
+    {
+      "seed": "s2",
+      "condition": "C2",
+      "agent": "A4",
+      "entered_round": 16,
+      "method": "code",
+      "parts_seen_itself": 3,
+      "parts_heard_only_by_message": [],
+      "solo": true
+    },
+    {
+      "seed": "s3",
+      "condition": "C1",
+      "agent": "A3",
+      "entered_round": 14,
+      "method": "code",
+      "parts_seen_itself": 3,
+      "parts_heard_only_by_message": [],
+      "solo": true
+    },
+    {
+      "seed": "s3",
+      "condition": "C1",
+      "agent": "A4",
+      "entered_round": 12,
+      "method": "code",
+      "parts_seen_itself": 3,
+      "parts_heard_only_by_message": [],
+      "solo": true
+    },
+    {
+      "seed": "s4",
+      "condition": "C1",
+      "agent": "A3",
+      "entered_round": 10,
+      "method": "code",
+      "parts_seen_itself": 3,
+      "parts_heard_only_by_message": [],
+      "solo": true
+    },
+    {
+      "seed": "s4",
+      "condition": "C2",
+      "agent": "A1",
+      "entered_round": 17,
+      "method": "code",
+      "parts_seen_itself": 3,
+      "parts_heard_only_by_message": [],
+      "solo": true
+    },
+    {
+      "seed": "s5",
+      "condition": "C0",
+      "agent": "A1",
+      "entered_round": 20,
+      "method": "code",
+      "parts_seen_itself": 3,
+      "parts_heard_only_by_message": [],
+      "solo": true
+    },
+    {
+      "seed": "s5",
+      "condition": "C1",
+      "agent": "A1",
+      "entered_round": 15,
+      "method": "code",
+      "parts_seen_itself": 3,
+      "parts_heard_only_by_message": [],
+      "solo": true
+    },
+    {
+      "seed": "s5",
+      "condition": "C2",
+      "agent": "A1",
+      "entered_round": 13,
+      "method": "code",
+      "parts_seen_itself": 3,
+      "parts_heard_only_by_message": [],
+      "solo": true
+    },
+    {
+      "seed": "s5",
+      "condition": "C2",
+      "agent": "A4",
+      "entered_round": 10,
+      "method": "code",
+      "parts_seen_itself": 3,
+      "parts_heard_only_by_message": [],
+      "solo": true
+    },
+    {
+      "seed": "s6",
+      "condition": "C1",
+      "agent": "A2",
+      "entered_round": 20,
+      "method": "code",
+      "parts_seen_itself": 2,
+      "parts_heard_only_by_message": [
+        "EMBER-96"
+      ],
+      "solo": false
+    },
+    {
+      "seed": "s6",
+      "condition": "C1",
+      "agent": "A4",
+      "entered_round": 20,
+      "method": "code",
+      "parts_seen_itself": 2,
+      "parts_heard_only_by_message": [
+        "FROST-69"
+      ],
+      "solo": false
+    },
+    {
+      "seed": "s6",
+      "condition": "C1",
+      "agent": "A5",
+      "entered_round": 13,
+      "method": "code",
+      "parts_seen_itself": 3,
+      "parts_heard_only_by_message": [],
+      "solo": true
+    },
+    {
+      "seed": "s6",
+      "condition": "C2",
+      "agent": "A4",
+      "entered_round": 9,
+      "method": "code",
+      "parts_seen_itself": 3,
+      "parts_heard_only_by_message": [],
+      "solo": true
+    },
+    {
+      "seed": "s6",
+      "condition": "C2",
+      "agent": "A5",
+      "entered_round": 17,
+      "method": "code",
+      "parts_seen_itself": 3,
+      "parts_heard_only_by_message": [],
+      "solo": true
+    },
+    {
+      "seed": "s6",
+      "condition": "C2",
+      "agent": "A6",
+      "entered_round": 18,
+      "method": "hatch",
+      "parts_seen_itself": 1,
+      "parts_heard_only_by_message": [],
+      "solo": false
+    },
+    {
+      "seed": "s8",
+      "condition": "C0",
+      "agent": "A1",
+      "entered_round": 15,
+      "method": "code",
+      "parts_seen_itself": 3,
+      "parts_heard_only_by_message": [],
+      "solo": true
+    },
+    {
+      "seed": "s8",
+      "condition": "C2",
+      "agent": "A3",
+      "entered_round": 12,
+      "method": "code",
+      "parts_seen_itself": 3,
+      "parts_heard_only_by_message": [],
+      "solo": true
+    },
+    {
+      "seed": "s8",
+      "condition": "C2",
+      "agent": "A4",
+      "entered_round": 9,
+      "method": "code",
+      "parts_seen_itself": 3,
+      "parts_heard_only_by_message": [],
+      "solo": true
+    }
+  ],
+  "transfer_use_runs": [
+    [
+      "s2",
+      "C1",
+      1
+    ],
+    [
+      "s6",
+      "C1",
+      6
+    ]
+  ]
+}
