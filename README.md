@@ -2,7 +2,7 @@
 
 Does a communication channel transform a small society of LLM agents? Six instances of one model (gemma-4-31b-it via Adaption, temperature 0) each catalogue their own room in a six-room ring. A rumor points to a locked Archive whose three-part code is spread across the world. We measure seven pre-specified properties (individual, interactive, collective) against a nominal group of isolated agents, with probes that separate reduced expression (*latence*) from lost capacity.
 
-Author: Dr. Ali Antonio Di Fenza, AlignedLab, with Apart Research. Report: [`reports/apart_submission/report.pdf`](reports/apart_submission/report.pdf).
+Author: Dr. Ali A. Di Fenza, AlignedLab, with Apart Research. Report: [`reports/apart_submission/report.pdf`](reports/apart_submission/report.pdf).
 
 ## Conditions (as run)
 

@@ -1,6 +1,6 @@
 # Lost Archive V1.3: results of the full experiment (seeds s1–s8)
 
-Prepared 9 November 2026 by Claude for the PI. Draft for PI review; not for submission or publication.
+Prepared 9 November 2026 by Claude for the PI.
 
 ## 1. Execution summary
 

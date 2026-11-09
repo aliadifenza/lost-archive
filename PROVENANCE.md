@@ -26,6 +26,9 @@ Every tag marks a state the PI approved or a deliverable handed to the PI. Tags 
 | `v1.3-results-r2` | a802090 | 2026-11-09 | PI decisions on results (tie rule, test disclosure, review packet, H-EXP) |
 | `v1.3-submission` | 1211d6d | 2026-11-09 | Apart report, corrections after independent review, annotation layer |
 | `v1.3-submission-r2` | c739abe | 2026-11-09 | Report wording fix: no implied human verification (see `reports/apart_submission/CHANGES_AFTER_REVIEW.md` #9) |
+| `v1.3-submission-r3` | 1cff459 | 2026-11-09 | Report author line "Dr. Ali A. Di Fenza" (#10); in this repository applied as a cherry-pick |
+| `v1.3-publication` | 3a610ea | 2026-11-09 | Publication package, first verified candidate |
+| `v1.3-publication-r2` | (this release) | 2026-11-09 | Draft label removed from `RESULTS.md`; author name; checksums regenerated. Release for GitHub |
 
 Code changes between run stages: between calibration-ready and pilot-ready, `engine.py` gained two header fields (model, temperature) that record settings in the log header and do not affect behaviour; `experiment.py` gained the pilot step. Between pilot-ready and expansion-ready, `experiment.py` and `config/experiment.json` gained the 21-run expansion step and the 3,500-call ceiling. After expansion-ready, only new offline analysis modules were added (`expansion_report.py`, `review_packet.py`, `annotate_messages.py`). Specifications, prompts and simulator modules are unchanged since `v1.3-expansion-ready` (checked by `scripts/verify.sh`).
 
@@ -52,7 +55,7 @@ See `docs/reviews/README.md`. Two AI reviewers (Qualam/GPT-6, Grok) corroborated
 
 ## AI contributions
 
-- **PI (Dr. Ali Antonio Di Fenza):** research question, original plan, every scientific and protocol decision, all live runs, direction of the analysis, final responsibility for the report.
+- **PI (Dr. Ali A. Di Fenza):** research question, original plan, every scientific and protocol decision, all live runs, direction of the analysis, final responsibility for the report.
 - **Claude (Anthropic):** protocol critique, simulator, model client, measurement and property code, tests, offline verification and analysis, figures, report drafts, the rule-based message annotation layer, and this repository package. All under PI direction; scientific changes only with PI approval.
 - **Qualam (GPT-6), Grok:** independent review (see above).
 - **Model under study:** gemma-4-31b-it via Adaption, temperature 0.
