@@ -28,7 +28,8 @@ Every tag marks a state the PI approved or a deliverable handed to the PI. Tags 
 | `v1.3-submission-r2` | c739abe | 2026-11-09 | Report wording fix: no implied human verification (see `reports/apart_submission/CHANGES_AFTER_REVIEW.md` #9) |
 | `v1.3-submission-r3` | 1cff459 | 2026-11-09 | Report author line "Dr. Ali A. Di Fenza" (#10); in this repository applied as a cherry-pick |
 | `v1.3-publication` | 3a610ea | 2026-11-09 | Publication package, first verified candidate |
-| `v1.3-publication-r2` | (this release) | 2026-11-09 | Draft label removed from `RESULTS.md`; author name; checksums regenerated. Release for GitHub |
+| `v1.3-publication-r2` | a6fc77e | 2026-11-09 | Draft label removed from `RESULTS.md`; author name; checksums regenerated. Published on GitHub |
+| `v1.3-publication-r3` | (this release) | 2026-11-09 | Licenses added (MIT for code, CC BY 4.0 for text and data, PI-approved); README License section; checksums regenerated. No other change |
 
 Code changes between run stages: between calibration-ready and pilot-ready, `engine.py` gained two header fields (model, temperature) that record settings in the log header and do not affect behaviour; `experiment.py` gained the pilot step. Between pilot-ready and expansion-ready, `experiment.py` and `config/experiment.json` gained the 21-run expansion step and the 3,500-call ceiling. After expansion-ready, only new offline analysis modules were added (`expansion_report.py`, `review_packet.py`, `annotate_messages.py`). Specifications, prompts and simulator modules are unchanged since `v1.3-expansion-ready` (checked by `scripts/verify.sh`).
 

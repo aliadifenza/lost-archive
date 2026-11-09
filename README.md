@@ -76,4 +76,9 @@ Git tags mark every approved state, from `v1.2-phase2-pre-A1` to `v1.3-submissio
 
 ## License
 
-Not yet chosen (PI decision pending). Until a license is added, all rights are reserved.
+Copyright © 2026 Dr. Ali A. Di Fenza.
+
+- **Code** (`lostarchive/`, `tests/`, `scripts/`, `reports/apart_submission/build_pdf.py`): MIT License, see [`LICENSE`](LICENSE).
+- **Everything else** (report, specifications, prompts, documentation, figures, configuration and data in `results/`, `predictions/`, `rehearsal/`): Creative Commons Attribution 4.0 International, see [`LICENSE-CC-BY-4.0`](LICENSE-CC-BY-4.0), to the extent of the author's rights. The raw logs contain outputs of gemma-4-31b-it accessed through Adaption; any terms of the model and provider apply to those outputs.
+
+Please cite the report: Di Fenza, A. A. (2026). *The Lost Archive: Emergence and Latence in Multi Agent AI Systems.* Apart Research Swarm Alignment Hackathon.
