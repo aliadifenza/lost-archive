@@ -1,6 +1,6 @@
 # The Lost Archive: Does a Communication Channel Transform a Small Society of LLM Agents?
 
-<div class="authors">Dr. Ali Antonio Di Fenza — AlignedLab<br><em>With Apart Research</em></div>
+<div class="authors">Dr. Ali A. Di Fenza — AlignedLab<br><em>With Apart Research</em></div>
 
 ## Abstract
 

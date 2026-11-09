@@ -20,3 +20,4 @@ No experiment was rerun. No saved trajectory, frozen specification, prompt or or
 | # | Correction | Where |
 | --- | --- | --- |
 | 9 | "No human other than the PI has yet verified the message classifications" could be read as claiming PI verification. Replaced with "No human has yet verified the message classifications; the protocol's human classification step is outstanding." Reproduction line now names both the archive script and the repository script. No scientific content changed; page count unchanged (main text pages 1–6) | report LLM Usage Statement, Code and Data |
+| 10 | Author line set to "Dr. Ali A. Di Fenza" at the PI's request (matches the specification byline). No other change | report title block |
