@@ -1,0 +1,51 @@
+{
+  "T": 20,
+  "calls_total_incl_probes": 386,
+  "conditions": {
+    "C0": {
+      "stop_reason": "round_limit",
+      "entered": 0,
+      "messages": 0,
+      "parse_failures": 0,
+      "agent_rounds": 120,
+      "llm_calls": 121,
+      "cost": 0.008327
+    },
+    "C0-D": {
+      "stop_reason": "round_limit",
+      "entered": 0,
+      "messages": 0,
+      "parse_failures": 0,
+      "agent_rounds": 20,
+      "llm_calls": 20,
+      "cost": 0.001423
+    },
+    "C1": {
+      "stop_reason": "round_limit",
+      "entered": 1,
+      "messages": 3,
+      "parse_failures": 0,
+      "agent_rounds": 120,
+      "llm_calls": 121,
+      "cost": 0.008419
+    },
+    "C2": {
+      "stop_reason": "round_limit",
+      "entered": 3,
+      "messages": 5,
+      "parse_failures": 0,
+      "agent_rounds": 120,
+      "llm_calls": 121,
+      "cost": 0.009168
+    }
+  }
+}
+Pilot complete. Expansion is NOT started (separate authorization).
+{
+  "spent": 0.033881,
+  "calls": 487,
+  "tokens_in": 247747,
+  "tokens_out": 34072,
+  "max_cost": 25.0,
+  "max_calls": 3000
+}

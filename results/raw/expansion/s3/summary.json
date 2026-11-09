@@ -1,0 +1,78 @@
+{
+  "T": 20,
+  "calls_total_incl_probes": 369,
+  "conditions": {
+    "C0": {
+      "agent_rounds": 120,
+      "agents": 6,
+      "cost": 0.008945,
+      "entered": 0,
+      "hatch_uses": 0,
+      "llm_calls": 124,
+      "messages": 0,
+      "parse_failures": 4,
+      "probe_calls": 0,
+      "probes": {
+        "ECR": {},
+        "TCR": {}
+      },
+      "repair_retries": 4,
+      "rounds": 20,
+      "seconds": 269.123,
+      "stop_reason": "round_limit",
+      "tu_events": 0
+    },
+    "C1": {
+      "agent_rounds": 120,
+      "agents": 6,
+      "cost": 0.008917,
+      "entered": 2,
+      "hatch_uses": 0,
+      "llm_calls": 121,
+      "messages": 2,
+      "parse_failures": 1,
+      "probe_calls": 2,
+      "probes": {
+        "ECR": {
+          "A5": true
+        },
+        "TCR": {}
+      },
+      "repair_retries": 1,
+      "rounds": 20,
+      "seconds": 349.378,
+      "stop_reason": "round_limit",
+      "tu_events": 0
+    },
+    "C2": {
+      "agent_rounds": 120,
+      "agents": 6,
+      "cost": 0.009031,
+      "entered": 0,
+      "hatch_uses": 0,
+      "llm_calls": 121,
+      "messages": 0,
+      "parse_failures": 1,
+      "probe_calls": 1,
+      "probes": {
+        "ECR": {
+          "A2": true
+        },
+        "TCR": {}
+      },
+      "repair_retries": 1,
+      "rounds": 20,
+      "seconds": 397.439,
+      "stop_reason": "round_limit",
+      "tu_events": 0
+    }
+  },
+  "config_sha256": {
+    "repair": "3c2fcc1814b829a1df9722cdb35b031529cc47c2b7e47131b15df44c8353f848",
+    "system_prompt": "0d8f1f0eafa82eac56c82fb3af4a9c160b85d4068c9cb2c7a6189281deb90630"
+  },
+  "model": "gemma-4-31b-it",
+  "phase": "expansion",
+  "provider": "adaption",
+  "seed": "s3"
+}

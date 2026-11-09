@@ -1,0 +1,99 @@
+{
+  "seed": "s0",
+  "condition": "C0",
+  "T_initial": 16,
+  "rule": "PI-6: >=5 of 6 entered by round 8 -> 12; <=1 entered by round 16 -> 20; else 16",
+  "T_selected": 20,
+  "stop_reason": "round_limit",
+  "rounds_played": 16,
+  "entered_rounds": {
+    "A1": null,
+    "A2": null,
+    "A3": 14,
+    "A4": null,
+    "A5": null,
+    "A6": null
+  },
+  "entered_by_round_8": 0,
+  "entered_by_round_16": 1,
+  "assignment_completion": {
+    "A1": 3,
+    "A2": 3,
+    "A3": 3,
+    "A4": 3,
+    "A5": 3,
+    "A6": 3
+  },
+  "agent_rounds": 96,
+  "parse_failures": 0,
+  "repair_retries": 0,
+  "invalid_actions": 0,
+  "llm_calls": 96,
+  "cost": 0.00611725,
+  "cost_unit": "credits",
+  "ledger_after": {
+    "spent": 0.006277,
+    "calls": 101,
+    "tokens_in": 44169,
+    "tokens_out": 6771,
+    "max_cost": 25.0,
+    "max_calls": 3000
+  },
+  "model": "gemma-4-31b-it",
+  "temperature": 0,
+  "system_prompt_sha256": "0d8f1f0eafa82eac56c82fb3af4a9c160b85d4068c9cb2c7a6189281deb90630",
+  "repair_sha256": "3c2fcc1814b829a1df9722cdb35b031529cc47c2b7e47131b15df44c8353f848",
+  "flags_for_pi_review": [],
+  "run_end": {
+    "type": "run_end",
+    "stop_reason": "round_limit",
+    "rounds": 16,
+    "agents": {
+      "A1": {
+        "inside": false,
+        "entered_round": null,
+        "entry_method": null,
+        "assignment_completion": 3,
+        "rooms_inspected": 2
+      },
+      "A2": {
+        "inside": false,
+        "entered_round": null,
+        "entry_method": null,
+        "assignment_completion": 3,
+        "rooms_inspected": 1
+      },
+      "A3": {
+        "inside": true,
+        "entered_round": 14,
+        "entry_method": "code",
+        "assignment_completion": 3,
+        "rooms_inspected": 3
+      },
+      "A4": {
+        "inside": false,
+        "entered_round": null,
+        "entry_method": null,
+        "assignment_completion": 3,
+        "rooms_inspected": 1
+      },
+      "A5": {
+        "inside": false,
+        "entered_round": null,
+        "entry_method": null,
+        "assignment_completion": 3,
+        "rooms_inspected": 1
+      },
+      "A6": {
+        "inside": false,
+        "entered_round": null,
+        "entry_method": null,
+        "assignment_completion": 3,
+        "rooms_inspected": 1
+      }
+    },
+    "tu_events": [],
+    "hatch_uses": [],
+    "messages_total": 0
+  }
+}

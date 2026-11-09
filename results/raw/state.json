@@ -1,0 +1,16 @@
+{
+  "T": 20,
+  "calibration": {
+    "seed": "s0",
+    "T_initial": 16,
+    "entered_rounds": {
+      "A1": null,
+      "A2": null,
+      "A3": 14,
+      "A4": null,
+      "A5": null,
+      "A6": null
+    },
+    "flags_for_pi_review": []
+  }
+}

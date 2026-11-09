@@ -1,0 +1,11 @@
+{
+  "spent": 0.21795,
+  "calls": 3043,
+  "tokens_in": 1573452,
+  "tokens_out": 224530,
+  "max_cost": 25.0,
+  "max_calls": 3500,
+  "unit": "credits",
+  "provider": "adaption",
+  "model": "gemma-4-31b-it"
+}

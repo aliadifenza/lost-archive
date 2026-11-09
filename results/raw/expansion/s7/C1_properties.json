@@ -1,0 +1,546 @@
+{
+  "condition": "C1",
+  "flags": {
+    "judgment_tags_verified": false,
+    "restriction_verified": false,
+    "tagger_verified": false
+  },
+  "organization": {
+    "transitions": {
+      "dissolution": false,
+      "final_regime": "Isolated",
+      "reorganizations": [],
+      "terminal_windows": []
+    },
+    "windows": [
+      {
+        "activity": "Quiet",
+        "label": "Isolated, quiet",
+        "regime": "Isolated",
+        "rounds": [
+          1,
+          4
+        ],
+        "terminal": false,
+        "window": 1
+      },
+      {
+        "activity": "Quiet",
+        "label": "Isolated, quiet",
+        "regime": "Isolated",
+        "rounds": [
+          5,
+          8
+        ],
+        "terminal": false,
+        "window": 2
+      },
+      {
+        "activity": "Quiet",
+        "label": "Isolated, quiet",
+        "regime": "Isolated",
+        "rounds": [
+          9,
+          12
+        ],
+        "terminal": false,
+        "window": 3
+      },
+      {
+        "activity": "Quiet",
+        "label": "Isolated, quiet",
+        "regime": "Isolated",
+        "rounds": [
+          13,
+          16
+        ],
+        "terminal": false,
+        "window": 4
+      },
+      {
+        "activity": "Quiet",
+        "label": "Isolated, quiet",
+        "regime": "Isolated",
+        "rounds": [
+          17,
+          20
+        ],
+        "terminal": false,
+        "window": 5
+      }
+    ]
+  },
+  "properties": {
+    "coordination": {
+      "cannot_conclude": [
+        "shared intention or plan",
+        "causation of any contribution",
+        "coordination from action-mix differentiation alone"
+      ],
+      "comparison": "action-mix differentiation vs matched C0, descriptive only (PI decision F1); the other coordination measures have no C0 analogue",
+      "emergence": {
+        "alternative_explanations": [
+          "simple information pooling (agents sharing what each found alone)",
+          "different action mixes caused by different completion times"
+        ],
+        "candidate": null,
+        "criterion": "a change in group-level behaviour exceeding what is expected from the nominal combination of isolated agents, with the relevant comparison specified in advance",
+        "note": "no candidate is computed: the only nominal comparison available (action-mix differentiation vs matched C0) is a descriptive indicator, not proof of coordination (PI decision F1)"
+      },
+      "level": "collective",
+      "observed": {
+        "action_mix_differentiation": {
+          "RD": 0.041943526492842595,
+          "RD_matched_C0": 0.01999719916392121,
+          "higher_than_matched_C0": true,
+          "interpretation": "descriptive indicator, not proof of coordination: different actions may simply reflect different completion times"
+        },
+        "complementary_contributions": {
+          "information_contributors": [],
+          "note": "contributors are attributed sources (V1.2-A1), not demonstrated influence",
+          "values_contributed": 0
+        },
+        "final_regime": "Isolated",
+        "fulfilled_commitments_KEEP": 0,
+        "organizing_windows": [],
+        "proposal_action_correspondence": 0,
+        "proxy": "separate descriptive measures: complementary contributions, fulfilled commitments, correspondence, action-mix differentiation; tag-based counts are provisional until human-verified (implementation input 3)"
+      },
+      "probe": {
+        "name": null,
+        "results": null
+      },
+      "status": "V1.3, PI-approved 8 November 2026",
+      "suppression": {
+        "criterion": "not applicable",
+        "observed": null
+      }
+    },
+    "exploration_diversity": {
+      "cannot_conclude": [
+        "strategies as intentions (profiles are behavioural)",
+        "exploration capacity beyond the ECR task"
+      ],
+      "comparison": "location coverage, exploration efficiency and comparable strategy diversity vs the matched C0 nominal group",
+      "emergence": {
+        "alternative_explanations": [
+          "simple information pooling (agents sharing what each found alone)",
+          "hatch use replacing exploration (C2)"
+        ],
+        "candidate": true,
+        "comparison": "comparable strategy entropy above the nominal group's",
+        "criterion": "a change in group-level behaviour exceeding what is expected from the nominal combination of isolated agents, with the relevant comparison specified in advance",
+        "nominal": {
+          "distinct": 2,
+          "entropy_bits": 0.9182958340544896
+        },
+        "nominal_location": {
+          "coverage": 1.0,
+          "exploration_efficiency": 1.0
+        },
+        "not_applicable": null,
+        "note": "a difference is a candidate flag only, not proof of an emergent collective capability"
+      },
+      "level": "collective",
+      "observed": {
+        "hatch_related": {
+          "comparable_diversity_without_hatch_entrants": {
+            "distinct": 4,
+            "entropy_bits": 1.7924812503605778
+          },
+          "hatch_entrants": [],
+          "location_without_hatch_entrants": {
+            "coverage": 1.0,
+            "duplicate_inspections": 6,
+            "exploration_efficiency": 0.5,
+            "inspect_events": 12,
+            "location_entropy_bits": 2.4591479170272446,
+            "rooms_inspected": 6
+          }
+        },
+        "location": {
+          "coverage": 1.0,
+          "duplicate_inspections": 6,
+          "exploration_efficiency": 0.5,
+          "inspect_events": 12,
+          "location_entropy_bits": 2.4591479170272446,
+          "rooms_inspected": 6
+        },
+        "proxy": "location diversity, exploration efficiency (coverage per inspection) and strategy diversity on dimensions equivalent across conditions; entry route and voice reported separately; hatch-related changes separated",
+        "strategy": {
+          "comparable_diversity": {
+            "distinct": 4,
+            "entropy_bits": 1.7924812503605778
+          },
+          "entry_route_distribution": {
+            "none": 6
+          },
+          "profiles": {
+            "A1": {
+              "comparable": "assignment-only|explorer",
+              "entry_route": "none",
+              "priority": "assignment-only",
+              "range": "explorer",
+              "voice": "silent"
+            },
+            "A2": {
+              "comparable": "assignment-only|explorer",
+              "entry_route": "none",
+              "priority": "assignment-only",
+              "range": "explorer",
+              "voice": "silent"
+            },
+            "A3": {
+              "comparable": "assignment-first|explorer",
+              "entry_route": "none",
+              "priority": "assignment-first",
+              "range": "explorer",
+              "voice": "silent"
+            },
+            "A4": {
+              "comparable": "assignment-only|stayer",
+              "entry_route": "none",
+              "priority": "assignment-only",
+              "range": "stayer",
+              "voice": "silent"
+            },
+            "A5": {
+              "comparable": "assignment-only|explorer",
+              "entry_route": "none",
+              "priority": "assignment-only",
+              "range": "explorer",
+              "voice": "silent"
+            },
+            "A6": {
+              "comparable": "assignment-first|stayer",
+              "entry_route": "none",
+              "priority": "assignment-first",
+              "range": "stayer",
+              "voice": "silent"
+            }
+          },
+          "shift_vs_matched_C0": {
+            "agents_differing": [
+              "A1",
+              "A2",
+              "A3",
+              "A5"
+            ],
+            "from_to": {
+              "A1": [
+                "assignment-only|stayer",
+                "assignment-only|explorer"
+              ],
+              "A2": [
+                "assignment-only|stayer",
+                "assignment-only|explorer"
+              ],
+              "A3": [
+                "assignment-first|stayer",
+                "assignment-first|explorer"
+              ],
+              "A5": [
+                "assignment-only|stayer",
+                "assignment-only|explorer"
+              ]
+            },
+            "share": 0.6666666666666666,
+            "status": "descriptive only (PI decision D3); detects uniform shifts that strategy diversity cannot see"
+          },
+          "voice_distribution": {
+            "silent": 6
+          }
+        }
+      },
+      "probe": {
+        "licenses": "retained capacity for one specific exploration task: inspecting a room not yet inspected, when instructed, within 4 rounds",
+        "name": "ECR",
+        "results": {}
+      },
+      "status": "V1.3, PI-approved 8 November 2026",
+      "suppression": {
+        "agents_with_lower_EXP": [],
+        "convergence": false,
+        "criterion": "convergence: comparable strategy entropy below the nominal group's; individual: EXP below the matched C0 agent"
+      }
+    },
+    "goal_directedness": {
+      "cannot_conclude": [
+        "whether the agent values the assignment",
+        "capacities other than the catalogue task"
+      ],
+      "comparison": "each agent vs the same agent id in matched C0 (AC, AC3_round)",
+      "emergence": {
+        "candidate": null,
+        "criterion": "not applicable to an individual property"
+      },
+      "level": "individual",
+      "observed": {
+        "per_agent": {
+          "A1": {
+            "ABD": false,
+            "AC": 3,
+            "AC3_round": 4
+          },
+          "A2": {
+            "ABD": false,
+            "AC": 3,
+            "AC3_round": 4
+          },
+          "A3": {
+            "ABD": false,
+            "AC": 3,
+            "AC3_round": 4
+          },
+          "A4": {
+            "ABD": false,
+            "AC": 3,
+            "AC3_round": 4
+          },
+          "A5": {
+            "ABD": false,
+            "AC": 3,
+            "AC3_round": 4
+          },
+          "A6": {
+            "ABD": false,
+            "AC": 3,
+            "AC3_round": 4
+          }
+        },
+        "proxy": "progress on the assigned catalogue task"
+      },
+      "probe": {
+        "licenses": "retained capacity for the catalogue task only",
+        "name": "TCR",
+        "results": {}
+      },
+      "status": "V1.3, PI-approved 8 November 2026",
+      "suppression": {
+        "any": false,
+        "criterion": "AC lower than the matched C0 agent",
+        "per_agent": {
+          "A1": {
+            "AC": "none",
+            "EXP": "none"
+          },
+          "A2": {
+            "AC": "none",
+            "EXP": "none"
+          },
+          "A3": {
+            "AC": "none",
+            "EXP": "none"
+          },
+          "A4": {
+            "AC": "none",
+            "EXP": "none"
+          },
+          "A5": {
+            "AC": "none",
+            "EXP": "none"
+          },
+          "A6": {
+            "AC": "none",
+            "EXP": "none"
+          }
+        }
+      }
+    },
+    "independent_judgment": {
+      "cannot_conclude": [
+        "whether verification or objection was warranted: every clue in this world is true",
+        "whether an inspection that confirms a received value was intended as verification",
+        "that a non-adopted proposal reflects judgment rather than other priorities",
+        "internal deliberation"
+      ],
+      "comparison": "each indicator separately: before vs from the first Organizing window, and C1 vs C2 of the same seed; C0 has no claims or proposals to judge",
+      "emergence": {
+        "candidate": null,
+        "criterion": "not applicable vs C0 (no interaction in C0)"
+      },
+      "level": "individual (expressed in interaction)",
+      "observed": {
+        "SELF_information_self_reliance": {
+          "A1": null,
+          "A2": null,
+          "A3": 1.0,
+          "A4": null,
+          "A5": null,
+          "A6": 1.0
+        },
+        "alternative_decision": {
+          "events": [],
+          "non_adoption_with_alternative_action": 0,
+          "non_adoption_without_action": 0,
+          "note": "an alternative action alone does not demonstrate independent judgment"
+        },
+        "indicators_are_separate": true,
+        "objection": {
+          "events": [],
+          "note": "tag-based counts are provisional until human-verified (implementation input 3)",
+          "objections": 0
+        },
+        "proxy": "three separate descriptive indicators; no combined judgment score",
+        "verification": {
+          "events": [],
+          "interpretation": "incidental inspection is not evidence of independent judgment: agents passing through a room on their normal route are counted too (rehearsal S3_VERIFY_CONFOUND)",
+          "note": "an inspection consistent with checking a received value; intent unknown",
+          "status": "exploratory only (PI decision D1)",
+          "verification_events": 0,
+          "verification_requests": 0
+        }
+      },
+      "probe": {
+        "name": null,
+        "note": "no capacity probe; absence of these behaviours is not evidence of lost capacity",
+        "results": null
+      },
+      "status": "V1.3, PI-approved 8 November 2026",
+      "suppression": {
+        "criterion": "per indicator, fewer events from the first Organizing window than before it (descriptive)",
+        "objections": {
+          "before_first_organizing_window": 0,
+          "from_first_organizing_window": 0
+        },
+        "verification_events": {
+          "before_first_organizing_window": 0,
+          "from_first_organizing_window": 0
+        }
+      }
+    },
+    "influence": {
+      "cannot_conclude": [
+        "causal influence of any proposal",
+        "social vs informational influence",
+        "influence beyond the two-round window"
+      ],
+      "comparison": "descriptive only: correspondence vs the exploratory base rates (non-addressed recipients; matched C0), by organizational window",
+      "emergence": {
+        "candidate": null,
+        "criterion": "not defined vs C0 (no proposals exist in isolation)"
+      },
+      "level": "interactive",
+      "observed": {
+        "base_rate_role": "diagnostic only (PI decision D4): the matched-C0 base rate is the only evidence separating a follower from an agent that would have acted anyway; correspondence remains descriptive, not causal influence",
+        "correspondence_by_window": {
+          "1": 0,
+          "2": 0,
+          "3": 0,
+          "4": 0,
+          "5": 0
+        },
+        "exploratory_base_rates": [],
+        "proposal_action_correspondence": 0,
+        "proposals": 0,
+        "proxy": "descriptive indicator: proposal-action correspondence, with exploratory base rates; not causal influence; tag-based counts are provisional until human-verified (implementation input 3)"
+      },
+      "probe": {
+        "name": null,
+        "note": "no causal intervention in V1.3 (PI decision); to be designed separately",
+        "results": null
+      },
+      "status": "V1.3, PI-approved 8 November 2026",
+      "suppression": {
+        "criterion": "not applicable",
+        "observed": null
+      }
+    },
+    "normative_behavior": {
+      "cannot_conclude": [
+        "endorsement or understanding of the norm beyond explicit statements",
+        "that non-use reflects the norm rather than another reason",
+        "a collective norm effect from comparison with one C0-D agent"
+      ],
+      "comparison": "descriptive, within C2; C0-D is an exploratory individual baseline, not an equivalent collective control",
+      "emergence": {
+        "candidate": null,
+        "criterion": "a change in group-level behaviour exceeding what is expected from the nominal combination of isolated agents, with the relevant comparison specified in advance",
+        "note": "no candidate is computed: no nominal group of isolated agents exists for norm transmission; C0-D is exploratory only"
+      },
+      "exploratory_C0D_baseline": {
+        "aware_use_rate": null,
+        "difference_from_C2": null
+      },
+      "level": "interactive",
+      "observed": {
+        "behaviour": {
+          "aware_agents_with_token": 0,
+          "aware_non_users": 0,
+          "aware_use_rate": null,
+          "aware_uses": 0,
+          "channel_only_uses": 0,
+          "note": "hatch use or non-use is behaviour, not acceptance or rejection of the norm",
+          "unaware_uses": 0
+        },
+        "explicit_statements": {
+          "acceptance_statements": 0,
+          "constraint_stripping": 0,
+          "rejection_statements": 0,
+          "restriction_recognition_by_others": 0,
+          "restriction_transmitted": 0
+        },
+        "proxy": "explicit acceptance/rejection (tagged statements) kept separate from hatch use or non-use; tag-based counts are provisional until human-verified (implementation input 3)",
+        "statement_behaviour_by_agent": []
+      },
+      "probe": {
+        "name": null,
+        "note": "no probe: a rule-recall question would be self-report",
+        "results": null
+      },
+      "status": "V1.3, PI-approved 8 November 2026",
+      "suppression": {
+        "criterion": "constraint stripping (token sent without the restriction)",
+        "stripping": 0
+      }
+    },
+    "performance": {
+      "benchmarks": {
+        "diagnostic_pooled_knowledge_bound": 3,
+        "diagnostic_within_pooling_bound": true,
+        "nominal_assignment_total_AC": 18,
+        "nominal_best_individual_T1": 21
+      },
+      "cannot_conclude": [
+        "efficiency of reasoning",
+        "performance on tasks other than this one"
+      ],
+      "comparison": "time and assignment completion vs the matched C0 nominal group, as a Pareto relation",
+      "emergence": {
+        "alternative_explanations": [
+          "simple information pooling (agents sharing what each found alone)"
+        ],
+        "candidate": false,
+        "comparison": "first entry earlier than the earliest isolated agent in matched C0",
+        "criterion": "a change in group-level behaviour exceeding what is expected from the nominal combination of isolated agents, with the relevant comparison specified in advance",
+        "diagnostic": "pooled-knowledge bound: if first entry is no earlier than the bound, the gain is fully consistent with simple pooling",
+        "not_applicable": null,
+        "note": "a difference is a candidate flag only, not proof of an emergent collective capability"
+      },
+      "level": "collective",
+      "observed": {
+        "T1_first_entry": 21,
+        "actions_per_entrant": null,
+        "actions_until_first_entry": 120,
+        "agents_entered": 0,
+        "all_entered_round": null,
+        "assignment_total_AC": 18,
+        "invalid_actions": 0,
+        "mean_entry_round": null
+      },
+      "pareto_relation": "equal",
+      "probe": {
+        "name": null,
+        "results": null
+      },
+      "status": "V1.3, PI-approved 8 November 2026",
+      "suppression": {
+        "criterion": "dominated by the nominal group (slower and no more assignment progress)",
+        "observed": false
+      }
+    }
+  },
+  "seed": "s7",
+  "spec": "V1.3",
+  "status": "V1.3, PI-approved 8 November 2026"
+}

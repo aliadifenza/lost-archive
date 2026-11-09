@@ -1,0 +1,52 @@
+{
+  "a_cost": true,
+  "a_calls": true,
+  "c_messages_in_C1": true,
+  "c_parse_failures_le_5pct": true,
+  "b_throughput": true,
+  "projection": {
+    "design": "7 seeds x 3 conditions (C0, C1, C2) = 21 runs",
+    "runs": 21,
+    "per_seed_calls_measured_s1": 365,
+    "probe_calls_per_seed_s1": {
+      "C0": 0,
+      "C1": 2,
+      "C2": 0
+    },
+    "calls": 2555,
+    "remaining_calls": 3013,
+    "call_margin": 458,
+    "cost": 0.1814,
+    "remaining_cost": 24.9661,
+    "cost_unit": "credits",
+    "seconds": 7883.9,
+    "seconds_to_deadline": 34087,
+    "parse_failure_rate_pilot": 0.0
+  },
+  "seeds_done": [],
+  "seeds_to_run": [
+    "s2",
+    "s3",
+    "s4",
+    "s5",
+    "s6",
+    "s7",
+    "s8"
+  ]
+}
+{"seed": "s2", "calls": 367, "entered": {"C0": 1, "C1": 0, "C2": 1}, "parse_failures": {"C0": 1, "C1": 1, "C2": 0}, "ledger": {"spent": 0.060202, "calls": 854, "tokens_in": 436960, "tokens_out": 61400, "max_cost": 25.0, "max_calls": 3500}}
+{"seed": "s3", "calls": 369, "entered": {"C0": 0, "C1": 2, "C2": 0}, "parse_failures": {"C0": 4, "C1": 1, "C2": 1}, "ledger": {"spent": 0.087372, "calls": 1223, "tokens_in": 629479, "tokens_out": 90351, "max_cost": 25.0, "max_calls": 3500}}
+{"seed": "s4", "calls": 365, "entered": {"C0": 0, "C1": 1, "C2": 1}, "parse_failures": {"C0": 1, "C1": 0, "C2": 0}, "ledger": {"spent": 0.113494, "calls": 1588, "tokens_in": 818955, "tokens_out": 117026, "max_cost": 25.0, "max_calls": 3500}}
+{"seed": "s5", "calls": 363, "entered": {"C0": 1, "C1": 1, "C2": 2}, "parse_failures": {"C0": 0, "C1": 1, "C2": 1}, "ledger": {"spent": 0.139241, "calls": 1951, "tokens_in": 1004637, "tokens_out": 143600, "max_cost": 25.0, "max_calls": 3500}}
+{"seed": "s6", "calls": 367, "entered": {"C0": 0, "C1": 3, "C2": 3}, "parse_failures": {"C0": 0, "C1": 0, "C2": 1}, "ledger": {"spent": 0.166262, "calls": 2318, "tokens_in": 1200613, "tokens_out": 171200, "max_cost": 25.0, "max_calls": 3500}}
+{"seed": "s7", "calls": 361, "entered": {"C0": 0, "C1": 0, "C2": 0}, "parse_failures": {"C0": 1, "C1": 0, "C2": 0}, "ledger": {"spent": 0.191704, "calls": 2679, "tokens_in": 1382999, "tokens_out": 197749, "max_cost": 25.0, "max_calls": 3500}}
+{"seed": "s8", "calls": 364, "entered": {"C0": 1, "C1": 0, "C2": 2}, "parse_failures": {"C0": 1, "C1": 0, "C2": 1}, "ledger": {"spent": 0.21795, "calls": 3043, "tokens_in": 1573452, "tokens_out": 224530, "max_cost": 25.0, "max_calls": 3500}}
+Expansion complete.
+{
+  "spent": 0.21795,
+  "calls": 3043,
+  "tokens_in": 1573452,
+  "tokens_out": 224530,
+  "max_cost": 25.0,
+  "max_calls": 3500
+}

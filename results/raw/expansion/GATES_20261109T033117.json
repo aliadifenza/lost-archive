@@ -1,0 +1,36 @@
+{
+  "a_cost": true,
+  "a_calls": true,
+  "c_messages_in_C1": true,
+  "c_parse_failures_le_5pct": true,
+  "b_throughput": true,
+  "projection": {
+    "design": "7 seeds x 3 conditions (C0, C1, C2) = 21 runs",
+    "runs": 21,
+    "per_seed_calls_measured_s1": 365,
+    "probe_calls_per_seed_s1": {
+      "C0": 0,
+      "C1": 2,
+      "C2": 0
+    },
+    "calls": 2555,
+    "remaining_calls": 3013,
+    "call_margin": 458,
+    "cost": 0.1814,
+    "remaining_cost": 24.9661,
+    "cost_unit": "credits",
+    "seconds": 7883.9,
+    "seconds_to_deadline": 34122,
+    "parse_failure_rate_pilot": 0.0
+  },
+  "seeds_done": [],
+  "seeds_to_run": [
+    "s2",
+    "s3",
+    "s4",
+    "s5",
+    "s6",
+    "s7",
+    "s8"
+  ]
+}
