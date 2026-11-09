@@ -1,5 +1,20 @@
 # Changelog
 
+## v1.3-results-r2 — PI decisions on the results (9 November 2026)
+
+- Numerical ties treated as ties: tolerance 1e-9 applied in the analysis to the
+  two float comparisons of the property code; convergence candidates 9 -> 7
+  runs; saved run reports unchanged; corrections listed under `tie_rule`.
+- Sign test disclosed as selected after the protocol freeze; all p-values
+  exploratory.
+- Human-review packet (`results/expansion/review/`): all 37 messages with
+  provisional auto-tags (none fired) and reviewer columns; verbatim trace of
+  the s6 C1 episode with five questions. The s6 claim is reported as pending
+  verification. New finding from the trace: the requester (A6) received both
+  parts but entered them in the wrong order.
+- Exploration effect labelled exploratory for V1.3; drafted as pre-registered
+  hypothesis H-EXP for V1.4.
+
 ## v1.3-expansion-ready — 21-run expansion (9 November 2026)
 
 - Engineering correction authorized by the PI: expansion runs C0, C1, C2 only

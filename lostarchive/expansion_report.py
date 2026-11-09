@@ -32,6 +32,39 @@ from .replay import replay
 import hashlib
 
 SEEDS = ["s1", "s2", "s3", "s4", "s5", "s6", "s7", "s8"]
+
+# PI decision, 9 Nov 2026: numerical ties are ties. The frozen property code compares
+# floats strictly (entropy run vs nominal; action-mix RD vs matched C0), so values that
+# are mathematically equal can flip a flag through platform-dependent rounding. The
+# analysis treats |a - b| <= TIE_TOL as a tie (neither above nor below). The saved
+# reports are left exactly as the run produced them; corrections are listed.
+TIE_TOL = 1e-9
+
+
+def tie_correct(seed, cond, props):
+    """Return (corrected copy of the properties, list of corrections)."""
+    pr = json.loads(json.dumps(props))
+    fixes = []
+    ex = pr["exploration_diversity"]
+    nom = (ex["emergence"].get("nominal") or {}).get("entropy_bits")
+    run = ex["observed"]["strategy"]["comparable_diversity"]["entropy_bits"]
+    if nom is not None and abs(run - nom) <= TIE_TOL:
+        for path, d, k in (("exploration_diversity.emergence.candidate", ex["emergence"], "candidate"),
+                           ("exploration_diversity.suppression.convergence", ex["suppression"], "convergence")):
+            if d[k]:
+                fixes.append({"run": f"{seed} {cond}", "field": path, "saved": d[k], "corrected": False,
+                              "values": [run, nom]})
+            d[k] = False
+        ex["tie"] = True
+    rd = pr["coordination"]["observed"]["action_mix_differentiation"]
+    if rd.get("RD") is not None and rd.get("RD_matched_C0") is not None \
+            and abs(rd["RD"] - rd["RD_matched_C0"]) <= TIE_TOL:
+        if rd.get("higher_than_matched_C0"):
+            fixes.append({"run": f"{seed} {cond}", "field": "coordination.action_mix_differentiation.higher_than_matched_C0",
+                          "saved": True, "corrected": False, "values": [rd["RD"], rd["RD_matched_C0"]]})
+        rd["higher_than_matched_C0"] = False
+        rd["tie"] = True
+    return pr, fixes
 CONDS = ["C0", "C1", "C2"]
 FROZEN_HASH = "0d8f1f0eafa82eac56c82fb3af4a9c160b85d4068c9cb2c7a6189281deb90630"
 
@@ -245,7 +278,7 @@ def main(argv=None):
         check(f"expansion/{seed}: exactly C0, C1, C2", set(s["conditions"]) == set(CONDS))
 
     # ---- analysis
-    table, props_all, probes_all = {}, {}, {}
+    table, props_all, probes_all, tie_fixes = {}, {}, {}, []
     for seed in SEEDS:
         s = summary(runs, seed)
         c0 = load(run_path(runs, seed, "C0"))
@@ -267,7 +300,9 @@ def main(argv=None):
             table[(seed, cond)] = analyse_run(recs, c0, code_values)
             phase = "pilot" if seed == "s1" else "expansion"
             with open(os.path.join(runs, phase, seed, f"{cond}_properties.json"), encoding="utf-8") as f:
-                props_all[(seed, cond)] = json.load(f)["properties"]
+                corrected, fixes = tie_correct(seed, cond, json.load(f)["properties"])
+            props_all[(seed, cond)] = corrected
+            tie_fixes.extend(fixes)
             probes_all[(seed, cond)] = s["conditions"][cond]["probes"]
 
     # primary contrasts
@@ -317,6 +352,12 @@ def main(argv=None):
             if e:
                 cand.setdefault(name, []).append(f"{seed} {cond}")
     supp = {}
+    conv = [f"{s} {c}" for (s, c), pr in props_all.items()
+            if pr["exploration_diversity"]["suppression"].get("convergence")]
+    if conv:
+        supp["exploration (strategy convergence below nominal)"] = conv
+    rd_above = {c: sum(1 for s in SEEDS if props_all[(s, c)]["coordination"]["observed"]
+                       ["action_mix_differentiation"].get("higher_than_matched_C0")) for c in ("C1", "C2")}
     for (seed, cond), pr in props_all.items():
         ex = pr["exploration_diversity"]["suppression"]
         if ex.get("agents_with_lower_EXP"):
@@ -346,6 +387,11 @@ def main(argv=None):
         "messages": {f"{s} {c}": r["messages_detail"] for (s, c), r in table.items() if r["messages_detail"]},
         "primary_contrasts": contrasts, "exploratory": explo,
         "emergence_candidates": cand, "suppression_candidates": supp, "probes": probe_summary,
+        "tie_rule": {"tolerance": TIE_TOL, "corrections": tie_fixes,
+                     "note": "PI decision 9 Nov 2026: numerical ties are ties; saved reports unchanged"},
+        "coordination_RD_above_matched_C0_runs": rd_above,
+        "statistics_disclosure": ("The sign test (with Wilcoxon as sensitivity) was selected after the protocol "
+                                  "was frozen; the spec named no test. All p-values are exploratory."),
         "entrants": entrants, "transfer_use_runs": tu_runs,
     }
     with open(os.path.join(out, "results.json"), "w", encoding="utf-8") as f:

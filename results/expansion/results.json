@@ -2403,6 +2403,15 @@
     ]
   },
   "suppression_candidates": {
+    "exploration (strategy convergence below nominal)": [
+      "s1 C1",
+      "s1 C2",
+      "s2 C2",
+      "s3 C1",
+      "s3 C2",
+      "s4 C2",
+      "s8 C1"
+    ],
     "exploration (EXP below matched C0 agent)": [
       "s1 C1: A3",
       "s2 C1: A1",
@@ -2427,6 +2436,37 @@
       "passed": 11
     }
   },
+  "tie_rule": {
+    "tolerance": 1e-09,
+    "corrections": [
+      {
+        "run": "s6 C1",
+        "field": "exploration_diversity.suppression.convergence",
+        "saved": true,
+        "corrected": false,
+        "values": [
+          1.4591479170272446,
+          1.4591479170272448
+        ]
+      },
+      {
+        "run": "s8 C2",
+        "field": "exploration_diversity.suppression.convergence",
+        "saved": true,
+        "corrected": false,
+        "values": [
+          1.9182958340544893,
+          1.9182958340544896
+        ]
+      }
+    ],
+    "note": "PI decision 9 Nov 2026: numerical ties are ties; saved reports unchanged"
+  },
+  "coordination_RD_above_matched_C0_runs": {
+    "C1": 6,
+    "C2": 6
+  },
+  "statistics_disclosure": "The sign test (with Wilcoxon as sensitivity) was selected after the protocol was frozen; the spec named no test. All p-values are exploratory.",
   "entrants": [
     {
       "seed": "s1",
