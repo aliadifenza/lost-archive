@@ -31,7 +31,7 @@ python3 -m lostarchive.expansion_report --runs ../runs --out /tmp/check   # repl
 ## Key results in four lines
 
 - Primary contrasts: not supported or not testable. T1: 5 seeds earlier, 2 later, 1 tie, p = 0.45. ABD: 0 everywhere. Organization: 0 of 8 runs. Constraint stripping: token never transmitted.
-- Entries: 3 / 8 / 12 (C0 / C1 / C2), but 20 of 23 entrants solved the code alone. One request-and-reply exchange (s6 C1) appears to have enabled two entries; **pending independent human verification** (`review/`).
+- Entries: 3 / 8 / 12 (C0 / C1 / C2), but 20 of 23 entrants solved the code alone. One request-and-reply exchange (s6 C1) enabled two entries: independently corroborated information transfer (two AI reviewers, as reported by the PI); human classification of message tags outstanding (`review/`).
 - The hatch rule was broken once in 14 aware opportunities.
 - Exploratory, not a V1.3 hypothesis: agents inspected more rooms when other agents and a channel existed (C2 > C0 in 8 of 8 seeds). To be pre-registered for V1.4.
 
