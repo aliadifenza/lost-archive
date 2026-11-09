@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.3-expansion-ready — 21-run expansion (9 November 2026)
+
+- Engineering correction authorized by the PI: expansion runs C0, C1, C2 only
+  (21 runs over s2–s8); gate projections use the s1 measurements of those
+  three conditions. Pilot behaviour unchanged.
+- Call ceiling 3,500 cumulative (PI); 25 credits unchanged.
+- `expand`: resume-safe, partial-seed block, per-seed call pre-check, s0/s1
+  refusal, gate record per evaluation, `--gates-only`.
+- Pre-execution gate on real pilot data: all pass (EXPANSION.md).
+- 163 tests; rehearsal and pilot replay unchanged.
+
 ## v1.3-pilot-ready — calibration verified, s1 pilot prepared (8 November 2026)
 
 - Calibration (PI, Mac): 5/5 smoke, C0 on s0, 96 calls, 0 parse failures,

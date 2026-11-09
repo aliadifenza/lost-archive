@@ -168,14 +168,33 @@ def run_condition(cfg, cond, seed, T, out_dir, budget, make_client):
     return sim, time.monotonic() - started
 
 
+def _probe_calls(path) -> int:
+    """Probe calls = probe rounds (probes make one call per round, no repair turn)."""
+    if not os.path.exists(path):
+        return 0
+    with open(path, encoding="utf-8") as f:
+        return sum(1 for l in f if '"type": "probe_round"' in l)
+
+
+def phase_conditions(cfg, phase):
+    """V1.2 §6/§12: the pilot runs C0, C1, C2 and C0-D; expansion runs C0, C1, C2
+    only (21 runs over s2-s8). C0-D is the supplementary control run on s1."""
+    conds = cfg["conditions"] if phase == "pilot" else cfg["expansion_conditions"]
+    if "C0" not in conds:
+        raise Blocked("C0 (the matched baseline) must be run on every seed")
+    return ["C0"] + [c for c in conds if c != "C0"]
+
+
 def run_seed(cfg, seed, T, phase, budget, make_client):
     if seed == cfg["seeds"]["calibration"]:
         raise Blocked(f"seed {seed} is the held-out calibration seed and is never reused (V1.2 §6)")
+    if phase == "expansion" and seed == cfg["seeds"]["pilot"]:
+        raise Blocked(f"seed {seed} is the pilot seed and is not rerun in expansion")
     out = os.path.join(cfg["_output"], phase, seed)
     if os.path.isdir(out) and any(f.endswith(".jsonl") for f in os.listdir(out)):
         raise Blocked(f"{phase} seed {seed} already has run logs; a rerun needs an explicit PI decision")
     os.makedirs(out, exist_ok=True)
-    order = ["C0"] + [c for c in cfg["conditions"] if c != "C0"]
+    order = phase_conditions(cfg, phase)
     sims, summary = {}, {"seed": seed, "T": T, "phase": phase, "conditions": {}}
     calls_before = budget.calls
     for cond in order:
@@ -211,6 +230,7 @@ def run_seed(cfg, seed, T, phase, budget, make_client):
         with open(os.path.join(out, f"{cond}_properties.json"), "w", encoding="utf-8") as f:
             f.write(json.dumps(props, indent=2, sort_keys=True) + "\n")
         summary["conditions"][cond]["probes"] = probes
+        summary["conditions"][cond]["probe_calls"] = _probe_calls(ppath)
     summary["calls_total_incl_probes"] = budget.calls - calls_before     # evidence for the call ceiling
     summary["config_sha256"] = {"system_prompt": _sha(cfg["_system"]), "repair": _sha(cfg["_repair"])}
     summary["provider"], summary["model"] = cfg["provider"], cfg.get("model")
@@ -262,29 +282,50 @@ def pilot_call_bound(T, repairs=True) -> int:
     return per * agent_rounds + per * 4 * probe_agents
 
 
-def expansion_gates(cfg, budget, pilot_summary, now=None) -> dict:
-    """§12 expansion gate: (a) cost, (b) throughput, (c) no floor and parse failures <= 5%."""
+def expansion_gates(cfg, budget, pilot_summary, now=None, pilot_dir=None, seeds_left=None) -> dict:
+    """V1.2 §12 expansion gate, on the expansion design (C0, C1, C2 per seed):
+    (a) measured s1 cost per run x remaining runs fits the budget (and, as approved,
+        projected calls fit the hard call ceiling);
+    (b) throughput: each remaining seed's three runs finish before the deadline;
+    (c) the pilot shows no floor (messages sent in C1) and parse failures <= 5%."""
     conds = pilot_summary["conditions"]
-    n_runs = len(cfg["seeds"]["expansion"]) * len(conds)
-    per_run_cost = sum(c["cost"] for c in conds.values()) / len(conds)
-    per_run_secs = sum(c["seconds"] for c in conds.values()) / len(conds)
-    remaining = budget.max_cost - budget.spent
-    rounds = sum(c["agent_rounds"] for c in conds.values())
+    exp = phase_conditions(cfg, "expansion")
+    seeds = len(cfg["seeds"]["expansion"]) if seeds_left is None else seeds_left
+    n_runs = seeds * len(exp)
+    per_run_cost = sum(conds[c]["cost"] for c in exp) / len(exp)
+    per_seed_secs = sum(conds[c]["seconds"] for c in exp)
+    # calls per seed measured on s1 for the expansion conditions: agent-round calls
+    # (incl. repair turns) + probe calls (summary, else counted in the s1 probe logs)
+    probe_calls = {}
+    for c in exp:
+        pc = conds[c].get("probe_calls")
+        if pc is None:
+            pc = _probe_calls(os.path.join(pilot_dir, f"{c}_probes.jsonl")) if pilot_dir else 0
+        probe_calls[c] = pc
+    per_seed_calls = sum(conds[c]["llm_calls"] for c in exp) + sum(probe_calls.values())
+    proj_calls = per_seed_calls * seeds
+    remaining_cost = budget.max_cost - budget.spent
+    remaining_calls = budget.max_calls - budget.calls
+    rounds = sum(c["agent_rounds"] for c in conds.values())      # whole pilot (all four runs)
     fails = sum(c["parse_failures"] for c in conds.values())
-    seeds = len(cfg["seeds"]["expansion"])
-    per_seed_calls = pilot_summary.get("calls_total_incl_probes")
-    proj_calls = per_seed_calls * seeds if per_seed_calls is not None else None
-    gates = {"a_cost": per_run_cost * n_runs <= remaining,
-             # the hard call ceiling would abort expansion mid-run; refuse up front instead
-             "a_calls": proj_calls is not None and proj_calls <= budget.max_calls - budget.calls,
+    gates = {"a_cost": per_run_cost * n_runs <= remaining_cost,
+             "a_calls": proj_calls <= remaining_calls,
              "c_messages_in_C1": conds.get("C1", {}).get("messages", 0) > 0,
              "c_parse_failures_le_5pct": (fails / rounds if rounds else 1) <= 0.05}
+    left = None
     if cfg.get("deadline_iso"):
         left = (datetime.fromisoformat(cfg["deadline_iso"]) - (now or datetime.now().astimezone())).total_seconds()
-        gates["b_throughput"] = per_run_secs * n_runs <= left
-    gates["projection"] = {"calls": proj_calls, "remaining_calls": budget.max_calls - budget.calls,
-                           "runs": n_runs, "usd": round(per_run_cost * n_runs, 4),
-                           "seconds": round(per_run_secs * n_runs, 1), "remaining": round(remaining, 4)}
+        gates["b_throughput"] = per_seed_secs * seeds <= left
+    gates["projection"] = {
+        "design": f"{seeds} seeds x {len(exp)} conditions ({', '.join(exp)}) = {n_runs} runs",
+        "runs": n_runs, "per_seed_calls_measured_s1": per_seed_calls,
+        "probe_calls_per_seed_s1": probe_calls, "calls": proj_calls, "remaining_calls": remaining_calls,
+        "call_margin": remaining_calls - proj_calls,
+        "cost": round(per_run_cost * n_runs, 4), "remaining_cost": round(remaining_cost, 4),
+        "cost_unit": cfg.get("cost_unit", "credits"),
+        "seconds": round(per_seed_secs * seeds, 1),
+        "seconds_to_deadline": None if left is None else round(left),
+        "parse_failure_rate_pilot": round(fails / rounds, 4) if rounds else None}
     return gates
 
 
@@ -435,6 +476,8 @@ def main(argv=None, transport=http_post_json, env=os.environ):
     ap = argparse.ArgumentParser()
     ap.add_argument("command", choices=["check", "smoke", "gate", "calibrate", "pilot", "expand"])
     ap.add_argument("--config", default="config/experiment.json")
+    ap.add_argument("--gates-only", action="store_true",
+                    help="expand: compute and record the §12 gates and projections, then stop (no calls)")
     ap.add_argument("--mock", action="store_true", help="force the cost-free mock provider (output under runs_mock/)")
     ap.add_argument("--confirm-live-call", action="store_true", help="required by `smoke`: one paid call")
     ap.add_argument("--confirm-live-calls", action="store_true",
@@ -473,16 +516,43 @@ def main(argv=None, transport=http_post_json, env=os.environ):
             print("Pilot complete. Expansion is NOT started (separate authorization).")
         else:
             st = _state(cfg)
-            path = os.path.join(cfg["_output"], "pilot", cfg["seeds"]["pilot"], "summary.json")
+            pdir = os.path.join(cfg["_output"], "pilot", cfg["seeds"]["pilot"])
+            path = os.path.join(pdir, "summary.json")
             if "T" not in st or not os.path.exists(path):
                 raise Blocked("run calibrate and pilot first")
             with open(path, encoding="utf-8") as f:
-                gates = expansion_gates(cfg, budget, json.load(f))
+                pilot = json.load(f)
+            seeds = cfg["seeds"]["expansion"]
+            if set(seeds) & {cfg["seeds"]["calibration"], cfg["seeds"]["pilot"]}:
+                raise Blocked("expansion seeds must exclude the calibration and pilot seeds")
+            # resume-safe: completed seeds are skipped; a seed with logs but no summary blocks (run_seed)
+            done = [x for x in seeds if os.path.exists(os.path.join(cfg["_output"], "expansion", x, "summary.json"))]
+            todo = [x for x in seeds if x not in done]
+            gates = expansion_gates(cfg, budget, pilot, pilot_dir=pdir, seeds_left=len(todo))
+            gates["seeds_done"], gates["seeds_to_run"] = done, todo
             print(json.dumps(gates, indent=2))
-            if not all(v for k, v in gates.items() if k != "projection"):
+            os.makedirs(os.path.join(cfg["_output"], "expansion"), exist_ok=True)
+            with open(os.path.join(cfg["_output"], "expansion",
+                                   "GATES_" + datetime.now().strftime("%Y%m%dT%H%M%S") + ".json"), "w",
+                      encoding="utf-8") as f:
+                json.dump(gates, f, indent=2)
+            passed = all(v for k, v in gates.items() if k.startswith(("a_", "b_", "c_")))
+            if a.gates_only:
+                print("GATES " + ("PASSED" if passed else "FAILED") + " (--gates-only: no runs started)")
+                return 0 if passed else 3
+            if not passed:
                 raise Blocked("expansion gate failed; no runs started")
-            for seed in cfg["seeds"]["expansion"]:
-                run_seed(cfg, seed, st["T"], "expansion", budget, make_client)
+            per_seed = gates["projection"]["per_seed_calls_measured_s1"]
+            for seed in todo:
+                left = budget.max_calls - budget.calls
+                if left < per_seed:          # stop cleanly between seeds, never mid-seed by choice
+                    raise Blocked(f"stopping before {seed}: {left} calls left < {per_seed} measured per seed")
+                res = run_seed(cfg, seed, st["T"], "expansion", budget, make_client)
+                print(json.dumps({"seed": seed, "calls": res["calls_total_incl_probes"],
+                                  "entered": {c: v["entered"] for c, v in res["conditions"].items()},
+                                  "parse_failures": {c: v["parse_failures"] for c, v in res["conditions"].items()},
+                                  "ledger": budget.ledger()}))
+            print("Expansion complete.")
     except Blocked as e:
         print(f"BLOCKED: {e}", file=sys.stderr)
         return 3

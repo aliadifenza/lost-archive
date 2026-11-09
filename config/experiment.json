@@ -3,8 +3,8 @@
   "authorized_live_steps": {
     "smoke": 5,
     "calibrate": true,
-    "pilot": false,
-    "expand": false
+    "pilot": true,
+    "expand": true
   },
   "provider": "adaption",
   "model": "gemma-4-31b-it",
@@ -25,7 +25,7 @@
   },
   "budget": {
     "max_cost": 25.0,
-    "max_calls": 3000
+    "max_calls": 3500
   },
   "retries": {
     "max_attempts": 4,
@@ -52,6 +52,11 @@
     "C1",
     "C2"
   ],
+  "expansion_conditions": [
+    "C0",
+    "C1",
+    "C2"
+  ],
   "prompts": {
     "system": "config/prompts/system_prompt.txt",
     "repair": "config/prompts/repair_message.txt"
@@ -63,7 +68,9 @@
   "approvals": {
     "2026-11-08": "PI: provider Adaption, model gemma-4-31b-it (verified via /api/v1/models), temperature 0, strict JSON parsing, 25-credit ceiling. Not yet approved: prompt text, repair text, call ceiling, live runs.",
     "2026-11-08b": "PI: action signatures approved (only currently available actions, exact argument names); system prompt approved conditionally pending verification of the rendered prompt; repair message approved and frozen; call ceiling stays 3000 (re-estimate after pilot); live runs not authorized.",
-    "2026-11-08c": "PI: probe signatures approved; rumor wording kept (framing effect documented as a limitation); expansion call-ceiling projection approved; system prompt frozen (sha256 0d8f1f0e...0630); exactly five smoke calls authorized, then C0 calibration on s0 only if all five pass strict parsing and action validation. Pilot and expansion not authorized. Limits: 3000 calls, 25 credits."
+    "2026-11-08c": "PI: probe signatures approved; rumor wording kept (framing effect documented as a limitation); expansion call-ceiling projection approved; system prompt frozen (sha256 0d8f1f0e...0630); exactly five smoke calls authorized, then C0 calibration on s0 only if all five pass strict parsing and action validation. Pilot and expansion not authorized. Limits: 3000 calls, 25 credits.",
+    "2026-11-08d": "PI: s1 pilot authorized (C0, C0-D, C1, C2 at T=20, TCR/ECR probes, seven D2 properties). Expansion not authorized. Limits 3000 calls, 25 credits.",
+    "2026-11-09": "PI: conditional expansion authorized: seeds s2-s8 x C0, C1, C2 only (21 runs; C0-D not added). Frozen T=20, model, temperature, prompts, mechanics, measures, probes and analysis unchanged. Cumulative hard call ceiling 3500 (incl. 487 used); 25-credit ceiling unchanged; no automatic raise. Engineering correction: expansion executes and projects 21 runs. Run only if all original \u00a712 gates pass."
   },
   "deadline_iso": "2026-11-09T13:00:00+01:00",
   "output_dir": "runs"

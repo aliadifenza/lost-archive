@@ -26,6 +26,9 @@ def make_cfg(tmp, **over):
         cfg = json.load(f)
     cfg["output_dir"] = "runs"
     cfg["provider"] = "mock"
+    # fixtures start from the pre-pilot authorization state unless a test overrides it
+    cfg["authorized_live_steps"] = {"smoke": 5, "calibrate": True, "pilot": False, "expand": False}
+    cfg["budget"] = {"max_cost": 25.0, "max_calls": 3000}
     cfg.update(over)
     path = os.path.join(tmp, "config", "experiment.json")
     with open(path, "w") as f:
@@ -142,16 +145,19 @@ class TestLiveRefusal(unittest.TestCase):
         cfg = ex.load_config(os.path.join(ROOT, "config", "experiment.json"))
         self.assertEqual((cfg["provider"], cfg["model"], cfg["temperature"], cfg["cost_unit"],
                           cfg["budget"]["max_cost"], cfg["budget"]["max_calls"]),
-                         ("adaption", "gemma-4-31b-it", 0, "credits", 25.0, 3000))
+                         ("adaption", "gemma-4-31b-it", 0, "credits", 25.0, 3500))
         self.assertEqual(cfg["frozen_prompt_sha256"]["system"],
                          "0d8f1f0eafa82eac56c82fb3af4a9c160b85d4068c9cb2c7a6189281deb90630")
         self.assertEqual(cfg["authorized_live_steps"],
-                         {"smoke": 5, "calibrate": True, "pilot": False, "expand": False})
+                         {"smoke": 5, "calibrate": True, "pilot": True, "expand": True})
+        self.assertEqual(cfg["conditions"], ["C0", "C0-D", "C1", "C2"])
+        self.assertEqual(cfg["expansion_conditions"], ["C0", "C1", "C2"])
+        self.assertEqual(cfg["seeds"]["expansion"], ["s2", "s3", "s4", "s5", "s6", "s7", "s8"])
+        self.assertEqual(cfg["T_initial"], 16)
         env = {"ADAPTION_API_KEY": "k"}
         self.assertEqual(ex.blockers(cfg, env, None), [])          # prompts frozen and matching
-        self.assertEqual(ex.blockers(cfg, env, "calibrate"), [])
-        for step in ("pilot", "expand"):
-            self.assertTrue(any("not authorized" in x for x in ex.blockers(cfg, env, step)), step)
+        for step in ("calibrate", "pilot", "expand"):
+            self.assertEqual(ex.blockers(cfg, env, step), [])
         self.assertTrue(any("ADAPTION_API_KEY" in x for x in ex.blockers(cfg, {}, None)))
 
     def test_unauthorized_steps_refused_without_network(self):
@@ -356,6 +362,116 @@ class TestPilotReadiness(unittest.TestCase):
         self.assertEqual(ex.pilot_call_bound(16, repairs=False), 3 * 96 + 16 + 4 * (6 + 12 + 12 + 2))
 
 
+class Talker:
+    """Fake provider: inspect the current room once, send when the channel is open, else wait."""
+    def __init__(self):
+        self.calls = []
+
+    def __call__(self, url, headers, body, timeout):
+        self.calls.append(body)
+        text = body["input"][-1]["content"] if body.get("input") else ""
+        last = text.strip().splitlines()[-1] if text.strip() else ""
+        if "send(text)" in last:
+            out = '{"thought": "", "action": "send", "args": {"text": "hello"}}'
+        elif "Known facts:\nHistory:" in text and "inspect" in last:
+            out = '{"thought": "", "action": "inspect", "args": {}}'
+        else:
+            out = WAIT
+        return _reply(out)
+
+
+class TestExpansionRun(unittest.TestCase):
+    ENV = {"ADAPTION_API_KEY": "k"}
+
+    def _setup(self, tmp, seeds=("s2", "s3"), transport=None):
+        auth = {"smoke": 5, "calibrate": True, "pilot": True, "expand": True}
+        path = make_cfg(tmp, provider="adaption", authorized_live_steps=auth, deadline_iso=None,
+                        budget={"max_cost": 25.0, "max_calls": 3500},
+                        seeds={"calibration": "s0", "pilot": "s1", "expansion": list(seeds)})
+        t = transport or Talker()
+        self.assertEqual(quiet(ex.main, ["gate", "--confirm-live-calls", "--config", path], transport=t, env=self.ENV), 0)
+        self.assertEqual(quiet(ex.main, ["pilot", "--config", path], transport=t, env=self.ENV), 0)
+        return path, t
+
+    def test_expansion_runs_three_conditions_per_seed(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path, t = self._setup(tmp)
+            before = len(t.calls)
+            self.assertEqual(quiet(ex.main, ["expand", "--config", path], transport=t, env=self.ENV), 0)
+            for seed in ("s2", "s3"):
+                out = os.path.join(tmp, "runs", "expansion", seed)
+                logs = sorted(f for f in os.listdir(out) if f.endswith(".jsonl") and "_probes" not in f)
+                self.assertEqual(logs, ["C0.jsonl", "C1.jsonl", "C2.jsonl"])
+                summ = _load(os.path.join(out, "summary.json"))
+                self.assertEqual(set(summ["conditions"]), {"C0", "C1", "C2"})
+                self.assertEqual(summ["T"], 20)
+                for c in ("C0", "C1", "C2"):
+                    with open(os.path.join(out, f"{c}.jsonl")) as f:
+                        h = json.loads(f.readline())
+                    self.assertEqual((h["seed"], h["T"], h["model"], h["temperature"]),
+                                     (seed, 20, "gemma-4-31b-it", 0))
+                    self.assertEqual(set(_load(os.path.join(out, f"{c}_properties.json"))["properties"]), SEVEN)
+            gates = [f for f in os.listdir(os.path.join(tmp, "runs", "expansion")) if f.startswith("GATES_")]
+            g = _load(os.path.join(tmp, "runs", "expansion", gates[0]))
+            self.assertEqual(g["projection"]["runs"], 6)
+            led = _load(os.path.join(tmp, "runs", "ledger.json"))
+            self.assertEqual(led["calls"], len(t.calls))
+            # pilot and calibration untouched; no s0/s1 rerun
+            self.assertFalse(os.path.exists(os.path.join(tmp, "runs", "expansion", "s1")))
+            self.assertFalse(os.path.exists(os.path.join(tmp, "runs", "expansion", "s0")))
+            # resume: completed seeds are skipped, nothing new is called
+            n = len(t.calls)
+            self.assertEqual(quiet(ex.main, ["expand", "--config", path], transport=t, env=self.ENV), 0)
+            self.assertEqual(len(t.calls), n)
+
+    def test_gates_only_makes_no_call(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path, t = self._setup(tmp)
+            n = len(t.calls)
+            self.assertEqual(quiet(ex.main, ["expand", "--gates-only", "--config", path], transport=t, env=self.ENV), 0)
+            self.assertEqual(len(t.calls), n)
+            self.assertFalse(os.path.exists(os.path.join(tmp, "runs", "expansion", "s2")))
+
+    def test_partial_seed_blocks_resume(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path, t = self._setup(tmp)
+            os.makedirs(os.path.join(tmp, "runs", "expansion", "s2"))
+            with open(os.path.join(tmp, "runs", "expansion", "s2", "C0.jsonl"), "w") as f:
+                f.write("{}\n")
+            n = len(t.calls)
+            self.assertEqual(quiet(ex.main, ["expand", "--config", path], transport=t, env=self.ENV), 3)
+            self.assertEqual(len(t.calls), n)
+
+    def test_pilot_or_calibration_seed_refused(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path, t = self._setup(tmp, seeds=("s1", "s2"))
+            n = len(t.calls)
+            self.assertEqual(quiet(ex.main, ["expand", "--config", path], transport=t, env=self.ENV), 3)
+            self.assertEqual(len(t.calls), n)
+
+    def test_gate_failure_starts_nothing(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path, t = self._setup(tmp)
+            n = len(t.calls)
+            cfg = _load(path)
+            cfg["budget"]["max_calls"] = n + 10                # ceiling far below the projection
+            with open(path, "w") as f:
+                json.dump(cfg, f)
+            self.assertEqual(quiet(ex.main, ["expand", "--config", path], transport=t, env=self.ENV), 3)
+            self.assertEqual(len(t.calls), n)
+            self.assertFalse(os.path.exists(os.path.join(tmp, "runs", "expansion", "s2")))
+
+    def test_no_c1_messages_fails_gate_c(self):
+        # all-wait agents send nothing: the pilot has a floor, so expansion must not start
+        with tempfile.TemporaryDirectory() as tmp:
+            path, t = self._setup(tmp, transport=Always(_reply(WAIT)))
+            self.assertEqual(_load(os.path.join(tmp, "runs", "pilot", "s1", "summary.json"))
+                             ["conditions"]["C1"]["messages"], 0)
+            n = len(t.calls)
+            self.assertEqual(quiet(ex.main, ["expand", "--config", path], transport=t, env=self.ENV), 3)
+            self.assertEqual(len(t.calls), n)
+
+
 class TestGate(unittest.TestCase):
     ENV = {"ADAPTION_API_KEY": "k"}
 
@@ -476,33 +592,73 @@ class TestRunner(unittest.TestCase):
         self.assertEqual(ex.tune_T(recs([3, 12, None, None, None, None])), 16)
         self.assertEqual(ex.tune_T(recs([3, 4, 9, 9, 9, 9])), 16)
 
-    def test_expansion_gates(self):
-        cfg = {"seeds": {"expansion": ["s2", "s3"]}, "deadline_iso": None}
-        good = {"conditions": {c: {"cost": 1.0, "seconds": 10, "agent_rounds": 100, "parse_failures": 5,
-                                   "messages": 3} for c in ("C0", "C0-D", "C1", "C2")}}
-        g = ex.expansion_gates(cfg, Budget(10, 100, 1, 1), good)
-        self.assertTrue(g["a_cost"] and g["c_messages_in_C1"] and g["c_parse_failures_le_5pct"])
-        self.assertFalse(ex.expansion_gates(cfg, Budget(7, 100, 1, 1), good)["a_cost"])
-        good["conditions"]["C1"]["messages"] = 0
-        good["conditions"]["C2"]["parse_failures"] = 6
-        g = ex.expansion_gates(cfg, Budget(10, 100, 1, 1), good)
-        self.assertFalse(g["c_messages_in_C1"] or g["c_parse_failures_le_5pct"])
-        cfg["deadline_iso"] = (datetime.now(timezone.utc) + timedelta(seconds=30)).isoformat()
-        self.assertFalse(ex.expansion_gates(cfg, Budget(10, 100, 1, 1), good)["b_throughput"])
+    PILOT = {"T": 20, "calls_total_incl_probes": 386, "conditions": {
+        "C0": {"cost": 0.008327, "seconds": 232.5, "agent_rounds": 120, "parse_failures": 0, "messages": 0,
+               "llm_calls": 121, "entered": 0},
+        "C0-D": {"cost": 0.001423, "seconds": 82.9, "agent_rounds": 20, "parse_failures": 0, "messages": 0,
+                 "llm_calls": 20, "entered": 0},
+        "C1": {"cost": 0.008419, "seconds": 381.1, "agent_rounds": 120, "parse_failures": 0, "messages": 3,
+               "llm_calls": 121, "entered": 1},
+        "C2": {"cost": 0.009168, "seconds": 512.7, "agent_rounds": 120, "parse_failures": 0, "messages": 5,
+               "llm_calls": 121, "entered": 3}}}
+    CFG = {"seeds": {"calibration": "s0", "pilot": "s1", "expansion": ["s2", "s3", "s4", "s5", "s6", "s7", "s8"]},
+           "conditions": ["C0", "C0-D", "C1", "C2"], "expansion_conditions": ["C0", "C1", "C2"],
+           "deadline_iso": None, "cost_unit": "credits"}
 
-    def test_call_ceiling_gate_uses_pilot_evidence(self):
-        cfg = {"seeds": {"expansion": ["s2", "s3"]}, "deadline_iso": None}
-        pilot = {"calls_total_incl_probes": 1000,
-                 "conditions": {c: {"cost": 0.0, "seconds": 1, "agent_rounds": 10, "parse_failures": 0,
-                                    "messages": 1} for c in ("C0", "C0-D", "C1", "C2")}}
-        b = Budget(25, 3000, 1, 1)
-        g = ex.expansion_gates(cfg, b, pilot)
-        self.assertTrue(g["a_calls"])
-        self.assertEqual(g["projection"]["calls"], 2000)
-        b.calls = 1500                                   # calibration + pilot already spent
-        self.assertFalse(ex.expansion_gates(cfg, b, pilot)["a_calls"])
-        del pilot["calls_total_incl_probes"]
-        self.assertFalse(ex.expansion_gates(cfg, Budget(25, 3000, 1, 1), pilot)["a_calls"])
+    def _pilot(self, probe_calls=(0, 2, 0)):
+        p = json.loads(json.dumps(self.PILOT))
+        for c, n in zip(("C0", "C1", "C2"), probe_calls):
+            p["conditions"][c]["probe_calls"] = n
+        return p
+
+    def test_expansion_is_21_runs_without_c0d(self):
+        self.assertEqual(ex.phase_conditions(self.CFG, "expansion"), ["C0", "C1", "C2"])
+        self.assertEqual(ex.phase_conditions(self.CFG, "pilot"), ["C0", "C0-D", "C1", "C2"])
+        g = ex.expansion_gates(self.CFG, Budget(25, 3500, 1, 1), self._pilot())
+        pr = g["projection"]
+        self.assertEqual(pr["runs"], 21)
+        self.assertIn("7 seeds x 3 conditions (C0, C1, C2) = 21 runs", pr["design"])
+        # per seed: 121 + 121 + 121 agent-round calls (incl. repairs) + 2 probe calls; C0-D excluded
+        self.assertEqual(pr["per_seed_calls_measured_s1"], 365)
+        self.assertEqual(pr["calls"], 365 * 7)
+        # cost: mean of the three expansion conditions x 21, C0-D excluded
+        self.assertAlmostEqual(pr["cost"], round((0.008327 + 0.008419 + 0.009168) / 3 * 21, 4))
+        self.assertAlmostEqual(pr["seconds"], round((232.5 + 381.1 + 512.7) * 7, 1))
+
+    def test_projection_against_actual_ledger(self):
+        b = Budget(25, 3500, 1, 1)
+        b.calls, b.spent = 487, 0.033881                 # calibration + smoke + pilot, as recorded
+        g = ex.expansion_gates(self.CFG, b, self._pilot())
+        self.assertEqual(g["projection"]["remaining_calls"], 3013)
+        self.assertEqual(g["projection"]["call_margin"], 3013 - 2555)
+        self.assertTrue(g["a_calls"] and g["a_cost"])
+        b.max_calls = 3000                                # the old ceiling would refuse
+        self.assertFalse(ex.expansion_gates(self.CFG, b, self._pilot())["a_calls"])
+
+    def test_probe_calls_counted_from_pilot_logs_when_missing(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            with open(os.path.join(tmp, "C1_probes.jsonl"), "w") as f:
+                f.write('{"type": "probe_round"}\n{"type": "probe_round"}\n{"type": "probe_result"}\n')
+            g = ex.expansion_gates(self.CFG, Budget(25, 3500, 1, 1), self.PILOT, pilot_dir=tmp)
+            self.assertEqual(g["projection"]["probe_calls_per_seed_s1"], {"C0": 0, "C1": 2, "C2": 0})
+
+    def test_gates_c_and_b(self):
+        p = self._pilot()
+        g = ex.expansion_gates(self.CFG, Budget(25, 3500, 1, 1), p)
+        self.assertTrue(g["c_messages_in_C1"] and g["c_parse_failures_le_5pct"])
+        p["conditions"]["C1"]["messages"] = 0
+        p["conditions"]["C2"]["parse_failures"] = 20       # 20 / 380 > 5%
+        g = ex.expansion_gates(self.CFG, Budget(25, 3500, 1, 1), p)
+        self.assertFalse(g["c_messages_in_C1"] or g["c_parse_failures_le_5pct"])
+        cfg = dict(self.CFG, deadline_iso=(datetime.now(timezone.utc) + timedelta(hours=1)).isoformat())
+        self.assertFalse(ex.expansion_gates(cfg, Budget(25, 3500, 1, 1), self._pilot())["b_throughput"])
+        cfg["deadline_iso"] = (datetime.now(timezone.utc) + timedelta(hours=4)).isoformat()
+        self.assertTrue(ex.expansion_gates(cfg, Budget(25, 3500, 1, 1), self._pilot())["b_throughput"])
+        self.assertFalse(ex.expansion_gates(self.CFG, Budget(0.1, 3500, 1, 1), self._pilot())["a_cost"])
+
+    def test_remaining_seeds_only(self):
+        g = ex.expansion_gates(self.CFG, Budget(25, 3500, 1, 1), self._pilot(), seeds_left=3)
+        self.assertEqual((g["projection"]["runs"], g["projection"]["calls"]), (9, 365 * 3))
 
     def test_mock_calibrate_pilot_expand_end_to_end(self):
         with tempfile.TemporaryDirectory() as tmp:
